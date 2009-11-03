@@ -40,7 +40,10 @@ public class FastCGIPortlet extends GenericPortlet {
 		super.init(portletConfig);
 		Map<String, String> config = new TreeMap<String, String>();
 		for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
-			config.put(paramName, getInitParameter(paramName));
+			String value = getInitParameter(paramName);
+			if(value != null){
+				config.put(paramName, getInitParameter(paramName));
+			}
 		}
 		handler = FastCGIHandlerFactory.create(config);
 	}
