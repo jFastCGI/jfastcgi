@@ -1,4 +1,12 @@
+/*
+ * (c) 2009 Julien Rialland, and the jFastCGI project developpers.
+ * 
+ * Released under BSD License (see license.txt)
+ *  
+ *   $Id$ 
+ */
 package net.jr.fastcgi;
+
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,10 +24,9 @@ import net.jr.fastcgi.impl.FastCGIHandlerFactory;
 import net.jr.fastcgi.impl.PortletRequestAdapter;
 import net.jr.fastcgi.impl.PortletResponseAdapter;
 
+
 /**
  * Porlet version is quite experimental, but functionnal.
- * 
- * TODO : add examples.
  * 
  * @author jrialland
  *
