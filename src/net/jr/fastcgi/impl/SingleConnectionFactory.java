@@ -34,7 +34,7 @@ public class SingleConnectionFactory implements ConnectionFactory {
 
 	public SingleConnectionFactory(String descriptor)
 	{
-		Matcher m = Pattern.compile("([^:]+):([1-9][0-9]*)$").matcher(descriptor);
+		Matcher m = Pattern.compile("([^:]+):([1-9][0-9]*)$").matcher(descriptor.trim());
 		if (m.matches()) {
 			try {
 				this.host = InetAddress.getByName(m.group(1));
