@@ -1,3 +1,10 @@
+/*
+ * (c) 2009 Julien Rialland, and the jFastCGI project developpers.
+ * 
+ * Released under BSD License (see license.txt)
+ *  
+ *   $Id$ 
+ */
 package net.jr.fastcgi.impl;
 
 import java.io.InputStream;
