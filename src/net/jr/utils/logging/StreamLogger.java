@@ -7,6 +7,12 @@ import java.io.InputStreamReader;
 
 import org.apache.commons.logging.Log;
 
+/**
+ * reads a stream indefinitely, and put a line of log in the specificied logger each time an EOF is seen.
+ * 
+ * @author jrialland
+ *
+ */
 public class StreamLogger implements Runnable {
 
 	private BufferedReader reader;
