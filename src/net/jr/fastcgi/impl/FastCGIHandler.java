@@ -63,9 +63,17 @@ public class FastCGIHandler {
 	public void startProcess(String cmd) throws IOException {
 		ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
 		process = pb.start();
-		processLogThread = new Thread(new StreamLogger(
-				process.getErrorStream(), log));
-		processLogThread.start();
+		
+		if(log.isTraceEnabled())
+		{
+		
+			processLogThread = new Thread(new StreamLogger(
+					process.getErrorStream(), log));
+			
+			processLogThread.setDaemon(true);
+			
+			processLogThread.start();
+		}
 	}
 
 	@Override
