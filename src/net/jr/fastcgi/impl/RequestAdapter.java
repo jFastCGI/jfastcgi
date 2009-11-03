@@ -3,6 +3,13 @@ package net.jr.fastcgi.impl;
 import java.io.InputStream;
 import java.util.Enumeration;
 
+/**
+ * part of the portlet / servlet request interface used by FastCGIHandler. Allows to use the same code
+ * for both portlet and servlet environment.
+ * 
+ * @author jrialland
+ *
+ */
 public interface RequestAdapter {
 
 	public InputStream getInputStream();

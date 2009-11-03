@@ -1,38 +1,37 @@
 package net.jr.fastcgi;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.jr.fastcgi.impl.FastCGIHandler;
+import net.jr.fastcgi.impl.FastCGIHandlerFactory;
 import net.jr.fastcgi.impl.ServletRequestAdapter;
 import net.jr.fastcgi.impl.ServletResponseAdapter;
-import net.jr.fastcgi.impl.SingleConnectionFactory;
 
+/**
+ * @author jrialland
+ *
+ */
 public class FastCGIServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -8597795652806478718L;
 
 	private FastCGIHandler handler = new FastCGIHandler();
 
-	public void init() throws ServletException {
-
-		String serverAddress = getInitParameter("server-address");
-		if(serverAddress != null) {
-			handler.setConnectionFactory(new SingleConnectionFactory(serverAddress));
-		} 
-
-		String startProcess = getInitParameter("start-executable");
-		if (startProcess != null) {
-			try {
-				handler.startProcess(startProcess);
-			} catch (IOException e) {
-				throw new ServletException(e);
-			}
+	public void init(ServletConfig servletConfig) throws ServletException {
+		super.init(servletConfig);
+		Map<String, String> config = new TreeMap<String, String>();
+		for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
+			config.put(paramName, getInitParameter(paramName));
 		}
+		handler = FastCGIHandlerFactory.create(config);
 	}
 	
 	@Override

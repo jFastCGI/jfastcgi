@@ -8,6 +8,12 @@ import java.util.regex.Pattern;
 
 import net.jr.fastcgi.ConnectionFactory;
 
+/**
+ * A connection factory that always tries to connect to the same ip/port.
+ * 
+ * @author jrialland
+ *
+ */
 public class SingleConnectionFactory implements ConnectionFactory {
 
 	private InetAddress host;

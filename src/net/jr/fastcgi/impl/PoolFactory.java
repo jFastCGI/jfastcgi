@@ -11,23 +11,27 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.pool.BasePoolableObjectFactory;
 
+/**
+ * Implements PoolableObjectFactory so it creates tcp connections on demand using pool configuration.
+ * 
+ * @author jrialland
+ *
+ */
 public class PoolFactory extends BasePoolableObjectFactory {
 
+	/**
+	 * embeds ip + port into a single structure.
+	 * 
+	 * @author jrialland
+	 *
+	 */
 	private static class ConnDesc {
 		public InetAddress getAddr() {
 			return addr;
 		}
 
-		public void setAddr(InetAddress addr) {
-			this.addr = addr;
-		}
-
 		public int getPort() {
 			return port;
-		}
-
-		public void setPort(int port) {
-			this.port = port;
 		}
 
 		private InetAddress addr;
@@ -47,8 +51,17 @@ public class PoolFactory extends BasePoolableObjectFactory {
 
 	private Random random = new Random();
 
+	/**
+	 * List of configured host/port pairs.
+	 * 
+	 */
 	private List<ConnDesc> addresses = new ArrayList<ConnDesc>();
 
+	/**
+	 * build a ConnDesc from a "host:port" string.
+	 * @param s
+	 * @return
+	 */
 	private static ConnDesc makeConndesc(String s) {
 		Matcher m = Pattern.compile("([^:]+):([1-9][0-9]*)$").matcher(s);
 		if (m.matches()) {
@@ -63,6 +76,9 @@ public class PoolFactory extends BasePoolableObjectFactory {
 			throw new IllegalArgumentException(s);
 	}
 
+	/**
+	 * builds a new socket using one of the descriptors.
+	 */
 	@Override
 	public Object makeObject() throws Exception {
 		int index = random.nextInt(addresses.size() - 1);
@@ -70,13 +86,33 @@ public class PoolFactory extends BasePoolableObjectFactory {
 		return new Socket(desc.getAddr(), desc.getPort());
 	}
 
-	public void setAddress(String address) {
+	public void addAddress(String address)
+	{
 		this.addresses.add(makeConndesc(address));
 	}
-
-	public void setAddresses(List<String> addresses) {
+	
+	public void addAdresses(Iterable<String> addresses)
+	{
 		for (String s : addresses) {
 			this.addresses.add(makeConndesc(s));
 		}
+	}
+	
+	/**
+	 * may simplify future spring integration...
+	 * 
+	 * @param address
+	 */
+	public void setAddress(String address) {
+		addAddress(address);
+	}
+
+	/**
+	 * may simplify future spring integration...
+	 * 
+	 * @param addresses
+	 */
+	public void setAddresses(Iterable<String> addresses) {
+		addAdresses(addresses);
 	}
 }

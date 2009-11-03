@@ -1,6 +1,8 @@
 package net.jr.fastcgi;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;
@@ -10,31 +12,30 @@ import javax.portlet.RenderResponse;
 import javax.servlet.ServletException;
 
 import net.jr.fastcgi.impl.FastCGIHandler;
+import net.jr.fastcgi.impl.FastCGIHandlerFactory;
 import net.jr.fastcgi.impl.PortletRequestAdapter;
 import net.jr.fastcgi.impl.PortletResponseAdapter;
-import net.jr.fastcgi.impl.SingleConnectionFactory;
 
+/**
+ * Porlet version is quite experimental, but functionnal.
+ * 
+ * TODO : add examples.
+ * 
+ * @author jrialland
+ *
+ */
 public class FastCGIPortlet extends GenericPortlet {
 
 	private FastCGIHandler handler = new FastCGIHandler();
 
 	@Override
-	public void init(PortletConfig config) throws PortletException {
-		super.init(config);
-
-		String serverAddress = getInitParameter("server-address");
-		if (serverAddress != null) {
-			handler.setConnectionFactory(new SingleConnectionFactory(serverAddress));
+	public void init(PortletConfig portletConfig) throws PortletException {
+		super.init(portletConfig);
+		Map<String, String> config = new TreeMap<String, String>();
+		for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
+			config.put(paramName, getInitParameter(paramName));
 		}
-		
-		String startProcess = getInitParameter("start-executable");
-		if (startProcess != null) {
-			try {
-				handler.startProcess(startProcess);
-			} catch (IOException e) {
-				throw new PortletException(e);
-			}
-		}
+		handler = FastCGIHandlerFactory.create(config);
 	}
 
 	@Override
@@ -47,7 +48,7 @@ public class FastCGIPortlet extends GenericPortlet {
 			throw new PortletException(e);
 		}
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -5,6 +5,9 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Implementation used for plain servlets.
+ */
 public class ServletResponseAdapter implements ResponseAdapter {
 
 	private HttpServletResponse httpServletResponse;
