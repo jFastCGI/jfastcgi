@@ -9,6 +9,9 @@ package net.jr.fastcgi.impl;
 
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.jr.fastcgi.ConnectionFactory;
 
 /**
@@ -20,6 +23,8 @@ import net.jr.fastcgi.ConnectionFactory;
  */
 public class FastCGIHandlerFactory {
 
+	private static Log LOG = LogFactory.getLog(FastCGIHandlerFactory.class);
+	
 	/**
 	 * Address of the fastcgi provider service to use.
 	 */
@@ -52,17 +57,22 @@ public class FastCGIHandlerFactory {
 		FastCGIHandler handler = new FastCGIHandler();
 		if(config.get(PARAM_SERVER_ADDRESS) != null)
 		{
+			LOG.info("configuring fastCGI handler using a single connection -based policy");
 			handler.setConnectionFactory(new SingleConnectionFactory(config.get(PARAM_SERVER_ADDRESS)));
 		}
 		else if(config.get(PARAM_CONNECTION_FACTORY) != null)
 		{
-			handler.setConnectionFactory(buildConnectionFactoryForClass(config.get(PARAM_CONNECTION_FACTORY)));
+			String className = config.get(PARAM_CONNECTION_FACTORY).trim(); 
+			LOG.info("configuring fastCGI handler using custom class '"+className+"'");
+			handler.setConnectionFactory(buildConnectionFactoryForClass(className));
 		}
 		else if(config.get(PARAM_CLUSTER_ADRESSES) != null)
 		{
 			PoolFactory factory = new PoolFactory();
+			LOG.info("configuring fastCGI handler using the following adresses : ");
 			for(String addr : config.get(PARAM_CLUSTER_ADRESSES).split(";"))
 			{
+				LOG.info("  => "+addr);
 				factory.addAddress(addr.trim());
 			}
 			handler.setConnectionFactory(new PooledConnectionFactory(factory));//sorry for the confusion, everything seems to be named 'factory'...
