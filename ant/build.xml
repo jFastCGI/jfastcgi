@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="jFastCGI" basedir="../" default="all">
+	
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="tmp.dir" value="${basedir}/.tmp" />
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="version" value="1.1" />
+	
+	<path id="build_classpath">
+		<fileset dir="${basedir}/lib" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${tmp.dir}" />
+		<mkdir dir="${tmp.dir}" />
+	</target>
+
+	<target name="compile" depends="clean">
+		<javac debug="on" srcdir="${src.dir}" destdir="${tmp.dir}">
+			<classpath>
+				<path refid="build_classpath" />
+			</classpath>
+		</javac>
+		<copy todir="${tmp.dir}">
+			<fileset dir="${basedir}/src">
+				<exclude name="*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${basedir}/dist" />
+		<jar destfile="${dist.dir}/${ant.project.name}.jar" basedir="${tmp.dir}">
+		</jar>
+		<delete dir="${tmp.dir}" />
+	</target>
+	
+	<target name="zip" depends="jar">
+		<zip destfile="${dist.dir}/${ant.project.name}-bin-${version}.zip">
+			<fileset file="${dist.dir}/${ant.project.name}.jar"></fileset>
+			<fileset file="${basedir}/lib/commons-logging-1.1.1.jar" />
+		</zip>
+	</target>
+	
+	<target name="targz" depends="jar">
+		<tar destfile="${dist.dir}/${ant.project.name}-bin-${version}.tar">
+			<tarfileset file="${dist.dir}/${ant.project.name}.jar" />
+			<tarfileset file="${basedir}/lib/commons-logging-1.1.1.jar" />
+		</tar>
+		<gzip src="${dist.dir}/${ant.project.name}-bin-${version}.tar"
+			destfile="${dist.dir}/${ant.project.name}-bin-${version}.tar.gz"/>
+		<delete file="${dist.dir}/${ant.project.name}-bin-${version}.tar"></delete>
+	</target>
+	
+	<target name="all" depends="zip, targz">
+	</target>
+</project>
