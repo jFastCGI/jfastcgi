@@ -15,7 +15,7 @@ public class PortletResponseAdapter implements ResponseAdapter {
 	}
 	
 	public void addHeader(String key, String value) {
-		//add nothing.
+		//can't add anything with portlets.
 	}
 
 	public OutputStream getOutputStream() {

@@ -6,6 +6,12 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Implementation used for plain servlets.
+ * 
+ * @author jrialland
+ *
+ */
 public class ServletRequestAdapter implements RequestAdapter {
 
 	public ServletRequestAdapter(HttpServletRequest httpServletRequest) {

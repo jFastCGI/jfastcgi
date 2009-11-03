@@ -5,23 +5,28 @@ import java.net.Socket;
 import net.jr.fastcgi.ConnectionFactory;
 
 import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
+/**
+ * A connection factory that handles multiple connections, using an underlying connection pool provided
+ * by commons-pool. (http://commons.apache.org/pool/)
+ * 
+ * @author jrialland
+ *
+ */
 public class PooledConnectionFactory implements ConnectionFactory {
 
 	private ObjectPool pool;
 	
-	public PooledConnectionFactory(ObjectPool pool)
+	public PooledConnectionFactory(PoolableObjectFactory poolableObjectFactory)
 	{
-		this.pool = pool;
+		this.pool = new GenericObjectPool(poolableObjectFactory);
 	}
 	
-	public PooledConnectionFactory()
-	{
-		this(new GenericObjectPool());
-	}
-	
-	
+	/**
+	 * get e connection from the pool.
+	 */
 	public Socket getConnection() {
 		try
 		{
@@ -34,6 +39,10 @@ public class PooledConnectionFactory implements ConnectionFactory {
 		}
 	}
 	
+	/**
+	 * returns a connection to the pool.
+	 * 
+	 */
 	public void releaseConnection(Socket socket) {
 		try
 		{
@@ -43,5 +52,13 @@ public class PooledConnectionFactory implements ConnectionFactory {
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	public ObjectPool getPool() {
+		return pool;
+	}
+
+	public void setPool(ObjectPool pool) {
+		this.pool = pool;
 	}
 }
