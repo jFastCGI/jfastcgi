@@ -99,9 +99,6 @@ public class FastCGIHandler {
 
 		try {
 			handleRequest(request, response, fcgiSocket, out, false);
-		} catch (Exception e) {
-			log.error(e);
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} finally {
 			if (fcgiSocket != null)
 				connectionFactory.releaseConnection(fcgiSocket);
