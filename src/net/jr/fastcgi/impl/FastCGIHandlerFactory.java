@@ -77,7 +77,7 @@ public class FastCGIHandlerFactory {
 			}
 			handler.setConnectionFactory(new PooledConnectionFactory(factory));//sorry for the confusion, everything seems to be named 'factory'...
 		}
-		else throw new IllegalArgumentException("Cannot create fcgi handler : did you configure it properly ?");
+		else throw new IllegalArgumentException("Cannot create fcgi handler : did you provide any configuration ?");
 		
 		return handler;
 	}
