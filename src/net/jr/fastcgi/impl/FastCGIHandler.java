@@ -67,6 +67,8 @@ public class FastCGIHandler {
 
 	private Thread processLogThread;
 
+	private boolean keepAlive = false;
+	
 	public void startProcess(String cmd) throws IOException {
 		ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
 		process = pb.start();
@@ -98,7 +100,7 @@ public class FastCGIHandler {
 		fcgiSocket.setSoTimeout((int) READ_TIMEOUT);
 
 		try {
-			handleRequest(request, response, fcgiSocket, out, false);
+			handleRequest(request, response, fcgiSocket, out, keepAlive);
 		} finally {
 			if (fcgiSocket != null)
 				connectionFactory.releaseConnection(fcgiSocket);
@@ -486,5 +488,13 @@ public class FastCGIHandler {
 
 	public Thread getProcessLogThread() {
 		return processLogThread;
+	}
+
+	public boolean isKeepAlive() {
+		return keepAlive;
+	}
+
+	public void setKeepAlive(boolean keepAlive) {
+		this.keepAlive = keepAlive;
 	}
 }
