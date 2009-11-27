@@ -294,43 +294,48 @@ public class FastCGIHandler {
 
 	private void addHeader(Socket fcgiSocket, OutputStream ws, String key,
 			String value) throws IOException {
-		int keyLen = key.length();
-		int valLen = value.length();
-
-		int len = keyLen + valLen;
-
-		if (keyLen < 0x80)
-			len += 1;
-		else
-			len += 4;
-
-		if (valLen < 0x80)
-			len += 1;
-		else
-			len += 4;
-
-		writeHeader(fcgiSocket, ws, FCGI_PARAMS, len);
-
-		if (keyLen < 0x80)
-			ws.write(keyLen);
-		else {
-			ws.write(0x80 | (keyLen >> 24));
-			ws.write(keyLen >> 16);
-			ws.write(keyLen >> 8);
-			ws.write(keyLen);
+		
+		if(value != null)
+		{
+		
+			int keyLen = key.length();
+			int valLen = value.length();
+	
+			int len = keyLen + valLen;
+	
+			if (keyLen < 0x80)
+				len += 1;
+			else
+				len += 4;
+	
+			if (valLen < 0x80)
+				len += 1;
+			else
+				len += 4;
+	
+			writeHeader(fcgiSocket, ws, FCGI_PARAMS, len);
+	
+			if (keyLen < 0x80)
+				ws.write(keyLen);
+			else {
+				ws.write(0x80 | (keyLen >> 24));
+				ws.write(keyLen >> 16);
+				ws.write(keyLen >> 8);
+				ws.write(keyLen);
+			}
+	
+			if (valLen < 0x80)
+				ws.write(valLen);
+			else {
+				ws.write(0x80 | (valLen >> 24));
+				ws.write(valLen >> 16);
+				ws.write(valLen >> 8);
+				ws.write(valLen);
+			}
+	
+			ws.write(key.getBytes());
+			ws.write(value.getBytes());
 		}
-
-		if (valLen < 0x80)
-			ws.write(valLen);
-		else {
-			ws.write(0x80 | (valLen >> 24));
-			ws.write(valLen >> 16);
-			ws.write(valLen >> 8);
-			ws.write(valLen);
-		}
-
-		ws.write(key.getBytes());
-		ws.write(value.getBytes());
 	}
 
 	private void writeHeader(Socket fcgiSocket, OutputStream ws, int type,
