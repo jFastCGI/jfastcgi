@@ -182,6 +182,7 @@ public class FastCGIHandler {
 		log.debug("FCGI file: " + scriptPath);
 		addHeader(fcgi, ws, "PATH_INFO", req.getContextPath() + scriptPath);
 		addHeader(fcgi, ws, "PATH_TRANSLATED", req.getRealPath(scriptPath));
+		addHeader(fcgi, ws, "SCRIPT_FILENAME", req.getRealPath(scriptPath));
 		int contentLength = req.getContentLength();
 		if (contentLength < 0)
 			addHeader(fcgi, ws, "CONTENT_LENGTH", "0");
