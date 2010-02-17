@@ -76,7 +76,7 @@ public class RequestHandler implements HttpRequestHandler, InitializingBean {
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		Assert.isTrue(getFastCGIHandler() != null);
+		Assert.isTrue(getFastCGIHandler() != null,"connectionFactory or fastCgiHandler property should be set.");
 	}
 
 	public FastCGIHandler getFastCGIHandler() {

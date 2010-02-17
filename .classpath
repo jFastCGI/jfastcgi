@@ -10,11 +10,11 @@
 	<classpathentry kind="lib" path="build_lib/mockrunner-servlet.jar"/>
 	<classpathentry kind="lib" path="build_lib/mockrunner.jar"/>
 	<classpathentry kind="lib" path="build_lib/mockrunner/jdom.jar"/>
-	<classpathentry kind="lib" path="build_lib/mockrunner/servlet-api.jar"/>
 	<classpathentry kind="lib" path="build_lib/mockrunner/jsp-api.jar"/>
 	<classpathentry kind="lib" path="build_lib/mockrunner/struts.jar"/>
 	<classpathentry kind="lib" path="build_lib/mockrunner/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="build_lib/mockrunner/commons-digester-1.8.jar"/>
 	<classpathentry kind="lib" path="lib/spring.jar"/>
+	<classpathentry kind="lib" path="build_lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
