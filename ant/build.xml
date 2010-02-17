@@ -4,10 +4,11 @@
 	<property name="src.dir" value="${basedir}/src" />
 	<property name="tmp.dir" value="${basedir}/.tmp" />
 	<property name="dist.dir" value="${basedir}/dist" />
-	<property name="version" value="1.1" />
+	<property name="version" value="2.0" />
 	
 	<path id="build_classpath">
 		<fileset dir="${basedir}/lib" />
+		<fileset dir="${basedir}/build_lib" />
 	</path>
 
 	<target name="clean">
