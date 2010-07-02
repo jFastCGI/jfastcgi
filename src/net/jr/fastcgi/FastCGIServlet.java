@@ -36,7 +36,7 @@ public class FastCGIServlet extends HttpServlet {
 		super.init(servletConfig);
 		Map<String, String> config = new TreeMap<String, String>();
 		for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
-			String value = getInitParameter(paramName);
+			String value = servletConfig.getInitParameter(paramName);
 			if(value != null){
 				config.put(paramName, getInitParameter(paramName));
 			}
