@@ -100,7 +100,9 @@ public class FastCGIHandler {
 		fcgiSocket.setSoTimeout((int) READ_TIMEOUT);
 
 		try {
-			handleRequest(request, response, fcgiSocket, out, keepAlive);
+			synchronized(fcgiSocket){
+				handleRequest(request, response, fcgiSocket, out, keepAlive);
+			}
 		} finally {
 			if (fcgiSocket != null)
 				connectionFactory.releaseConnection(fcgiSocket);
