@@ -40,17 +40,24 @@
 	<licenses>
 		<license>
 			<name>The BSD 2-Clause License</name>
-			<url>http://www.opensource.org/licenses/bsd-license.php</url>
+			<url>https://jfastcgi.svn.sourceforge.net/svnroot/jfastcgi/trunk/license.txt</url>
 		</license>
 	</licenses>
 
 	<url>http://sourceforge.net/projects/jfastcgi/</url>
 
 	<scm>
-		<connection>scm:svn:https://jfastcgi.svn.sourceforge.net/svnroot/jfastcgi</connection>
-		<developerConnection>scm:svn:https://jfastcgi.svn.sourceforge.net/svnroot/jfastcgi</developerConnection>
-		<url>http://jfastcgi.svn.sourceforge.net/viewvc/jfastcgi/</url>
+		<connection>scm:svn:https://jfastcgi.svn.sourceforge.net/svnroot/jfastcgi/trunk</connection>
+		<developerConnection>scm:svn:https://jfastcgi.svn.sourceforge.net/svnroot/jfastcgi/trunk</developerConnection>
+		<url>http://jfastcgi.svn.sourceforge.net/viewvc/jfastcgi/trunk</url>
 	</scm>
+
+	<mailingLists>
+		<mailingList>
+			<name>Announcements</name>
+			<subscribe>jfastcgi-announces@lists.sourceforge.net</subscribe>
+		</mailingList>
+	</mailingLists>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
