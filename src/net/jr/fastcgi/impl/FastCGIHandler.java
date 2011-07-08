@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Enumeration;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * 
+ * handling of the fastCGI protocol.
  */
 public class FastCGIHandler {
 
@@ -68,19 +69,72 @@ public class FastCGIHandler {
 	private Thread processLogThread;
 
 	private boolean keepAlive = false;
+
+	private static interface HeaderFilter {
+		public boolean isFiltered(String header);
+	}
+	
+	/**
+	 * by default, no header is filtered.
+	 */
+	private HeaderFilter headerFilter = new HeaderFilter() {
+		public boolean isFiltered(String header) {
+			return false;
+		};
+	};
+	
+	/**
+	 * Some http headers have sometimes to be filtered for security reasons, so this methods allows to tell
+	 * which http headers we do not want to pass to the fastcgi app. For example :
+	 * <code>
+	 * 	  handler.setFilteredHeaders(new String[]{"Authorization"});
+	 * </code>
+	 * 
+	 * will remove all the HTTP_AUTHORIZATION headers from the transmitted requests.
+	 * 
+	 * @param filteredHeaders an array of http header keys that will not be transmitted to
+	 * the fastcgi responder app.
+	 */
+	public void setFilteredHeaders(String[] filteredHeaders) {
+		
+		if(filteredHeaders.length > 0) {
+			StringBuffer regex = new StringBuffer();
+			for(String header : filteredHeaders) {
+				regex.append("|");
+				regex.append(Pattern.quote(header));
+			}
+			
+			log.trace("regular expression for filtered headers : " + regex);
+			
+			final Pattern pattern = Pattern.compile(regex.toString().substring(1), Pattern.CASE_INSENSITIVE);
+			
+			this.headerFilter = new HeaderFilter() {
+				public boolean isFiltered(String header) {
+					return pattern.matcher(header).matches();
+				}
+			};
+		}
+	}
+
+	/**
+	 * 
+	 * @param header the name of a http header (case insensitive)
+	 * @return true if the header should be filtered.
+	 */
+	protected boolean isHeaderFiltered(String header) {
+		return headerFilter.isFiltered(header);
+	}
 	
 	public void startProcess(String cmd) throws IOException {
 		ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
 		process = pb.start();
-		
-		if(log.isTraceEnabled())
-		{
-		
-			processLogThread = new Thread(new StreamLogger(
-					process.getErrorStream(), log));
-			
+
+		if (log.isTraceEnabled()) {
+
+			processLogThread = new Thread(new StreamLogger(process.getErrorStream(), log));
+
 			processLogThread.setDaemon(true);
-			
+
 			processLogThread.start();
 		}
 	}
@@ -91,8 +145,7 @@ public class FastCGIHandler {
 		destroy();
 	}
 
-	public void service(RequestAdapter request, ResponseAdapter response)
-			throws ServletException, IOException {
+	public void service(RequestAdapter request, ResponseAdapter response) throws ServletException, IOException {
 
 		OutputStream out = response.getOutputStream();
 
@@ -100,7 +153,7 @@ public class FastCGIHandler {
 		fcgiSocket.setSoTimeout((int) READ_TIMEOUT);
 
 		try {
-			synchronized(fcgiSocket){
+			synchronized (fcgiSocket) {
 				handleRequest(request, response, fcgiSocket, out, keepAlive);
 			}
 		} finally {
@@ -110,9 +163,7 @@ public class FastCGIHandler {
 		}
 	}
 
-	private boolean handleRequest(RequestAdapter req, ResponseAdapter res,
-			Socket fcgiSocket, OutputStream out, boolean keepalive)
-			throws ServletException, IOException {
+	private boolean handleRequest(RequestAdapter req, ResponseAdapter res, Socket fcgiSocket, OutputStream out, boolean keepalive) throws ServletException, IOException {
 		OutputStream ws = fcgiSocket.getOutputStream();
 
 		writeHeader(fcgiSocket, ws, FCGI_BEGIN_REQUEST, 8);
@@ -157,8 +208,7 @@ public class FastCGIHandler {
 		return !is.isDead() && keepalive;
 	}
 
-	private void setEnvironment(Socket fcgi, OutputStream ws, RequestAdapter req)
-			throws IOException {
+	private void setEnvironment(Socket fcgi, OutputStream ws, RequestAdapter req) throws IOException {
 		addHeader(fcgi, ws, "REQUEST_URI", req.getRequestURI());
 		addHeader(fcgi, ws, "REQUEST_METHOD", req.getMethod());
 		addHeader(fcgi, ws, "SERVER_SOFTWARE", FastCGIHandler.class.getName());
@@ -200,16 +250,15 @@ public class FastCGIHandler {
 			String key = (String) e.nextElement();
 			String value = req.getHeader(key);
 
-			if (key.equalsIgnoreCase("content-length"))
-				addHeader(fcgi, ws, "CONTENT_LENGTH", value);
-			else if (key.equalsIgnoreCase("content-type"))
-				addHeader(fcgi, ws, "CONTENT_TYPE", value);
-			else if (key.equalsIgnoreCase("if-modified-since")) {
-			} else if (key.equalsIgnoreCase("if-none-match")) {
-			} else if (key.equalsIgnoreCase("authorization")) {
-			} else if (key.equalsIgnoreCase("proxy-authorization")) {
-			} else
-				addHeader(fcgi, ws, convertHeader(cb, key), value);
+			if(! isHeaderFiltered(key)) {
+				if (key.equalsIgnoreCase("content-length"))
+					addHeader(fcgi, ws, "CONTENT_LENGTH", value);
+				else if (key.equalsIgnoreCase("content-type")) {
+					addHeader(fcgi, ws, "CONTENT_TYPE", value);
+				} else {
+					addHeader(fcgi, ws, convertHeader(cb, key), value);
+				}
+			}
 		}
 	}
 
@@ -230,8 +279,7 @@ public class FastCGIHandler {
 		return cb;
 	}
 
-	private int parseHeaders(ResponseAdapter res, InputStream is)
-			throws IOException {
+	private int parseHeaders(ResponseAdapter res, InputStream is) throws IOException {
 		String key = "";
 		String value = "";
 
@@ -247,8 +295,7 @@ public class FastCGIHandler {
 			key = "";
 			value = "";
 
-			for (; ch >= 0 && ch != ' ' && ch != '\r' && ch != '\n'
-					&& ch != ':'; ch = is.read()) {
+			for (; ch >= 0 && ch != ' ' && ch != '\r' && ch != '\n' && ch != ':'; ch = is.read()) {
 				key += new Character((char) ch).toString();
 			}
 
@@ -295,29 +342,27 @@ public class FastCGIHandler {
 		return ch;
 	}
 
-	private void addHeader(Socket fcgiSocket, OutputStream ws, String key,
-			String value) throws IOException {
-		
-		if(value != null)
-		{
-		
+	private void addHeader(Socket fcgiSocket, OutputStream ws, String key, String value) throws IOException {
+
+		if (value != null) {
+
 			int keyLen = key.length();
 			int valLen = value.length();
-	
+
 			int len = keyLen + valLen;
-	
+
 			if (keyLen < 0x80)
 				len += 1;
 			else
 				len += 4;
-	
+
 			if (valLen < 0x80)
 				len += 1;
 			else
 				len += 4;
-	
+
 			writeHeader(fcgiSocket, ws, FCGI_PARAMS, len);
-	
+
 			if (keyLen < 0x80)
 				ws.write(keyLen);
 			else {
@@ -326,7 +371,7 @@ public class FastCGIHandler {
 				ws.write(keyLen >> 8);
 				ws.write(keyLen);
 			}
-	
+
 			if (valLen < 0x80)
 				ws.write(valLen);
 			else {
@@ -335,14 +380,13 @@ public class FastCGIHandler {
 				ws.write(valLen >> 8);
 				ws.write(valLen);
 			}
-	
+
 			ws.write(key.getBytes());
 			ws.write(value.getBytes());
 		}
 	}
 
-	private void writeHeader(Socket fcgiSocket, OutputStream ws, int type,
-			int length) throws IOException {
+	private void writeHeader(Socket fcgiSocket, OutputStream ws, int type, int length) throws IOException {
 		int id = 1;
 		int pad = 0;
 
@@ -424,13 +468,11 @@ public class FastCGIHandler {
 
 				switch (type) {
 				case FCGI_END_REQUEST: {
-					int appStatus = ((_is.read() << 24) + (_is.read() << 16)
-							+ (_is.read() << 8) + (_is.read()));
+					int appStatus = ((_is.read() << 24) + (_is.read() << 16) + (_is.read() << 8) + (_is.read()));
 					int pStatus = _is.read();
 
 					if (log.isDebugEnabled()) {
-						log.debug(_fcgiSocket + ": FCGI_END_REQUEST(appStatus:"
-								+ appStatus + ", pStatus:" + pStatus + ")");
+						log.debug(_fcgiSocket + ": FCGI_END_REQUEST(appStatus:" + appStatus + ", pStatus:" + pStatus + ")");
 					}
 
 					if (appStatus != 0)
@@ -446,8 +488,7 @@ public class FastCGIHandler {
 
 				case FCGI_STDOUT:
 					if (log.isDebugEnabled()) {
-						log.debug(_fcgiSocket + ": FCGI_STDOUT(length:"
-								+ length + ", padding:" + padding + ")");
+						log.debug(_fcgiSocket + ": FCGI_STDOUT(length:" + length + ", padding:" + padding + ")");
 					}
 
 					if (length == 0) {
@@ -463,8 +504,7 @@ public class FastCGIHandler {
 
 				case FCGI_STDERR:
 					if (log.isDebugEnabled()) {
-						log.debug(_fcgiSocket + ": FCGI_STDERR(length:"
-								+ length + ", padding:" + padding + ")");
+						log.debug(_fcgiSocket + ": FCGI_STDERR(length:" + length + ", padding:" + padding + ")");
 					}
 
 					byte[] buf = new byte[length];
