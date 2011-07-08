@@ -26,36 +26,34 @@ import org.springframework.web.HttpRequestHandler;
  * Sample configuration :
  * 
  * <h3>web.xml</h3>
- * <pre><![CDATA[    <servlet>
-        <servlet-name>jfastcgi</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+ * <pre>	&lt;servlet&gt;
+        &lt;servlet-name&gt;jfastcgi&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
 
-    <servlet-mapping>
-        <servlet-name>jfastcgi</servlet-name>
-        <url-pattern>*.php</url-pattern>
-    </servlet-mapping>
-
-]]></pre>
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;jfastcgi&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.php&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;</pre>
  * 
  * <h3>Spring xml configuration</h3>
- * <pre><![CDATA[<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <value>
-                /&#42;/&#42;.php=fastCGIRequestHandler
-            </value>
-        </property>
-    </bean>
+ * <pre>	&lt;bean class=&quot;org.springframework.web.servlet.handler.SimpleUrlHandlerMapping&quot;&gt;
+        &lt;property name=&quot;mappings&quot;&gt;
+            &lt;value&gt;
+                /&amp;#42;/&amp;#42;.php=fastCGIRequestHandler
+            &lt;/value&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
     
-    <bean id="fastCGIRequestHandler" class="net.jr.fastcgi.spring.RequestHandler">
-    	<property name="connectionFactory" ref="connectionFactory" />
-    </bean>
+    &lt;bean id=&quot;fastCGIRequestHandler&quot; class=&quot;net.jr.fastcgi.spring.RequestHandler&quot;&gt;
+    	&lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;
+    &lt;/bean&gt;
     
-    <bean id="connectionFactory" class="net.jr.fastcgi.impl.SingleConnectionFactory">
-    	 <constructor-arg value="localhost:9763"/>
-    </bean>
-]]></pre>
+    &lt;bean id=&quot;connectionFactory&quot; class=&quot;net.jr.fastcgi.impl.SingleConnectionFactory&quot;&gt;
+    	 &lt;constructor-arg value=&quot;localhost:9763&quot;/&gt;
+    &lt;/bean&gt;
+</pre>
  * @author julien
  *
  */
