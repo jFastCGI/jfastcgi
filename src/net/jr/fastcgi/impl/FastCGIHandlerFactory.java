@@ -65,7 +65,7 @@ public class FastCGIHandlerFactory {
 		FastCGIHandler handler = new FastCGIHandler();
 		if(config.get(PARAM_SERVER_ADDRESS) != null)
 		{
-			LOG.info("configuring fastCGI handler using a single connection -based policy");
+			LOG.info("configuring fastcgi servlet using default single connection handler");
 			handler.setConnectionFactory(new SingleConnectionFactory(config.get(PARAM_SERVER_ADDRESS)));
 		}
 		else if(config.get(PARAM_CONNECTION_FACTORY) != null)
