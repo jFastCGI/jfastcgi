@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -21,8 +22,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ServletRequestAdapter implements RequestAdapter {
 
-	public ServletRequestAdapter(HttpServletRequest httpServletRequest) {
+	private HttpServletRequest httpServletRequest;
+	
+	private ServletContext servletContext;
+	
+	public ServletRequestAdapter(ServletContext servletContext, HttpServletRequest httpServletRequest) {
 		super();
+		this.servletContext = servletContext;
 		this.httpServletRequest = httpServletRequest;
 	}
 
@@ -34,7 +40,7 @@ public class ServletRequestAdapter implements RequestAdapter {
 		this.httpServletRequest = httpServletRequest;
 	}
 
-	private HttpServletRequest httpServletRequest;
+
 
 	public InputStream getInputStream() {
 		try {
@@ -102,6 +108,6 @@ public class ServletRequestAdapter implements RequestAdapter {
 	}
 
 	public String getRealPath(String relPath) {
-		return httpServletRequest.getSession().getServletContext().getRealPath(relPath);
+		return servletContext.getRealPath(relPath);
 	}
 }

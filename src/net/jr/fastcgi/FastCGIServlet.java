@@ -47,12 +47,20 @@ public class FastCGIServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		handler.service(new ServletRequestAdapter(request), new ServletResponseAdapter(response));
+		handler.service(new ServletRequestAdapter(getServletContext(), request), new ServletResponseAdapter(response));
 	}
 	
 	@Override
 	public void destroy() {
 		super.destroy();
 		handler.destroy();
+	}
+
+	public FastCGIHandler getHandler() {
+		return handler;
+	}
+
+	public void setHandler(FastCGIHandler handler) {
+		this.handler = handler;
 	}
 }
