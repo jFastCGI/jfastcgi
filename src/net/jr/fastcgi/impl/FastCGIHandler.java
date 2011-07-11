@@ -243,8 +243,6 @@ public class FastCGIHandler {
 
 		addHeader(fcgi, ws, "DOCUMENT_ROOT", req.getRealPath("/"));
 
-		String cb = "";
-
 		Enumeration<String> e = req.getHeaderNames();
 		while (e.hasMoreElements()) {
 			String key = (String) e.nextElement();
@@ -256,27 +254,16 @@ public class FastCGIHandler {
 				else if (key.equalsIgnoreCase("content-type")) {
 					addHeader(fcgi, ws, "CONTENT_TYPE", value);
 				} else {
-					addHeader(fcgi, ws, convertHeader(cb, key), value);
+					addHeader(fcgi, ws, convertHeader(key), value);
 				}
 			}
 		}
 	}
 
-	private String convertHeader(String cb, String key) {
-
-		cb += "HTTP_";
-
-		for (int i = 0; i < key.length(); i++) {
-			char ch = key.charAt(i);
-			if (ch == '-')
-				cb += "_";
-			else if (ch >= 'a' && ch <= 'z')
-				cb += new Character((char) (ch + 'A' - 'a')).toString();
-			else
-				cb += new Character(ch);
-		}
-
-		return cb;
+	private String convertHeader(String key) {
+		StringBuffer sb = new StringBuffer("HTTP_");
+		sb.append(key.toUpperCase().replace('-', '_'));
+		return sb.toString();
 	}
 
 	private int parseHeaders(ResponseAdapter res, InputStream is) throws IOException {
