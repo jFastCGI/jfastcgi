@@ -18,6 +18,7 @@ import net.jr.fastcgi.impl.FastCGIHandler;
 import net.jr.fastcgi.impl.ServletRequestAdapter;
 import net.jr.fastcgi.impl.ServletResponseAdapter;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.HttpRequestHandler;
@@ -57,7 +58,7 @@ import org.springframework.web.HttpRequestHandler;
  * @author julien
  *
  */
-public class RequestHandler implements HttpRequestHandler, InitializingBean {
+public class RequestHandler implements HttpRequestHandler, InitializingBean, DisposableBean {
 
 	private ConnectionFactory connectionFactory = null;
 	
@@ -97,5 +98,10 @@ public class RequestHandler implements HttpRequestHandler, InitializingBean {
 		}
 		getFastCGIHandler().setConnectionFactory(connectionFactory);
 	}
-
+	
+	public void destroy() throws Exception {
+		if(fastCGIHandler != null) {
+			fastCGIHandler.destroy();
+		}
+	}
 }
