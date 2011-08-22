@@ -36,8 +36,6 @@ public class FastCGIHandler {
 		this.connectionFactory = connectionFactory;
 	}
 
-	private static final long serialVersionUID = 7733797250176758803L;
-
 	private static final Log log = LogFactory.getLog(FastCGIHandler.class);
 
 	private static final int FCGI_BEGIN_REQUEST = 1;
