@@ -9,6 +9,7 @@ package net.jr.fastcgi.impl;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +28,10 @@ public class SingleConnectionFactory implements ConnectionFactory {
 
 	private int port;
 
+	public SingleConnectionFactory(InetSocketAddress sockAddr) {
+		this(sockAddr.getAddress(), sockAddr.getPort());
+	}
+	
 	public SingleConnectionFactory(InetAddress host, int port) {
 		this.host = host;
 		this.port = port;
