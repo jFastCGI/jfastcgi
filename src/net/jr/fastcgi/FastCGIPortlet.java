@@ -7,7 +7,6 @@
  */
 package net.jr.fastcgi;
 
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,19 +16,17 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.ServletException;
 
 import net.jr.fastcgi.impl.FastCGIHandler;
 import net.jr.fastcgi.impl.FastCGIHandlerFactory;
 import net.jr.fastcgi.impl.PortletRequestAdapter;
 import net.jr.fastcgi.impl.PortletResponseAdapter;
 
-
 /**
  * Porlet version is quite experimental, but functionnal.
  * 
  * @author jrialland
- *
+ * 
  */
 public class FastCGIPortlet extends GenericPortlet {
 
@@ -41,7 +38,7 @@ public class FastCGIPortlet extends GenericPortlet {
 		Map<String, String> config = new TreeMap<String, String>();
 		for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
 			String value = portletConfig.getInitParameter(paramName);
-			if(value != null){
+			if (value != null) {
 				config.put(paramName, getInitParameter(paramName));
 			}
 		}
@@ -51,12 +48,8 @@ public class FastCGIPortlet extends GenericPortlet {
 	@Override
 	public void render(RenderRequest request, RenderResponse response)
 			throws PortletException, IOException {
-		try {
-			handler.service(new PortletRequestAdapter(request),
-					new PortletResponseAdapter(response));
-		} catch (ServletException e) {
-			throw new PortletException(e);
-		}
+		handler.service(new PortletRequestAdapter(request),
+				new PortletResponseAdapter(response));
 	}
 
 	@Override

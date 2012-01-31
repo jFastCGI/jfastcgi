@@ -14,14 +14,11 @@ import java.net.Socket;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import net.jr.fastcgi.ConnectionFactory;
 import net.jr.utils.logging.StreamLogger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * handling of the fastCGI protocol.
@@ -36,8 +33,14 @@ public class FastCGIHandler {
 		this.connectionFactory = connectionFactory;
 	}
 
-	private static final Log log = LogFactory.getLog(FastCGIHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FastCGIHandler.class);
 
+	private static Logger getLog() {
+		return LOGGER;
+	}
+	
+	private static final int HTTP_ERROR_BAD_GATEWAY = 502;
+	
 	private static final int FCGI_BEGIN_REQUEST = 1;
 
 	private static final int FCGI_END_REQUEST = 3;
@@ -102,7 +105,7 @@ public class FastCGIHandler {
 				regex.append(Pattern.quote(header));
 			}
 			
-			log.trace("regular expression for filtered headers : " + regex);
+			getLog().trace("regular expression for filtered headers : " + regex);
 			
 			final Pattern pattern = Pattern.compile(regex.toString().substring(1), Pattern.CASE_INSENSITIVE);
 			
@@ -127,9 +130,9 @@ public class FastCGIHandler {
 		ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
 		process = pb.start();
 
-		if (log.isTraceEnabled()) {
+		if (getLog().isTraceEnabled()) {
 
-			processLogThread = new Thread(new StreamLogger(process.getErrorStream(), log));
+			processLogThread = new Thread(new StreamLogger(process.getErrorStream(), getLog()));
 
 			processLogThread.setDaemon(true);
 
@@ -143,7 +146,7 @@ public class FastCGIHandler {
 		destroy();
 	}
 
-	public void service(RequestAdapter request, ResponseAdapter response) throws ServletException, IOException {
+	public void service(RequestAdapter request, ResponseAdapter response) throws IOException {
 
 		OutputStream out = response.getOutputStream();
 
@@ -161,7 +164,7 @@ public class FastCGIHandler {
 		}
 	}
 
-	private boolean handleRequest(RequestAdapter req, ResponseAdapter res, Socket fcgiSocket, OutputStream out, boolean keepalive) throws ServletException, IOException {
+	private boolean handleRequest(RequestAdapter req, ResponseAdapter res, Socket fcgiSocket, OutputStream out, boolean keepalive) throws IOException {
 		OutputStream ws = fcgiSocket.getOutputStream();
 
 		writeHeader(fcgiSocket, ws, FCGI_BEGIN_REQUEST, 8);
@@ -229,7 +232,7 @@ public class FastCGIHandler {
 			addHeader(fcgi, ws, "QUERY_STRING", "");
 
 		String scriptPath = req.getServletPath();
-		log.debug("FCGI file: " + scriptPath);
+		getLog().debug("FCGI file: " + scriptPath);
 		addHeader(fcgi, ws, "PATH_INFO", req.getContextPath() + scriptPath);
 		addHeader(fcgi, ws, "PATH_TRANSLATED", req.getRealPath(scriptPath));
 		addHeader(fcgi, ws, "SCRIPT_FILENAME", req.getRealPath(scriptPath));
@@ -271,8 +274,8 @@ public class FastCGIHandler {
 		int ch = is.read();
 
 		if (ch < 0) {
-			log.error("Can't contact FastCGI");
-			res.sendError(HttpServletResponse.SC_BAD_GATEWAY);
+			getLog().error("Can't contact FastCGI");
+			res.sendError(HTTP_ERROR_BAD_GATEWAY);
 			return -1;
 		}
 
@@ -300,8 +303,8 @@ public class FastCGIHandler {
 			if (key.length() == 0)
 				return ch;
 
-			if (log.isInfoEnabled())
-				log.info("fastcgi:" + key + ": " + value);
+			if (getLog().isInfoEnabled())
+				getLog().info("fastcgi:" + key + ": " + value);
 
 			if (key.equalsIgnoreCase("status")) {
 				int status = 0;
@@ -456,8 +459,8 @@ public class FastCGIHandler {
 					int appStatus = ((_is.read() << 24) + (_is.read() << 16) + (_is.read() << 8) + (_is.read()));
 					int pStatus = _is.read();
 
-					if (log.isDebugEnabled()) {
-						log.debug(_fcgiSocket + ": FCGI_END_REQUEST(appStatus:" + appStatus + ", pStatus:" + pStatus + ")");
+					if (getLog().isDebugEnabled()) {
+						getLog().debug(_fcgiSocket + ": FCGI_END_REQUEST(appStatus:" + appStatus + ", pStatus:" + pStatus + ")");
 					}
 
 					if (appStatus != 0)
@@ -472,8 +475,8 @@ public class FastCGIHandler {
 				}
 
 				case FCGI_STDOUT:
-					if (log.isDebugEnabled()) {
-						log.debug(_fcgiSocket + ": FCGI_STDOUT(length:" + length + ", padding:" + padding + ")");
+					if (getLog().isDebugEnabled()) {
+						getLog().debug(_fcgiSocket + ": FCGI_STDOUT(length:" + length + ", padding:" + padding + ")");
 					}
 
 					if (length == 0) {
@@ -488,20 +491,20 @@ public class FastCGIHandler {
 					}
 
 				case FCGI_STDERR:
-					if (log.isDebugEnabled()) {
-						log.debug(_fcgiSocket + ": FCGI_STDERR(length:" + length + ", padding:" + padding + ")");
+					if (getLog().isDebugEnabled()) {
+						getLog().debug(_fcgiSocket + ": FCGI_STDERR(length:" + length + ", padding:" + padding + ")");
 					}
 
 					byte[] buf = new byte[length];
 					_is.read(buf, 0, length);
-					log.warn(new String(buf, 0, length));
+					getLog().warn(new String(buf, 0, length));
 
 					if (padding > 0)
 						_is.skip(padding);
 					break;
 
 				default:
-					log.warn(_fcgiSocket + ": Unknown Protocol(" + type + ")");
+					getLog().warn(_fcgiSocket + ": Unknown Protocol(" + type + ")");
 
 					_isDead = true;
 					_is.skip(length + padding);

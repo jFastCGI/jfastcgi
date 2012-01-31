@@ -12,21 +12,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 /**
- * reads a stream indefinitely, and put a line of log in the specificied logger each time an EOF is seen.
+ * reads a stream indefinitely, and put a line of log in the specified logger
+ * each time an EOF is seen.
  * 
  * @author jrialland
- *
+ * 
  */
 public class StreamLogger implements Runnable {
 
 	private BufferedReader reader;
 
-	private Log log;
+	private Logger logger;
 
-	public StreamLogger(InputStream is, Log log) {
+	public StreamLogger(InputStream is, Logger logger) {
 		reader = new BufferedReader(new InputStreamReader(is));
 	}
 
@@ -34,10 +35,10 @@ public class StreamLogger implements Runnable {
 		String line = null;
 		try {
 			while ((line = reader.readLine()) != null) {
-				log.trace(line);
+				logger.trace(line);
 			}
 		} catch (IOException e) {
-			log.error(e);
+			logger.error("while logging stream", e);
 		}
 	}
 
