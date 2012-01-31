@@ -9,11 +9,11 @@ package net.jr.fastcgi.impl;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.jr.fastcgi.ConnectionFactory;
 import net.jr.utils.StringUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class helps instanciating FastCGIHandlers using a properties-based configuration.
@@ -24,7 +24,11 @@ import net.jr.utils.StringUtil;
  */
 public class FastCGIHandlerFactory {
 
-	private static Log LOG = LogFactory.getLog(FastCGIHandlerFactory.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(FastCGIHandlerFactory.class);
+	
+	private static Logger getLog() {
+		return LOGGER;
+	}
 	
 	/**
 	 * Address of the fastcgi provider service to use.
@@ -65,22 +69,22 @@ public class FastCGIHandlerFactory {
 		FastCGIHandler handler = new FastCGIHandler();
 		if(config.get(PARAM_SERVER_ADDRESS) != null)
 		{
-			LOG.info("configuring fastcgi servlet using default single connection handler");
+			getLog().info("configuring fastcgi servlet using default single connection handler");
 			handler.setConnectionFactory(new SingleConnectionFactory(config.get(PARAM_SERVER_ADDRESS)));
 		}
 		else if(config.get(PARAM_CONNECTION_FACTORY) != null)
 		{
 			String className = config.get(PARAM_CONNECTION_FACTORY).trim(); 
-			LOG.info("configuring fastCGI handler using custom class '"+className+"'");
+			getLog().info("configuring fastCGI handler using custom class '"+className+"'");
 			handler.setConnectionFactory(buildConnectionFactoryForClass(className));
 		}
 		else if(config.get(PARAM_CLUSTER_ADRESSES) != null)
 		{
 			PoolFactory factory = new PoolFactory();
-			LOG.info("configuring fastCGI handler using the following adresses : ");
+			getLog().info("configuring fastCGI handler using the following adresses : ");
 			for(String addr : config.get(PARAM_CLUSTER_ADRESSES).split(";"))
 			{
-				LOG.info("  => "+addr);
+				getLog().info("  => "+addr);
 				factory.addAddress(addr.trim());
 			}
 			handler.setConnectionFactory(new PooledConnectionFactory(factory));//sorry for the confusion, everything seems to be named 'factory'...
@@ -94,8 +98,8 @@ public class FastCGIHandlerFactory {
 				filteredHeaders[i] = filteredHeaders[i].trim();
 			}
 			
-			if(LOG.isInfoEnabled()) {
-				LOG.info("The following http headers will not be transmitted : [" + StringUtil.arrayToString(", ", filteredHeaders) + "]");
+			if(getLog().isInfoEnabled()) {
+				getLog().info("The following http headers will not be transmitted : [" + StringUtil.arrayToString(", ", filteredHeaders) + "]");
 			}
 			handler.setFilteredHeaders(filteredHeaders);
 		}
