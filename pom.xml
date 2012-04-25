@@ -5,7 +5,7 @@
 	<groupId>net.sf.jfastcgi</groupId>
 	<artifactId>jfastcgi</artifactId>
 	<name>jFastCGI</name>
-	<version>2.1</version>
+	<version>2.2</version>
 	<packaging>jar</packaging>
 
 	<description>
@@ -61,30 +61,15 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<slf4j.version>1.6.4</slf4j.version>
 	</properties>
 
 	<build>
 
-		<sourceDirectory>src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-		
-		<testSourceDirectory>test</testSourceDirectory>
-		<testResources>
-			<testResource>
-				<directory>test</directory>
-			</testResource>
-		</testResources>
-		
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<source>1.5</source>
 					<target>1.5</target>
@@ -106,6 +91,8 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
@@ -126,6 +113,14 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
@@ -134,58 +129,58 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.jdom</groupId>
-		    <artifactId>jdom</artifactId>
-		    <version>1.1</version>
-		    <type>jar</type>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>struts</groupId>
-		    <artifactId>struts</artifactId>
-		    <version>1.2.9</version>
-		    <type>jar</type>
+			<groupId>struts</groupId>
+			<artifactId>struts</artifactId>
+			<version>1.2.9</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>jsp-api</artifactId>
-		    <version>2.0</version>
-		    <type>jar</type>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>jta</groupId>
-		    <artifactId>jta</artifactId>
-		    <version>1.0.1b</version>
-		    <type>jar</type>
+			<groupId>jta</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.0.1b</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.mockejb</groupId>
-		    <artifactId>mockejb</artifactId>
-		    <version>0.6-beta2</version>
-		    <type>jar</type>
+			<groupId>org.mockejb</groupId>
+			<artifactId>mockejb</artifactId>
+			<version>0.6-beta2</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>javax.jms</groupId>
-		    <artifactId>jms</artifactId>
-		    <version>1.1</version>
-		    <type>jar</type>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>javax.ejb</groupId>
-		    <artifactId>ejb</artifactId>
-		    <version>2.0</version>
-		    <type>jar</type>
+			<groupId>javax.ejb</groupId>
+			<artifactId>ejb</artifactId>
+			<version>2.0</version>
+			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
+			<version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
 
