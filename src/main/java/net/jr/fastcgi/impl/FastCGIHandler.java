@@ -38,9 +38,9 @@ public class FastCGIHandler {
 	private static Logger getLog() {
 		return LOGGER;
 	}
-	
+
 	private static final int HTTP_ERROR_BAD_GATEWAY = 502;
-	
+
 	private static final int FCGI_BEGIN_REQUEST = 1;
 
 	private static final int FCGI_END_REQUEST = 3;
@@ -74,7 +74,7 @@ public class FastCGIHandler {
 	private static interface HeaderFilter {
 		public boolean isFiltered(String header);
 	}
-	
+
 	/**
 	 * by default, no header is filtered.
 	 */
@@ -83,7 +83,7 @@ public class FastCGIHandler {
 			return false;
 		};
 	};
-	
+
 	/**
 	 * Some http headers have sometimes to be filtered for security reasons, so this methods allows to tell
 	 * which http headers we do not want to pass to the fastcgi app. For example :
@@ -97,18 +97,18 @@ public class FastCGIHandler {
 	 * the fastcgi responder app.
 	 */
 	public void setFilteredHeaders(String[] filteredHeaders) {
-		
-		if(filteredHeaders.length > 0) {
+
+		if (filteredHeaders.length > 0) {
 			StringBuffer regex = new StringBuffer();
-			for(String header : filteredHeaders) {
+			for (String header : filteredHeaders) {
 				regex.append("|");
 				regex.append(Pattern.quote(header));
 			}
-			
+
 			getLog().trace("regular expression for filtered headers : " + regex);
-			
+
 			final Pattern pattern = Pattern.compile(regex.toString().substring(1), Pattern.CASE_INSENSITIVE);
-			
+
 			this.headerFilter = new HeaderFilter() {
 				public boolean isFiltered(String header) {
 					return pattern.matcher(header).matches();
@@ -125,7 +125,7 @@ public class FastCGIHandler {
 	protected boolean isHeaderFiltered(String header) {
 		return headerFilter.isFiltered(header);
 	}
-	
+
 	public void startProcess(String cmd) throws IOException {
 		ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
 		process = pb.start();
@@ -167,7 +167,7 @@ public class FastCGIHandler {
 	private boolean handleRequest(RequestAdapter req, ResponseAdapter res, Socket fcgiSocket, OutputStream out, boolean keepalive) throws IOException {
 		OutputStream ws = fcgiSocket.getOutputStream();
 
-		writeHeader(fcgiSocket, ws, FCGI_BEGIN_REQUEST, 8);
+		writeHeader(ws, FCGI_BEGIN_REQUEST, 8);
 
 		int role = FCGI_RESPONDER;
 
@@ -177,24 +177,25 @@ public class FastCGIHandler {
 		for (int i = 0; i < 5; i++)
 			ws.write(0);
 
-		setEnvironment(fcgiSocket, ws, req);
+		setEnvironment(ws, req);
 
 		InputStream in = req.getInputStream();
 		byte[] buf = new byte[4096];
 		int len = buf.length;
 		int sublen;
 
-		writeHeader(fcgiSocket, ws, FCGI_PARAMS, 0);
+		writeHeader(ws, FCGI_PARAMS, 0);
 
 		boolean hasStdin = false;
 		while ((sublen = in.read(buf, 0, len)) > 0) {
 			hasStdin = true;
-			writeHeader(fcgiSocket, ws, FCGI_STDIN, sublen);
+			writeHeader(ws, FCGI_STDIN, sublen);
 			ws.write(buf, 0, sublen);
 		}
 
-		if (hasStdin)
-			writeHeader(fcgiSocket, ws, FCGI_STDIN, 0);
+		if (hasStdin) {
+			writeHeader(ws, FCGI_STDIN, 0);
+		}
 
 		FastCGIInputStream is = new FastCGIInputStream(fcgiSocket);
 
@@ -209,53 +210,56 @@ public class FastCGIHandler {
 		return !is.isDead() && keepalive;
 	}
 
-	private void setEnvironment(Socket fcgi, OutputStream ws, RequestAdapter req) throws IOException {
-		addHeader(fcgi, ws, "REQUEST_URI", req.getRequestURI());
-		addHeader(fcgi, ws, "REQUEST_METHOD", req.getMethod());
-		addHeader(fcgi, ws, "SERVER_SOFTWARE", FastCGIHandler.class.getName());
-		addHeader(fcgi, ws, "SERVER_NAME", req.getServerName());
-		addHeader(fcgi, ws, "SERVER_PORT", String.valueOf(req.getServerPort()));
-		addHeader(fcgi, ws, "REMOTE_ADDR", req.getRemoteAddr());
-		addHeader(fcgi, ws, "REMOTE_HOST", req.getRemoteAddr());
+	private void setEnvironment(OutputStream ws, RequestAdapter req) throws IOException {
+		addHeader(ws, "REQUEST_URI", req.getRequestURI());
+		addHeader(ws, "REQUEST_METHOD", req.getMethod());
+		addHeader(ws, "SERVER_SOFTWARE", FastCGIHandler.class.getName());
+		addHeader(ws, "SERVER_NAME", req.getServerName());
+		addHeader(ws, "SERVER_PORT", String.valueOf(req.getServerPort()));
+		addHeader(ws, "REMOTE_ADDR", req.getRemoteAddr());
+		addHeader(ws, "REMOTE_HOST", req.getRemoteAddr());
 		if (req.getRemoteUser() != null)
-			addHeader(fcgi, ws, "REMOTE_USER", req.getRemoteUser());
+			addHeader(ws, "REMOTE_USER", req.getRemoteUser());
 		else
-			addHeader(fcgi, ws, "REMOTE_USER", "");
-		if (req.getAuthType() != null)
-			addHeader(fcgi, ws, "AUTH_TYPE", req.getAuthType());
+			addHeader(ws, "REMOTE_USER", "");
+		if (req.getAuthType() != null) {
+			addHeader(ws, "AUTH_TYPE", req.getAuthType());
+		}
+		addHeader(ws, "GATEWAY_INTERFACE", "CGI/1.1");
+		addHeader(ws, "SERVER_PROTOCOL", req.getProtocol());
 
-		addHeader(fcgi, ws, "GATEWAY_INTERFACE", "CGI/1.1");
-		addHeader(fcgi, ws, "SERVER_PROTOCOL", req.getProtocol());
-		if (req.getQueryString() != null)
-			addHeader(fcgi, ws, "QUERY_STRING", req.getQueryString());
-		else
-			addHeader(fcgi, ws, "QUERY_STRING", "");
+		if (req.getQueryString() != null) {
+			addHeader(ws, "QUERY_STRING", req.getQueryString());
+		} else {
+			addHeader(ws, "QUERY_STRING", "");
+		}
 
 		String scriptPath = req.getServletPath();
 		getLog().debug("FCGI file: " + scriptPath);
-		addHeader(fcgi, ws, "PATH_INFO", req.getContextPath() + scriptPath);
-		addHeader(fcgi, ws, "PATH_TRANSLATED", req.getRealPath(scriptPath));
-		addHeader(fcgi, ws, "SCRIPT_FILENAME", req.getRealPath(scriptPath));
+		addHeader(ws, "PATH_INFO", req.getContextPath() + scriptPath);
+		addHeader(ws, "PATH_TRANSLATED", req.getRealPath(scriptPath));
+		addHeader(ws, "SCRIPT_FILENAME", req.getRealPath(scriptPath));
 		int contentLength = req.getContentLength();
-		if (contentLength < 0)
-			addHeader(fcgi, ws, "CONTENT_LENGTH", "0");
-		else
-			addHeader(fcgi, ws, "CONTENT_LENGTH", String.valueOf(contentLength));
+		if (contentLength < 0) {
+			addHeader(ws, "CONTENT_LENGTH", "0");
+		} else {
+			addHeader(ws, "CONTENT_LENGTH", String.valueOf(contentLength));
+		}
 
-		addHeader(fcgi, ws, "DOCUMENT_ROOT", req.getRealPath("/"));
+		addHeader(ws, "DOCUMENT_ROOT", req.getRealPath("/"));
 
 		Enumeration<String> e = req.getHeaderNames();
 		while (e.hasMoreElements()) {
 			String key = (String) e.nextElement();
 			String value = req.getHeader(key);
 
-			if(! isHeaderFiltered(key)) {
+			if (!isHeaderFiltered(key)) {
 				if (key.equalsIgnoreCase("content-length"))
-					addHeader(fcgi, ws, "CONTENT_LENGTH", value);
+					addHeader(ws, "CONTENT_LENGTH", value);
 				else if (key.equalsIgnoreCase("content-type")) {
-					addHeader(fcgi, ws, "CONTENT_TYPE", value);
+					addHeader(ws, "CONTENT_TYPE", value);
 				} else {
-					addHeader(fcgi, ws, convertHeader(key), value);
+					addHeader(ws, convertHeader(key), value);
 				}
 			}
 		}
@@ -320,7 +324,6 @@ public class FastCGIHandler {
 				}
 
 				res.setStatus(status);
-			} else if (key.startsWith("http") || key.startsWith("HTTP")) {
 			} else if (key.equalsIgnoreCase("location")) {
 				res.sendRedirect(value.toString());
 			} else
@@ -330,7 +333,7 @@ public class FastCGIHandler {
 		return ch;
 	}
 
-	private void addHeader(Socket fcgiSocket, OutputStream ws, String key, String value) throws IOException {
+	private void addHeader(OutputStream ws, String key, String value) throws IOException {
 
 		if (value != null) {
 
@@ -349,7 +352,7 @@ public class FastCGIHandler {
 			else
 				len += 4;
 
-			writeHeader(fcgiSocket, ws, FCGI_PARAMS, len);
+			writeHeader(ws, FCGI_PARAMS, len);
 
 			if (keyLen < 0x80)
 				ws.write(keyLen);
@@ -374,7 +377,7 @@ public class FastCGIHandler {
 		}
 	}
 
-	private void writeHeader(Socket fcgiSocket, OutputStream ws, int type, int length) throws IOException {
+	private void writeHeader(OutputStream ws, int type, int length) throws IOException {
 		int id = 1;
 		int pad = 0;
 

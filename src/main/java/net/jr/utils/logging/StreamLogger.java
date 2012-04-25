@@ -28,7 +28,8 @@ public class StreamLogger implements Runnable {
 	private Logger logger;
 
 	public StreamLogger(InputStream is, Logger logger) {
-		reader = new BufferedReader(new InputStreamReader(is));
+		this.logger = logger;
+		this.reader = new BufferedReader(new InputStreamReader(is));
 	}
 
 	public void run() {
