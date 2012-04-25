@@ -19,11 +19,11 @@ import java.util.Iterator;
  */
 public final class StringUtil {
 
-	public static final <T> String arrayToString(String separator, T... array) {
+	public static <T> String arrayToString(String separator, T... array) {
 		return collectionToString(separator, Arrays.asList(array));
 	}
 
-	public static final String collectionToString(String separator, Collection<?> coll) {
+	public static String collectionToString(String separator, Collection<?> coll) {
 		StringBuffer buf = new StringBuffer();
 		Iterator<?> it = coll.iterator();
 		while (it.hasNext()) {
