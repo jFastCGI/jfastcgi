@@ -76,14 +76,18 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
 	</build>
+
 	<dependencies>
+
 		<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>1.5.6</version>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.portlet</groupId>
 			<artifactId>portlet-api</artifactId>
@@ -92,13 +96,13 @@
 			<optional>true</optional>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
 			<version>2.5.6</version>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -106,11 +110,11 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 
@@ -125,63 +129,65 @@
 			<groupId>com.mockrunner</groupId>
 			<artifactId>mockrunner</artifactId>
 			<version>0.3.1</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>struts</groupId>
 			<artifactId>struts</artifactId>
 			<version>1.2.9</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>2.0</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>jta</groupId>
+			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
-			<version>1.0.1b</version>
-			<type>jar</type>
+			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mockejb</groupId>
 			<artifactId>mockejb</artifactId>
 			<version>0.6-beta2</version>
-			<type>jar</type>
+
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>jms</artifactId>
 			<version>1.1</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.ejb</groupId>
 			<artifactId>ejb</artifactId>
 			<version>2.0</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
+
 	</dependencies>
 
 	<reporting>

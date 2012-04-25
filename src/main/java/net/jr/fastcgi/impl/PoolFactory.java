@@ -1,5 +1,5 @@
 /*
- * (c) 2009 Julien Rialland, and the jFastCGI project developpers.
+ * (c) 2009-2012 Julien Rialland, and the jFastCGI project developpers.
  * 
  * Released under BSD License (see license.txt)
  *  
