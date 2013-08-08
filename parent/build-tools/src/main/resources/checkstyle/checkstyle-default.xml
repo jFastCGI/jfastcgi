@@ -1,0 +1,175 @@
+﻿<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<!-- Checkstyle configuration that checks the "ZEPTA" coding conventions -->
+<module name="Checker">
+    
+    <!-- enable supression -->
+    <module name="SuppressionCommentFilter"/>
+    
+    <!-- required by SuppressionCommentFilter -->
+    <module name="TreeWalker">
+        <module name="FileContentsHolder"/>
+    </module>
+
+    <!-- configure the "Checker", that it handle files with the UTF-8 charset -->
+    <property name="charset" value="UTF-8" />
+
+    <!-- Checks for long src-Files - configure to accept files up to 3500 lines -->
+    <module name="FileLength">
+        <property name="max" value="3500" />
+        <property name="fileExtensions" value="java" />
+    </module>
+
+    <!-- Checks that there are no tab characters in the src-code -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true" />
+    </module>
+
+    <!-- Checks individual java src-Files and defines properties that are applicable -->
+    <!-- to checking such files                                                      -->
+    <module name="TreeWalker">
+        <property name="cacheFile" value="${checkstyle.cache.file}" />
+
+        <!-- Checks for naming conventions -->
+        <!-- Checks that constant only contains UpperCase-letters (except log [ logger) -->
+        <module name="ConstantName">
+            <property name="format" value="((log)|(logger)|([A-Z][A-Z0-9]*(_[A-Z0-9]+)*))$" />
+        </module>
+
+        <module name="LocalVariableName">
+            <property name="format" value="^_?[a-z][a-zA-Z0-9]*$" />
+        </module>
+
+        <module name="MethodName">
+            <property name="format" value="[a-z][a-zA-Z0-9]*$" />
+        </module>
+
+        <module name="PackageName" />
+
+        <module name="LocalFinalVariableName" />
+
+        <module name="ParameterName" />
+
+        <module name="StaticVariableName">
+            <property name="format" value="^_?[a-z][a-zA-Z0-9]*$" />
+        </module>
+
+        <module name="TypeName">
+            <property name="format" value="[A-Z][a-zA-Z0-9]*$" />
+        </module>
+
+        <!-- Checks for imports                              -->
+        <!-- See http://checkstyle.sf.net/config_import.html -->
+        <module name="AvoidStarImport">
+            <property name="excludes" value="java.io,java.net,java.util,javax.enterprise.inject.spi,javax.enterprise.context,javax.persistence"/>
+            <property name="allowStaticMemberImports" value="true"/>
+        </module>
+
+        <!-- Checks for imports from a set of illegal packages -->
+        <!-- <property name="illegalPkgs" value="java.sql" -->
+        <module name="IllegalImport" />
+
+        <!-- Checks for reduntant imports -->
+        <module name="RedundantImport" />
+
+        <!-- Checks for unused imports -->
+        <module name="UnusedImports" />
+
+        <!-- Checks for long lines -->
+        <module name="LineLength">
+            <property name="max" value="180" />
+            <property name="ignorePattern" value="@version|@see" />
+        </module>
+
+        <!-- Checks for long methods and constructors -->
+        <!-- countEmpty - whether to count empty lines and single line comments - defaut=false -->
+        <module name="MethodLength">
+            <property name="max" value="250" />
+        </module>
+
+        <!-- Checks the number of parameters of a method | constructor -->
+        <module name="ParameterNumber">
+            <property name="max" value="10" />
+        </module>
+
+        <!-- Checks for braces around code blocks (if, for, while, do) -->
+        <module name="NeedBraces" />
+
+        <!-- Checks for block that are used freely in the code -->
+        <module name="AvoidNestedBlocks" />
+
+        <!-- Checks for the placement of the left curly braces "{" -->
+        <module name="LeftCurly">
+            <property name="option" value="EOL" />
+        </module>
+
+        <!-- Checks for the placement of the right curly braces "}" -->
+        <module name="RightCurly">
+            <property name="option" value="alone" />
+        </module>
+
+        <!-- Checks for emtpy statements -->
+        <module name="EmptyStatement" />
+
+        <!-- Checks, that classes that override equals also override hashCode -->
+        <module name="EqualsHashCode" />
+
+        <!-- Checks for assignments in subexpressions (ie String s = Integer.toString(i = 2) -->
+        <module name="InnerAssignment" />
+
+        <!-- Checks that the "default" is after all "case" in a "switch" -->
+        <module name="DefaultComesLast" />
+
+        <!-- Checks that "switch" has a "default" -->
+        <module name="MissingSwitchDefault" />
+
+        <!-- Checks for fall through in "switch                                                   -->
+        <!-- to supress the warning comment one-linear on the last not empty line before "switch" -->
+        <!--    - fallthru      (default)                                                         -->
+        <!--    - falls through (default)                                                         -->
+        <!--    - fallsthrough  (default)                                                         -->
+        <!--    - continue in next case                                                           -->
+        <!-- don't forget to comment why you need a fall through -->
+        <module name="FallThrough">
+            <property name="reliefPattern" value="continue in next case" />
+        </module>
+
+        <!-- Checks, that each variable declaration is in its own statement and on its own file -->
+        <module name="MultipleVariableDeclarations" />
+
+        <!-- Checks visibility of class members -->
+        <!-- Only static final members may be public, other class members must be private or protected -->
+        <module name="VisibilityModifier">
+            <property name="packageAllowed" value="false" />
+            <property name="protectedAllowed" value="true" />
+            <property name="publicMemberPattern" value="^serialVersionUID$" />
+        </module>
+
+        <!-- Checks, that "long" constants are defined with an "L" not "l" -->
+        <module name="UpperEll" />
+
+        <!-- Checks the style of array type definition in JavaStyle (ie String[] strings) -->
+        <module name="ArrayTypeStyle">
+            <property name="javaStyle" value="true" />
+        </module>
+
+        <!-- Checks for empty blocks -->
+        <module name="EmptyBlock" />
+
+        <!-- enforce ordering of class members -->
+        <module name="DeclarationOrder"/>
+
+        <!-- System.(out|err).print*, Exception#printStackTrace() -->
+        <module name="Regexp">
+            <property name="format" value="System\.(out|err)\.print(ln)?"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+        <module name="Regexp">
+            <property name="format" value="\.printStackTrace\("/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+    </module>
+
+</module>
