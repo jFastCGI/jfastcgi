@@ -1,0 +1,14 @@
+*.ipr
+*.iws
+*.iml
+*.ids
+target
+.project
+.settings
+.idea
+*.log
+.svn
+.classpath
+sun-jaxb.episode
+.surefire-*
+.tm_properties
