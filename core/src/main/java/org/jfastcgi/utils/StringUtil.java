@@ -5,7 +5,7 @@
  *  
  *   $Id$ 
  */
-package net.jr.utils;
+package org.jfastcgi.utils;
 
 import java.util.Arrays;
 import java.util.Collection;

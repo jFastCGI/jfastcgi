@@ -5,12 +5,12 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi;
+package org.jfastcgi.fastcgi;
 
-import net.jr.fastcgi.impl.FastCGIHandler;
-import net.jr.fastcgi.impl.FastCGIHandlerFactory;
-import net.jr.fastcgi.impl.ServletRequestAdapter;
-import net.jr.fastcgi.impl.ServletResponseAdapter;
+import org.jfastcgi.fastcgi.impl.FastCGIHandler;
+import org.jfastcgi.fastcgi.impl.FastCGIHandlerFactory;
+import org.jfastcgi.fastcgi.impl.ServletRequestAdapter;
+import org.jfastcgi.fastcgi.impl.ServletResponseAdapter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

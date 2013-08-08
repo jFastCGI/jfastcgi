@@ -5,7 +5,7 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi.impl;
+package org.jfastcgi.fastcgi.impl;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

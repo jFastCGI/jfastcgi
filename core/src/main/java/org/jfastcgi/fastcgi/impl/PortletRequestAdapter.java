@@ -5,7 +5,7 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi.impl;
+package org.jfastcgi.fastcgi.impl;
 
 import javax.portlet.PortletRequest;
 import java.io.ByteArrayInputStream;
