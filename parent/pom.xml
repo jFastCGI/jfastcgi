@@ -202,13 +202,13 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.10</version>
                 <executions>
-                    <!--<execution>-->
-                    <!--<id>verify-style</id>-->
-                    <!--<phase>process-classes</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>check</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
+                    <execution>
+                        <id>verify-style</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <configLocation>checkstyle/checkstyle-default.xml</configLocation>
