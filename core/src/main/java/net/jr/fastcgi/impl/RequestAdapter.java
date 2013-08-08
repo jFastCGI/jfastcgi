@@ -13,41 +13,40 @@ import java.util.Enumeration;
 /**
  * part of the portlet / servlet request interface used by FastCGIHandler. Allows to use the same code
  * for both portlet and servlet environment.
- * 
- * @author jrialland
  *
+ * @author jrialland
  */
 public interface RequestAdapter {
 
-	public InputStream getInputStream();
+    public InputStream getInputStream();
 
-	public String getRequestURI();
+    public String getRequestURI();
 
-	public String getMethod();
+    public String getMethod();
 
-	public String getServerName();
+    public String getServerName();
 
-	public int getServerPort();
+    public int getServerPort();
 
-	public String getRemoteAddr();
+    public String getRemoteAddr();
 
-	public String getRemoteUser();
+    public String getRemoteUser();
 
-	public String getAuthType();
+    public String getAuthType();
 
-	public String getProtocol();
+    public String getProtocol();
 
-	public String getQueryString();
+    public String getQueryString();
 
-	public String getServletPath();
+    public String getServletPath();
 
-	public String getRealPath(String relPath);
-	
-	public String getContextPath();
+    public String getRealPath(String relPath);
 
-	public int getContentLength();
+    public String getContextPath();
 
-	public Enumeration<String> getHeaderNames();
+    public int getContentLength();
 
-	public String getHeader(String key);
+    public Enumeration<String> getHeaderNames();
+
+    public String getHeader(String key);
 }
