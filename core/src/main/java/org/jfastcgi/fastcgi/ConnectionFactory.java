@@ -5,7 +5,7 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi;
+package org.jfastcgi.fastcgi;
 
 import java.net.Socket;
 

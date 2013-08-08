@@ -5,10 +5,10 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi.impl;
+package org.jfastcgi.fastcgi.impl;
 
-import net.jr.fastcgi.ConnectionFactory;
-import net.jr.utils.logging.StreamLogger;
+import org.jfastcgi.fastcgi.ConnectionFactory;
+import org.jfastcgi.utils.logging.StreamLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

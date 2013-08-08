@@ -5,12 +5,12 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi.spring;
+package org.jfastcgi.fastcgi.spring;
 
-import net.jr.fastcgi.ConnectionFactory;
-import net.jr.fastcgi.impl.FastCGIHandler;
-import net.jr.fastcgi.impl.ServletRequestAdapter;
-import net.jr.fastcgi.impl.ServletResponseAdapter;
+import org.jfastcgi.fastcgi.ConnectionFactory;
+import org.jfastcgi.fastcgi.impl.FastCGIHandler;
+import org.jfastcgi.fastcgi.impl.ServletRequestAdapter;
+import org.jfastcgi.fastcgi.impl.ServletResponseAdapter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;

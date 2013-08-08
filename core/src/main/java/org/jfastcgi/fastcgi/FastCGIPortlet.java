@@ -5,12 +5,12 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi;
+package org.jfastcgi.fastcgi;
 
-import net.jr.fastcgi.impl.FastCGIHandler;
-import net.jr.fastcgi.impl.FastCGIHandlerFactory;
-import net.jr.fastcgi.impl.PortletRequestAdapter;
-import net.jr.fastcgi.impl.PortletResponseAdapter;
+import org.jfastcgi.fastcgi.impl.FastCGIHandler;
+import org.jfastcgi.fastcgi.impl.FastCGIHandlerFactory;
+import org.jfastcgi.fastcgi.impl.PortletRequestAdapter;
+import org.jfastcgi.fastcgi.impl.PortletResponseAdapter;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;

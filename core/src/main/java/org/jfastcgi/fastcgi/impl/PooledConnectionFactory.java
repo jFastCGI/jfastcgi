@@ -5,9 +5,9 @@
  *  
  *   $Id$ 
  */
-package net.jr.fastcgi.impl;
+package org.jfastcgi.fastcgi.impl;
 
-import net.jr.fastcgi.ConnectionFactory;
+import org.jfastcgi.fastcgi.ConnectionFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;

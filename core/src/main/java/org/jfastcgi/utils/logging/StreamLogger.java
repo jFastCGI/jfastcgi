@@ -5,7 +5,7 @@
  *  
  *   $Id$ 
  */
-package net.jr.utils.logging;
+package org.jfastcgi.utils.logging;
 
 import org.slf4j.Logger;
 
