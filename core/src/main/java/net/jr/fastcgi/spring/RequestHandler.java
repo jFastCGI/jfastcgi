@@ -7,44 +7,42 @@
  */
 package net.jr.fastcgi.spring;
 
-import java.io.IOException;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import net.jr.fastcgi.ConnectionFactory;
 import net.jr.fastcgi.impl.FastCGIHandler;
 import net.jr.fastcgi.impl.ServletRequestAdapter;
 import net.jr.fastcgi.impl.ServletResponseAdapter;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.context.ServletContextAware;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 /**
  * Sample configuration :
- * 
+ * <p/>
  * <h3>web.xml</h3>
- * 
+ * <p/>
  * <pre>
  * &lt;servlet&gt;
  *         &lt;servlet-name&gt;jfastcgi&lt;/servlet-name&gt;
  *         &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
  *         &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
  *     &lt;/servlet&gt;
- * 
+ *
  *     &lt;servlet-mapping&gt;
  *         &lt;servlet-name&gt;jfastcgi&lt;/servlet-name&gt;
  *         &lt;url-pattern&gt;*.php&lt;/url-pattern&gt;
  *     &lt;/servlet-mapping&gt;
  * </pre>
- * 
+ * <p/>
  * <h3>Spring xml configuration</h3>
- * 
+ * <p/>
  * <pre>
  * &lt;bean class=&quot;org.springframework.web.servlet.handler.SimpleUrlHandlerMapping&quot;&gt;
  *         &lt;property name=&quot;mappings&quot;&gt;
@@ -53,65 +51,64 @@ import org.springframework.web.context.ServletContextAware;
  *             &lt;/value&gt;
  *         &lt;/property&gt;
  *     &lt;/bean&gt;
- *     
+ *
  *     &lt;bean id=&quot;fastCGIRequestHandler&quot; class=&quot;net.jr.fastcgi.spring.RequestHandler&quot;&gt;
- *     	&lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;
+ *     &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;
  *     &lt;/bean&gt;
- *     
+ *
  *     &lt;bean id=&quot;connectionFactory&quot; class=&quot;net.jr.fastcgi.impl.SingleConnectionFactory&quot;&gt;
- *     	 &lt;constructor-arg value=&quot;localhost:9763&quot;/&gt;
+ *     &lt;constructor-arg value=&quot;localhost:9763&quot;/&gt;
  *     &lt;/bean&gt;
  * </pre>
- * 
+ *
  * @author julien
- * 
  */
 public class RequestHandler implements HttpRequestHandler, ServletContextAware, InitializingBean, DisposableBean {
 
-	private ServletContext servletContext;
+    private ServletContext servletContext;
 
-	private ConnectionFactory connectionFactory = null;
+    private ConnectionFactory connectionFactory = null;
 
-	private FastCGIHandler fastCGIHandler = null;
+    private FastCGIHandler fastCGIHandler = null;
 
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
 
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(servletContext, "servletContext is null !");
-		Assert.isTrue(getFastCGIHandler() != null, "connectionFactory or fastCgiHandler property should be set.");
-	}
-	
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ServletRequestAdapter requestAdapter = new ServletRequestAdapter(servletContext, request);
-		ServletResponseAdapter responseAdapter = new ServletResponseAdapter(response);
-		getFastCGIHandler().service(requestAdapter, responseAdapter);
-	}
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(servletContext, "servletContext is null !");
+        Assert.isTrue(getFastCGIHandler() != null, "connectionFactory or fastCgiHandler property should be set.");
+    }
 
-	public FastCGIHandler getFastCGIHandler() {
-		return fastCGIHandler;
-	}
+    public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletRequestAdapter requestAdapter = new ServletRequestAdapter(servletContext, request);
+        ServletResponseAdapter responseAdapter = new ServletResponseAdapter(response);
+        getFastCGIHandler().service(requestAdapter, responseAdapter);
+    }
 
-	public void setFastCGIHandler(FastCGIHandler fastCGIHandler) {
-		this.fastCGIHandler = fastCGIHandler;
-	}
+    public FastCGIHandler getFastCGIHandler() {
+        return fastCGIHandler;
+    }
 
-	public ConnectionFactory getConnectionFactory() {
-		return connectionFactory;
-	}
+    public void setFastCGIHandler(FastCGIHandler fastCGIHandler) {
+        this.fastCGIHandler = fastCGIHandler;
+    }
 
-	public void setConnectionFactory(ConnectionFactory connectionFactory) {
-		this.connectionFactory = connectionFactory;
-		if (getFastCGIHandler() == null) {
-			setFastCGIHandler(new FastCGIHandler());
-		}
-		getFastCGIHandler().setConnectionFactory(connectionFactory);
-	}
+    public ConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
 
-	public void destroy() throws Exception {
-		if (fastCGIHandler != null) {
-			fastCGIHandler.destroy();
-		}
-	}
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+        if (getFastCGIHandler() == null) {
+            setFastCGIHandler(new FastCGIHandler());
+        }
+        getFastCGIHandler().setConnectionFactory(connectionFactory);
+    }
+
+    public void destroy() throws Exception {
+        if (fastCGIHandler != null) {
+            fastCGIHandler.destroy();
+        }
+    }
 }

@@ -7,107 +7,105 @@
  */
 package net.jr.fastcgi.impl;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * Implementation used for plain servlets.
- * 
- * @author jrialland
  *
+ * @author jrialland
  */
 public class ServletRequestAdapter implements RequestAdapter {
 
-	private HttpServletRequest httpServletRequest;
-	
-	private ServletContext servletContext;
-	
-	public ServletRequestAdapter(ServletContext servletContext, HttpServletRequest httpServletRequest) {
-		super();
-		this.servletContext = servletContext;
-		this.httpServletRequest = httpServletRequest;
-	}
+    private HttpServletRequest httpServletRequest;
 
-	public HttpServletRequest getHttpServletRequest() {
-		return httpServletRequest;
-	}
+    private ServletContext servletContext;
 
-	public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
-		this.httpServletRequest = httpServletRequest;
-	}
+    public ServletRequestAdapter(ServletContext servletContext, HttpServletRequest httpServletRequest) {
+        super();
+        this.servletContext = servletContext;
+        this.httpServletRequest = httpServletRequest;
+    }
+
+    public HttpServletRequest getHttpServletRequest() {
+        return httpServletRequest;
+    }
+
+    public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
+        this.httpServletRequest = httpServletRequest;
+    }
 
 
+    public InputStream getInputStream() {
+        try {
+            return httpServletRequest.getInputStream();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public InputStream getInputStream() {
-		try {
-			return httpServletRequest.getInputStream();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public String getAuthType() {
+        return httpServletRequest.getAuthType();
+    }
 
-	public String getAuthType() {
-		return httpServletRequest.getAuthType();
-	}
+    public int getContentLength() {
+        return httpServletRequest.getContentLength();
+    }
 
-	public int getContentLength() {
-		return httpServletRequest.getContentLength();
-	}
+    public String getContextPath() {
+        return httpServletRequest.getContextPath();
+    }
 
-	public String getContextPath() {
-		return httpServletRequest.getContextPath();
-	}
+    public String getHeader(String key) {
+        return httpServletRequest.getHeader(key);
+    }
 
-	public String getHeader(String key) {
-		return httpServletRequest.getHeader(key);
-	}
+    @SuppressWarnings("unchecked")
+    public Enumeration<String> getHeaderNames() {
+        return httpServletRequest.getHeaderNames();
+    }
 
-	@SuppressWarnings("unchecked")
-	public Enumeration<String> getHeaderNames() {
-		return httpServletRequest.getHeaderNames();
-	}
+    public String getMethod() {
+        return httpServletRequest.getMethod();
+    }
 
-	public String getMethod() {
-		return httpServletRequest.getMethod();
-	}
+    public String getProtocol() {
+        return httpServletRequest.getProtocol();
+    }
 
-	public String getProtocol() {
-		return httpServletRequest.getProtocol();
-	}
+    public String getQueryString() {
+        return httpServletRequest.getQueryString();
+    }
 
-	public String getQueryString() {
-		return httpServletRequest.getQueryString();
-	}
+    public String getRemoteAddr() {
+        return httpServletRequest.getRemoteAddr();
+    }
 
-	public String getRemoteAddr() {
-		return httpServletRequest.getRemoteAddr();
-	}
+    public String getRemoteUser() {
+        return httpServletRequest.getRemoteUser();
+    }
 
-	public String getRemoteUser() {
-		return httpServletRequest.getRemoteUser();
-	}
+    public String getRequestURI() {
+        return httpServletRequest.getRequestURI();
+    }
 
-	public String getRequestURI() {
-		return httpServletRequest.getRequestURI();
-	}
+    public String getServerName() {
+        return httpServletRequest.getServerName();
+    }
 
-	public String getServerName() {
-		return httpServletRequest.getServerName();
-	}
+    public int getServerPort() {
+        return httpServletRequest.getServerPort();
+    }
 
-	public int getServerPort() {
-		return httpServletRequest.getServerPort();
-	}
+    public String getServletPath() {
+        return httpServletRequest.getServletPath();
+    }
 
-	public String getServletPath() {
-		return httpServletRequest.getServletPath();
-	}
-
-	public String getRealPath(String relPath) {
-		return servletContext.getRealPath(relPath);
-	}
+    public String getRealPath(String relPath) {
+        return servletContext.getRealPath(relPath);
+    }
 }

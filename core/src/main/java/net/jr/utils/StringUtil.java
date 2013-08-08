@@ -13,32 +13,32 @@ import java.util.Iterator;
 
 /**
  * String-related utility methods.
- * 
+ *
  * @author jrialland
- * 
  */
 public final class StringUtil {
 
-	public static <T> String arrayToString(String separator, T... array) {
-		return collectionToString(separator, Arrays.asList(array));
-	}
+    public static <T> String arrayToString(String separator, T... array) {
+        return collectionToString(separator, Arrays.asList(array));
+    }
 
-	public static String collectionToString(String separator, Collection<?> coll) {
-		StringBuffer buf = new StringBuffer();
-		Iterator<?> it = coll.iterator();
-		while (it.hasNext()) {
+    public static String collectionToString(String separator, Collection<?> coll) {
+        StringBuffer buf = new StringBuffer();
+        Iterator<?> it = coll.iterator();
+        while (it.hasNext()) {
 
-			Object item = it.next();
-			if (item == null) {
-				buf.append("null");
-			} else {
-				buf.append(item.toString());
-			}
+            Object item = it.next();
+            if (item == null) {
+                buf.append("null");
+            }
+            else {
+                buf.append(item.toString());
+            }
 
-			if (it.hasNext()) {
-				buf.append(separator);
-			}
-		}
-		return buf.toString();
-	}
+            if (it.hasNext()) {
+                buf.append(separator);
+            }
+        }
+        return buf.toString();
+    }
 }

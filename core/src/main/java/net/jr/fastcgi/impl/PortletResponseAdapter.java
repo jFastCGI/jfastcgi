@@ -7,42 +7,41 @@
  */
 package net.jr.fastcgi.impl;
 
+import javax.portlet.RenderResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.portlet.RenderResponse;
-
 public class PortletResponseAdapter implements ResponseAdapter {
 
-	private RenderResponse renderResponse;
+    private RenderResponse renderResponse;
 
-	public PortletResponseAdapter(RenderResponse renderResponse)
-	{
-		this.renderResponse = renderResponse;
-	}
-	
-	public void addHeader(String key, String value) {
-		//can't add anything with portlets.
-	}
+    public PortletResponseAdapter(RenderResponse renderResponse) {
+        this.renderResponse = renderResponse;
+    }
 
-	public OutputStream getOutputStream() {
-		try {
-			return renderResponse.getPortletOutputStream();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public void addHeader(String key, String value) {
+        //can't add anything with portlets.
+    }
 
-	public void sendError(int errorCode) {
-		// does nothing
-	}
+    public OutputStream getOutputStream() {
+        try {
+            return renderResponse.getPortletOutputStream();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public void sendRedirect(String targetUrl) {
-		// does nothing
-	}
+    public void sendError(int errorCode) {
+        // does nothing
+    }
 
-	public void setStatus(int statusCode) {
-		// does nothing
-	}
+    public void sendRedirect(String targetUrl) {
+        // does nothing
+    }
+
+    public void setStatus(int statusCode) {
+        // does nothing
+    }
 
 }
