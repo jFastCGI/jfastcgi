@@ -1,5 +1,8 @@
 /*
  Copyright (c) 1996 Open Market, Inc.
+ (see LICENSE_OPEN_MARKET.txt)
+ */
+/*
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
