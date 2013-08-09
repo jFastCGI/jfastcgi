@@ -12,7 +12,7 @@
     <artifactId>jfastcgi-parent</artifactId>
     <packaging>pom</packaging>
 
-    <name>jFastCGI Parent</name>
+    <name>jFastCGI Build: Parent</name>
     <description>Parent POM for jFastCGI projects</description>
     <url>http://www.jfastcgi.org</url>
 

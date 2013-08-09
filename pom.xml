@@ -10,7 +10,7 @@
         <maven>3.0</maven>
     </prerequisites>
 
-    <name>jFastCGI Build Build Parent</name>
+    <name>jFastCGI Parent Module</name>
     <description>Build POM for jFastCGI projects</description>
     <url>http://www.jfastcgi.org</url>
 
@@ -22,8 +22,8 @@
 
     <modules>
         <module>parent</module>
-        <module>core</module>
         <module>server</module>
+        <module>client</module>
         <!--<module>servlets</module>-->
         <!--<module>portlets</module>-->
     </modules>
