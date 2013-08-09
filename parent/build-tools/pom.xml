@@ -10,7 +10,7 @@
     <artifactId>build-tools</artifactId>
     <packaging>jar</packaging>
 
-    <name>Build Tools</name>
+    <name>jFastCGI Build: Build Tools</name>
 
 </project>
 

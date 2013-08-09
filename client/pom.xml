@@ -9,13 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jfastcgi</groupId>
-    <artifactId>server</artifactId>
-    <name>jFastCGI Server</name>
-    <description>Utility-Classes to expose a Java Programm as a FastCGI Service.
-        Based on the files on the fastcgi.com website.</description>
-    <packaging>jar</packaging>
+    <groupId>org.jfastcgi.client</groupId>
+    <artifactId>client-parent</artifactId>
+    <name>jFastCGI Client: Parent</name>
+    <packaging>pom</packaging>
 
-
+    <modules>
+        <module>core</module>
+    </modules>
 
 </project>
