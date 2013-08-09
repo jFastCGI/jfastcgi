@@ -18,6 +18,7 @@
         <module>core</module>
         <module>servlet</module>
         <module>portlet</module>
+	<module>spring</module>
     </modules>
 
 </project>
