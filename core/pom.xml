@@ -10,6 +10,7 @@
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
+    <groupId>org.jfastcgi</groupId>
     <artifactId>core</artifactId>
     <name>jFastCGI CORE</name>
     <packaging>jar</packaging>
@@ -94,6 +95,12 @@
             <artifactId>httpunit</artifactId>
             <version>${httpunit.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jfastcgi</groupId>
+            <artifactId>server</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
     </dependencies>
