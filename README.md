@@ -49,19 +49,21 @@ so the FastCGI Service can be integrated into a Portlet Container.
 This module contains code to allow integration with the Spring Framework.
 
 
-
-
 ## Credits
 
 Credits go out to Julien Rialland who created the base version of the jFastCGI Project on 
 Sourceforge: http://sourceforge.net/projects/jfastcgi/ 
-I imported the source code from sourceforge using the git svn command. The last commit on the
-sourceforge project was in April 2012, I tagged it as "v2.2_ref69_sourceforge". 
+I (Dominik Dorn) imported the source code from sourceforge using the git svn command. 
+The last commit (rev69) on the sourceforge project was in April 2012, 
+I tagged it as "v2.2_ref69_sourceforge". 
 
 
 ## License
 
-Most of the code from Julien is BSD Licensed. The code from fastcgi.com is custom licensed.
-I'm trying to get into contact with the fastcgi.com guys and Julian to get the whole codebase Apache 2
-licensed.
+The codebase currently has 3 (three) licenses.
+
+* The code originally provided by Julien is BSD licensed (see LICENSE\_JRIALLAND.txt) 
+* The code originally provided by the fastcgi.com guys / Open Market, Inc. is also some kind of BSD / public domain license
+* New code is licensed with the Apache Software License 2.
+
 
