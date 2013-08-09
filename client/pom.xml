@@ -16,6 +16,8 @@
 
     <modules>
         <module>core</module>
+        <module>servlet</module>
+        <module>portlet</module>
     </modules>
 
 </project>
