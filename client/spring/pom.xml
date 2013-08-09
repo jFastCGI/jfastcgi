@@ -11,10 +11,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jfastcgi.client</groupId>
-    <artifactId>portlet</artifactId>
-    <version>2.3-SNAPSHOT</version>
-    <name>jFastCGI Client: Portlet</name>
-
+    <artifactId>spring</artifactId>
+    <version>${project.parent.version}</version>
+    <name>jFastCGI Client: Spring-Integration</name>
 
     <dependencies>
         <dependency>
@@ -23,11 +22,16 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.portlet</groupId>
-            <artifactId>portlet-api</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jfastcgi.client</groupId>
+            <artifactId>servlet</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
-    </dependencies>
 
+    </dependencies>
 
 </project>

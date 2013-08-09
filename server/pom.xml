@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jfastcgi</groupId>
+    <groupId>org.jfastcgi.server</groupId>
     <artifactId>server</artifactId>
     <name>jFastCGI Server</name>
     <description>Utility-Classes to expose a Java Programm as a FastCGI Service.
