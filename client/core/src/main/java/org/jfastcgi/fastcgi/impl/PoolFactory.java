@@ -36,17 +36,19 @@ import java.util.regex.Pattern;
  * @author jrialland
  */
 public class PoolFactory extends BasePoolableObjectFactory {
+    private final static Pattern PATTERN_HOSTNAME_PORT = Pattern.compile("([^:]+):([1-9][0-9]*)$");
+    private final static Pattern PATTERN_IPV6_PORT = Pattern.compile("\\[((?:(?:(?:[0-9a-fA-F]{0,4}):){2,7})(?:[0-9a-fA-F]{1,4}))\\]:([1-9][0-9]*)");
 
     /**
      * embeds ip + port into a single structure.
      *
      * @author jrialland
      */
-    private static class ConnDesc {
-        private InetAddress addr;
-        private int port;
+    static class ConnectionDescriptor {
+        private final InetAddress addr;
+        private final int port;
 
-        public ConnDesc(InetAddress addr, int port) {
+        public ConnectionDescriptor(InetAddress addr, int port) {
             this.addr = addr;
             this.port = port;
         }
@@ -70,28 +72,45 @@ public class PoolFactory extends BasePoolableObjectFactory {
     /**
      * List of configured host/port pairs.
      */
-    private List<ConnDesc> addresses = new ArrayList<ConnDesc>();
+    private List<ConnectionDescriptor> addresses = new ArrayList<ConnectionDescriptor>();
 
     /**
-     * build a ConnDesc from a "host:port" string.
+     * build a ConnDesc from a &quot;host:port&quot; string.
+     * <p/>
+     * If you want to specify ipv6 addresses, use the format &quot;[ipv6]:port&quot;, e.g. &quot;[::1]:9000&quot;
      *
-     * @param s
-     * @return
+     * @param address the input address
+     * @return a parsed ConnectionDescription
      */
-    private static ConnDesc makeConnDesc(String s) {
-        Matcher m = Pattern.compile("([^:]+):([1-9][0-9]*)$").matcher(s);
-        if (m.matches()) {
+    static ConnectionDescriptor makeConnDesc(String address) {
+        if (address == null) {
+            throw new IllegalArgumentException("null for Connection Description given. Try something like localhost:9000 ");
+        }
+
+        Matcher matcher_ipv4 = PATTERN_HOSTNAME_PORT.matcher(address);
+        Matcher ipv6 = PATTERN_IPV6_PORT.matcher(address);
+        if (matcher_ipv4.matches()) {
             try {
-                InetAddress addr = InetAddress.getByName(m.group(1));
-                int port = Integer.parseInt(m.group(2));
-                return new ConnDesc(addr, port);
+                InetAddress addr = InetAddress.getByName(matcher_ipv4.group(1));
+                int port = Integer.parseInt(matcher_ipv4.group(2));
+                return new ConnectionDescriptor(addr, port);
+            }
+            catch (UnknownHostException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+        else if (ipv6.matches()) {
+            try {
+                InetAddress addr = InetAddress.getByName(ipv6.group(1));
+                int port = Integer.parseInt(ipv6.group(2));
+                return new ConnectionDescriptor(addr, port);
             }
             catch (UnknownHostException e) {
                 throw new IllegalArgumentException(e);
             }
         }
         else {
-            throw new IllegalArgumentException(s);
+            throw new IllegalArgumentException(address);
         }
     }
 
@@ -101,7 +120,7 @@ public class PoolFactory extends BasePoolableObjectFactory {
     @Override
     public Object makeObject() throws Exception {
         int index = random.nextInt(addresses.size() - 1);
-        ConnDesc desc = addresses.get(index);
+        ConnectionDescriptor desc = addresses.get(index);
         return new Socket(desc.getAddr(), desc.getPort());
     }
 
@@ -110,8 +129,8 @@ public class PoolFactory extends BasePoolableObjectFactory {
     }
 
     public void addAdresses(Iterable<String> addresses) {
-        for (String s : addresses) {
-            this.addresses.add(makeConnDesc(s));
+        for (String address : addresses) {
+            this.addresses.add(makeConnDesc(address));
         }
     }
 
