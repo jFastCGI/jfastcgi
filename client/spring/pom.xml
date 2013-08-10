@@ -14,6 +14,7 @@
     <artifactId>spring</artifactId>
     <version>${project.parent.version}</version>
     <name>jFastCGI Client: Spring-Integration</name>
+    <description>Integration for the Spring-Framework.</description>
 
     <dependencies>
         <dependency>
@@ -24,11 +25,17 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jfastcgi.client</groupId>
             <artifactId>servlet</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
 
 
