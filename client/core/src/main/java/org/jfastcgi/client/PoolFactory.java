@@ -17,7 +17,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-package org.jfastcgi.fastcgi.impl;
+package org.jfastcgi.client;
 
 import org.apache.commons.pool.BasePoolableObjectFactory;
 
@@ -87,22 +87,22 @@ public class PoolFactory extends BasePoolableObjectFactory {
             throw new IllegalArgumentException("null for Connection Description given. Try something like localhost:9000 ");
         }
 
-        Matcher matcher_ipv4 = PATTERN_HOSTNAME_PORT.matcher(address);
-        Matcher ipv6 = PATTERN_IPV6_PORT.matcher(address);
-        if (matcher_ipv4.matches()) {
+        Matcher ipv4Matcher = PATTERN_HOSTNAME_PORT.matcher(address);
+        Matcher ipv6Matcher = PATTERN_IPV6_PORT.matcher(address);
+        if (ipv4Matcher.matches()) {
             try {
-                InetAddress addr = InetAddress.getByName(matcher_ipv4.group(1));
-                int port = Integer.parseInt(matcher_ipv4.group(2));
+                InetAddress addr = InetAddress.getByName(ipv4Matcher.group(1));
+                int port = Integer.parseInt(ipv4Matcher.group(2));
                 return new ConnectionDescriptor(addr, port);
             }
             catch (UnknownHostException e) {
                 throw new IllegalArgumentException(e);
             }
         }
-        else if (ipv6.matches()) {
+        else if (ipv6Matcher.matches()) {
             try {
-                InetAddress addr = InetAddress.getByName(ipv6.group(1));
-                int port = Integer.parseInt(ipv6.group(2));
+                InetAddress addr = InetAddress.getByName(ipv6Matcher.group(1));
+                int port = Integer.parseInt(ipv6Matcher.group(2));
                 return new ConnectionDescriptor(addr, port);
             }
             catch (UnknownHostException e) {

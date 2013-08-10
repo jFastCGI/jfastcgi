@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>org.jfastcgi.client</groupId>
-    <artifactId>core</artifactId>
+    <artifactId>client-core</artifactId>
     <name>jFastCGI Client: CORE</name>
     <packaging>jar</packaging>
 

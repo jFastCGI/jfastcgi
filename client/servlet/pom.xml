@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jfastcgi.client</groupId>
-    <artifactId>servlet</artifactId>
+    <artifactId>client-servlet</artifactId>
     <version>${project.parent.version}</version>
     <name>jFastCGI Client: Servlet</name>
     <description>Integration into Servlet Containers.
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.jfastcgi.client</groupId>
             <artifactId>client-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -76,7 +76,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jfastcgi</groupId>
+            <groupId>org.jfastcgi.server</groupId>
             <artifactId>server</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>

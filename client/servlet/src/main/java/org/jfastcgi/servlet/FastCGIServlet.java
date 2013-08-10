@@ -17,12 +17,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-package org.jfastcgi.fastcgi;
+package org.jfastcgi.servlet;
 
-import org.jfastcgi.fastcgi.impl.FastCGIHandler;
-import org.jfastcgi.fastcgi.impl.FastCGIHandlerFactory;
-import org.jfastcgi.fastcgi.impl.ServletRequestAdapter;
-import org.jfastcgi.fastcgi.impl.ServletResponseAdapter;
+import org.jfastcgi.client.FastCGIHandler;
+import org.jfastcgi.client.FastCGIHandlerFactory;
+import org.jfastcgi.servlet.impl.ServletRequestAdapter;
+import org.jfastcgi.servlet.impl.ServletResponseAdapter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

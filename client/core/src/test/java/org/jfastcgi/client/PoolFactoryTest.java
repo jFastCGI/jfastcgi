@@ -1,4 +1,4 @@
-package org.jfastcgi.fastcgi.impl;
+package org.jfastcgi.client;
 
 import org.junit.Test;
 

@@ -5,7 +5,9 @@
  *  
  *   $Id$ 
  */
-package org.jfastcgi.fastcgi.impl;
+package org.jfastcgi.portlet.impl;
+
+import org.jfastcgi.api.ResponseAdapter;
 
 import javax.portlet.RenderResponse;
 import java.io.IOException;
