@@ -17,12 +17,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-package org.jfastcgi.fastcgi.spring;
+package org.jfastcgi.spring;
 
-import org.jfastcgi.fastcgi.ConnectionFactory;
-import org.jfastcgi.fastcgi.impl.FastCGIHandler;
-import org.jfastcgi.fastcgi.impl.ServletRequestAdapter;
-import org.jfastcgi.fastcgi.impl.ServletResponseAdapter;
+import org.jfastcgi.api.ConnectionFactory;
+import org.jfastcgi.client.FastCGIHandler;
+import org.jfastcgi.servlet.impl.ServletRequestAdapter;
+import org.jfastcgi.servlet.impl.ServletResponseAdapter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;

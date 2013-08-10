@@ -17,12 +17,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-package org.jfastcgi.fastcgi;
+package org.jfastcgi.api;
 
 import java.net.Socket;
 
 /**
- * interface that any service that can create / destroy connections to a fastcgi provider should implement.
+ * interface that any service that can create / destroy connections to a fastCGI provider should implement.
  *
  * @author jrialland
  */

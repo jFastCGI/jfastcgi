@@ -11,17 +11,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jfastcgi.client</groupId>
-    <artifactId>spring</artifactId>
+    <artifactId>client-spring</artifactId>
     <version>${project.parent.version}</version>
     <name>jFastCGI Client: Spring-Integration</name>
     <description>Integration for the Spring-Framework.</description>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jfastcgi.client</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
@@ -29,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>org.jfastcgi.client</groupId>
-            <artifactId>servlet</artifactId>
+            <artifactId>client-servlet</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

@@ -17,12 +17,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-package org.jfastcgi.fastcgi;
+package org.jfastcgi.portlet;
 
-import org.jfastcgi.fastcgi.impl.FastCGIHandler;
-import org.jfastcgi.fastcgi.impl.FastCGIHandlerFactory;
-import org.jfastcgi.fastcgi.impl.PortletRequestAdapter;
-import org.jfastcgi.fastcgi.impl.PortletResponseAdapter;
+import org.jfastcgi.client.FastCGIHandler;
+import org.jfastcgi.client.FastCGIHandlerFactory;
+import org.jfastcgi.portlet.impl.PortletRequestAdapter;
+import org.jfastcgi.portlet.impl.PortletResponseAdapter;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletConfig;

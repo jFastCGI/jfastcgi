@@ -17,9 +17,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-package org.jfastcgi.fastcgi.impl;
+package org.jfastcgi.client;
 
-import org.jfastcgi.fastcgi.ConnectionFactory;
+import org.jfastcgi.api.ConnectionFactory;
 import org.jfastcgi.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
