@@ -27,7 +27,7 @@ import java.util.Properties;
  * FastCGI web server. This version is single threaded, and handles one request at
  * a time, which is why we can have a static variable for it.
  */
-public class FCGIInterface 
+public class FCGIInterface
 {
     /*
     * Class variables
@@ -67,7 +67,16 @@ public class FCGIInterface
     *
     */
     public int FCGIaccept() {
-        int acceptResult = 0;
+        boolean acceptResult = accept();
+        if(acceptResult){
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+    public boolean accept(){
+        boolean acceptResult = true;
 
         /*
          * If first call, mark it and if fcgi save original system properties,
@@ -82,10 +91,9 @@ public class FCGIInterface
                  * and get a server socket
                  */
                 startupProps = new Properties(System.getProperties());
-                String str =
-                    new String(System.getProperty("FCGI_PORT"));
+                String str = System.getProperty("FCGI_PORT");
                 if (str.length() <= 0) {
-                    return -1;
+                    return false;
                 }
                 int portNum = Integer.parseInt(str);
 
@@ -98,13 +106,13 @@ public class FCGIInterface
                     }
                     srvSocket = null;
                     request = null;
-                    return -1;
+                    return false;
                 }
             }
         }
         else {
             if (!isFCGI){
-                return -1;
+                return false;
             }
         }
         /*
@@ -114,10 +122,10 @@ public class FCGIInterface
             try {
                 acceptResult = FCGIAccept();
             } catch (IOException e) {
-                return -1;
+                return false;
             }
-            if (acceptResult < 0){
-                return -1;
+            if (!acceptResult){
+                return false;
             }
 
             /*
@@ -130,7 +138,7 @@ public class FCGIInterface
                 request.errStream, 512)));
             System.setProperties(request.params);
         }
-        return 0;
+        return true;
     }
 
     /*
@@ -141,7 +149,7 @@ public class FCGIInterface
      * the request object. (This is redundant on System.props
      * as long as we can handle only one request object.)
      */
-    int FCGIAccept() throws IOException{
+    boolean FCGIAccept() throws IOException{
 
         boolean isNewConnection;
         boolean errCloseEx = false;
@@ -162,7 +170,7 @@ public class FCGIInterface
             }
             if (prevRequestfailed) {
                 request = null;
-                return -1;
+                return false;
             }
         }
         else    {
@@ -178,14 +186,14 @@ public class FCGIInterface
         /*
          * if connection isnt open accept a new connection (blocking)
          */
-        for(;;) {
+        while(true) {
             if (request.socket == null){
                 try {
                     request.socket = srvSocket.accept();
                 } catch (IOException e) {
                     request.socket = null;
                     request = null;
-                    return -1;
+                    return false;
                 }
                 isNewConnection = true;
             }
@@ -207,7 +215,7 @@ public class FCGIInterface
 
                 request.socket = null;
             if (isNewConnection) {
-                return -1;
+                return false;
             }
         }
         /*
@@ -225,14 +233,14 @@ public class FCGIInterface
             request.params.put("ROLE", "FILTER");
             break;
         default:
-            return -1;
+            return false;
         }
         request.inStream.setReaderType(FCGIGlobalDefs.def_FCGIParams);
         /*
          * read the rest of request parameters
          */
         if (new FCGIMessage(request.inStream).readParams(request.params) < 0) {
-            return -1;
+            return false;
         }
         request.inStream.setReaderType(FCGIGlobalDefs.def_FCGIStdin);
         request.outStream
@@ -244,6 +252,6 @@ public class FCGIInterface
             getOutputStream(), 512,
             FCGIGlobalDefs.def_FCGIStderr,request);
         request.numWriters = 2;
-        return 0;
+        return true;
     }
 }
