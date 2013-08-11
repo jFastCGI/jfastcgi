@@ -20,8 +20,8 @@
     <url>http://www.jfastcgi.org</url>
 
     <scm>
-        <connection>scm:git@github.com:jFastCGI/jfastcgi.git</connection>
-        <developerConnection>scm:git@github.com:domdorn/jfastcgi.git</developerConnection>
+        <connection>scm:git:git@github.com:jFastCGI/jfastcgi.git</connection>
+        <developerConnection>scm:git:git@github.com:domdorn/jfastcgi.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
