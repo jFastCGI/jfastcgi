@@ -30,6 +30,18 @@
             <id>jfastcgi_website</id>
             <url>ftp://jfastcgi.org/</url>
         </site>
+        <downloadUrl>http://www.jfastcgi.org/maven/</downloadUrl>
+        <repository>
+          <uniqueVersion>true</uniqueVersion>
+          <id>jfastcgi-maven-repo</id>
+          <name>jFastCGI Maven Repository</name>
+          <url>ftp://jfastcgi.org/maven/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>jfastcgi-maven-repo</id>
+            <name>jFastCGI Maven Repository</name>
+            <url>ftp://jfastcgi.org/maven/snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <modules>
