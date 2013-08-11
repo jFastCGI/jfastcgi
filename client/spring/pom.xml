@@ -3,14 +3,14 @@
     <parent>
         <groupId>org.jfastcgi.parent</groupId>
         <artifactId>jfastcgi-parent</artifactId>
-        <version>2.3</version>
+        <version>2.4-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jfastcgi.client</groupId>
     <artifactId>client-spring</artifactId>
-    <version>2.3</version>
+    <version>2.4-SNAPSHOT</version>
     <name>jFastCGI Client: Spring-Integration</name>
     <description>Integration for the Spring-Framework.</description>
 
