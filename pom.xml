@@ -32,10 +32,10 @@
         </site>
         <downloadUrl>http://www.jfastcgi.org/maven/</downloadUrl>
         <repository>
-          <uniqueVersion>true</uniqueVersion>
-          <id>jfastcgi-maven-repo</id>
-          <name>jFastCGI Maven Repository</name>
-          <url>ftp://jfastcgi.org/maven/releases/</url>
+            <uniqueVersion>true</uniqueVersion>
+            <id>jfastcgi-maven-repo</id>
+            <name>jFastCGI Maven Repository</name>
+            <url>ftp://jfastcgi.org/maven/releases/</url>
         </repository>
         <snapshotRepository>
             <id>jfastcgi-maven-repo</id>
@@ -65,6 +65,19 @@
                     <pushChanges>false</pushChanges>
                     <localCheckout>true</localCheckout>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -146,8 +159,9 @@
 
     <licenses>
         <license>
-            <name>Apache 2</name>
-            <url>https://raw.github.com/jFastCGI/jfastcgi/master/license.txt</url>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
         <license>
             <name>The BSD 2-Clause License</name>
