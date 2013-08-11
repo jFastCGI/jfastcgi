@@ -168,6 +168,24 @@ Using several connections for the same app
 </servlet>
 -----------------
 
+    Alternatively you can also put the different endpoints on multiple lines, like this
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>cluster-adresses</param-name>
+        <param-value>
+            localhost:6666
+            host1:6666
+            host2:6666
+            [::1]:9000
+        </param-value>
+    </init-param>
+</servlet>
+-----------------
+
     By default, the fastCGI connection that will be used to build a response is chosen randomly when a request arrives.
 
 Doing fancy things: writing a custom ConnectionFactory

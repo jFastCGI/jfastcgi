@@ -69,6 +69,8 @@ public class FastCGIHandlerFactory {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FastCGIHandlerFactory.class);
 
+    private static PoolFactory poolFactory = new PoolFactory();
+
     public static FastCGIHandler create(Map<String, String> config) {
         FastCGIHandler handler = new FastCGIHandler();
         if (config.get(PARAM_SERVER_ADDRESS) != null) {
@@ -81,13 +83,15 @@ public class FastCGIHandlerFactory {
             handler.setConnectionFactory(buildConnectionFactoryForClass(className));
         }
         else if (config.get(PARAM_CLUSTER_ADRESSES) != null) {
-            PoolFactory factory = new PoolFactory();
+
             getLog().info("configuring fastCGI handler using the following adresses : ");
-            for (String addr : config.get(PARAM_CLUSTER_ADRESSES).split(";")) {
-                getLog().info("  => " + addr);
-                factory.addAddress(addr.trim());
+            for (String addr : config.get(PARAM_CLUSTER_ADRESSES).replaceAll("[\n\t]",";").replaceAll(" ","").split(";")) {
+                if(!addr.isEmpty()){
+                    getLog().info("  => " + addr);
+                    poolFactory.addAddress(addr.trim());
+                }
             }
-            handler.setConnectionFactory(new PooledConnectionFactory(factory));//sorry for the confusion, everything seems to be named 'factory'...
+            handler.setConnectionFactory(new PooledConnectionFactory(poolFactory));//sorry for the confusion, everything seems to be named 'factory'...
         }
         else {
             throw new IllegalArgumentException("Cannot create fcgi handler : did you provide any configuration ?");
@@ -120,5 +124,9 @@ public class FastCGIHandlerFactory {
 
     private static Logger getLog() {
         return LOGGER;
+    }
+
+    public static void setPoolFactory(final PoolFactory poolFactory) {
+        FastCGIHandlerFactory.poolFactory = poolFactory;
     }
 }
