@@ -15,17 +15,17 @@ Manual installation:
 
       * Apache Commons Pool: http://repo1.maven.org/maven2/commons-pool/commons-pool/1.6/commons-pool-1.6.jar
       * SLF4J API: http://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar
-      * jFastCGI Client Core: http://www.jfastcgi.com/repository/release/org/jfastcgi/client/client-core/client-core-${project.version}.jar
+      * jFastCGI Client Core: http://www.jfastcgi.com/maven/releases/org/jfastcgi/client/client-core/client-core-${project.version}.jar
 
       If you want to add jFastCGI to a web-application in a servlet container (tomcat, jetty, etc.), add all the above jars and the ones linked below to your /WEB-INF/lib folder
 
-      * jFastCGI Client Servlet: http://www.jfastcgi.com/repository/release/org/jfastcgi/client/client-servlet/client-servlet-${project.version}.jar
+      * jFastCGI Client Servlet: http://www.jfastcgi.com/maven/releases/org/jfastcgi/client/client-servlet/client-servlet-${project.version}.jar
 
       If you want to manage the jFastCGI Client Servlet through the Spring Framework, add our Spring Integration as well
-      * jFastCGI Client Servlet: http://www.jfastcgi.com/repository/release/org/jfastcgi/client/client-spring/client-spring-${project.version}.jar
+      * jFastCGI Client Servlet: http://www.jfastcgi.com/maven/releases/org/jfastcgi/client/client-spring/client-spring-${project.version}.jar
 
       If you want to use our portlet integration, you'll need this file:
-      * jFastCGI Client Portlet: http://www.jfastcgi.com/repository/release/org/jfastcgi/client/client-portlet/client-portlet-${project.version}.jar
+      * jFastCGI Client Portlet: http://www.jfastcgi.com/maven/releases/org/jfastcgi/client/client-portlet/client-portlet-${project.version}.jar
 
 
 Automated dependency resolving
