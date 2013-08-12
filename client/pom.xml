@@ -17,6 +17,7 @@
         <module>servlet</module>
         <module>portlet</module>
 	<module>spring</module>
+        <module>bundled</module>
     </modules>
 
 </project>
