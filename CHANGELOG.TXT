@@ -1,0 +1,38 @@
+ - Created this CHANGELOG.TXT file
+
+Released version 2.3 on 2013-10-12.
+ - Restructured the project into client and server packages
+ - Moved the existing code to client-core, client-servlet, client-portlet and client-spring
+ - Imported the server code from www.fastcgi.com to the server package
+ - Created a maven site: http://www.jfastcgi.org
+ - Created a maven repository, until we can sync to central: http://www.jfastcgi.org/maven/
+ - Adjusted the test-cases for the client-side code, got rid of old code for EJB 2.x
+ - Allow multi-line config for "cluster-addresses" in servlet/portlet configs
+ - Added IPv6 support to the client + servlet-/portlet-configuration
+ - Applied license headers to existing files
+ - Moved documentation from Open Document Format to the Maven site.
+ - Created a README file for the project
+ - correctly setup maven-site and maven-release plugin
+ - Added a checkstyle config and made code conforming
+ - removed IDE specific files from the project, added .gitignore file
+ - moved classes to the org.jfastcgi namespace
+ - Server-code:
+   + replaced some c-style coding with more java-ish way of doing things
+     ( replaced "return -1" with "return false", "return 0" with "return true" and the like
+
+
+Released version 2.2 on 2012-11-19 (SVN Rev. 66)
+ - Migrated from commons-logging to SLF4J
+
+
+Released Version 2.1 on 2011-07-10 (SVN Rev. 49)
+ - Improved JavaDocs (escaped XML tags comments)
+ - Security-related headers are passed through normally
+ - Migrated to maven
+ - Thread-safety improvements on the FastCGIHandler
+ - Fixed servlet init parameter parsing/handling
+
+Released Version 2.0 on 2010-07-02 (SVN Rev. 38)
+
+Released Version 1.1 on 2009-04-14 (SVN Rev. 12)
+

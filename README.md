@@ -35,11 +35,10 @@ and a Response to be received.
 This module contains code to directly bridge a Java Servlet to a FastCGI Service,
 so that the FastCGI Service can be accessed through the Servlet. 
 
-
 ### Client Portlet
 
 
-This module contains code to directly bridge a FastCGI Service into a Portlet, 
+This module contains code to directly bridge a FastCGI Service into a Portlet,
 so the FastCGI Service can be integrated into a Portlet Container. 
 
 
@@ -49,14 +48,23 @@ so the FastCGI Service can be integrated into a Portlet Container.
 This module contains code to allow integration with the Spring Framework.
 
 
+### Client bundled
+
+
+This module creates a "bundled" or sometimes called "shaded" version of the project.
+The resulting JAR contains all classes from client-core, client-servlet, client-portlet and
+client-spring. Its supposed to be used by people that are not using Maven or another dependency
+resolver. See [the download site](http://www.jfastcgi.org/download.html) for further details.
+
 ## Credits
 
-Credits go out to Julien Rialland who created the base version of the jFastCGI Project on 
-Sourceforge: http://sourceforge.net/projects/jfastcgi/ 
-I (Dominik Dorn) imported the source code from sourceforge using the git svn command. 
-The last commit (rev69) on the sourceforge project was in April 2012, 
-I tagged it as "v2.2_ref69_sourceforge". 
+Credits go out to Julien Rialland who created the [base version](http://sourceforge.net/projects/jfastcgi/)
+of the jFastCGI Project on Sourceforge: http://sourceforge.net/projects/jfastcgi/
 
+Dominik Dorn imported the source code from sourceforge using the git svn command and converted it
+into a full-blown maven project including submodules, sites, etc.
+The last commit (rev69) on the sourceforge project was in April 2012, its tagged as "v2.2_ref69_sourceforge"
+in our Git Repository.
 
 ## License
 
