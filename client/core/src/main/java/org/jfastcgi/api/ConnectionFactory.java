@@ -20,7 +20,7 @@
 package org.jfastcgi.api;
 
 import java.net.Socket;
-
+// START SNIPPET: apiConnectionFactory
 /**
  * interface that any service that can create / destroy connections to a fastCGI provider should implement.
  *
@@ -46,3 +46,4 @@ public interface ConnectionFactory {
      */
     public void releaseConnection(Socket socket);
 }
+    // END SNIPPET: apiConnectionFactory
