@@ -232,7 +232,7 @@ public class FCGIInterface {
         /*
          * read the rest of request parameters
          */
-        if (new FCGIMessage(request.getInputStream()).readParams(request.getParameters()) < 0) {
+        if (!new FCGIMessage(request.getInputStream()).readParams(request.getParameters())) {
             return false;
         }
         request.getInputStream().setReaderType(FCGIConstants.TYPE_STDIN);

@@ -309,7 +309,7 @@ public class FCGIMessage {
      * Read FCGI name-value pairs from a stream until EOF. Put them
      * into a Properties object, storing both as strings.
      */
-    public int readParams(Properties props) throws IOException {
+    public boolean readParams(Properties props) throws IOException {
         int nameLen = 0;
         int valueLen = 0;
         byte[] lenBuff = new byte[3];
@@ -319,9 +319,8 @@ public class FCGIMessage {
             i++;
             if ((nameLen & 0x80) != 0) {
                 if ((in.read(lenBuff, 0, 3)) != 3) {
-                    in.setFCGIError(
-                            FCGIConstants.ERROR_PARAMS_ERROR);
-                    return -1;
+                    in.setFCGIError(FCGIConstants.ERROR_PARAMS_ERROR);
+                    return false;
                 }
                 nameLen = ((nameLen & 0x7f) << 24)
                         | ((lenBuff[0] & 0xFF) << 16)
@@ -331,16 +330,14 @@ public class FCGIMessage {
 
             valueLen = in.read();
             if (valueLen == -1) {
-                in.setFCGIError(
-                        FCGIConstants.ERROR_PARAMS_ERROR);
-                return -1;
+                in.setFCGIError(FCGIConstants.ERROR_PARAMS_ERROR);
+                return false;
             }
 
             if ((valueLen & 0x80) != 0) {
                 if ((in.read(lenBuff, 0, 3)) != 3) {
-                    in.setFCGIError(
-                            FCGIConstants.ERROR_PARAMS_ERROR);
-                    return -1;
+                    in.setFCGIError(FCGIConstants.ERROR_PARAMS_ERROR);
+                    return false;
                 }
                 valueLen = ((valueLen & 0x7f) << 24)
                         | ((lenBuff[0] & 0xFF) << 16)
@@ -356,21 +353,19 @@ public class FCGIMessage {
             byte[] name = new byte[nameLen];
             byte[] value = new byte[valueLen];
             if (in.read(name, 0, nameLen) != nameLen) {
-                in.setFCGIError(
-                        FCGIConstants.ERROR_PARAMS_ERROR);
-                return -1;
+                in.setFCGIError(FCGIConstants.ERROR_PARAMS_ERROR);
+                return false;
             }
 
             if (in.read(value, 0, valueLen) != valueLen) {
-                in.setFCGIError(
-                        FCGIConstants.ERROR_PARAMS_ERROR);
-                return -1;
+                in.setFCGIError(FCGIConstants.ERROR_PARAMS_ERROR);
+                return false;
             }
             String strName = new String(name);
             String strValue = new String(value);
             props.put(strName, strValue);
         }
-        return 0;
+        return true;
 
 
     }
