@@ -1,0 +1,17 @@
+jFastCGI - FastCGI for Java & the JVM
+
+   The {{{http://www.jfastcgi.org}jFastCGI}} Project is aimed at helping developers bridge the
+   technological boundaries between Java Applications and the world of {{{http://www.fastcgi.com}FastCGI}}-Applications.
+
+   For this purpose, it provides projects and libraries that allow you to either include existing FastCGI projects
+   in your own projects (we refer to these as "Clients") or expose functionality of your own Application with
+   our FastCGI Interface (we refer to these as "Servers").
+
+   See the navigation bar for further documentation, usage and installation instructions.
+
+   If you find an issue with our library, please use our {{{https://github.com/jFastCGI/jfastcgi/issues}Issue tracker}}.
+
+   If you're fluent in Java, you might as well also simply {{{http://github.com/jfastcgi/jfastcgi}Fork us on Github}}
+   and provide a pull request.
+
+

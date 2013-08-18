@@ -21,7 +21,7 @@
         <dependency>
             <groupId>org.jfastcgi.client</groupId>
             <artifactId>client-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.portlet</groupId>
@@ -30,5 +30,14 @@
 
     </dependencies>
 
-
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <generateReports>true</generateReports>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

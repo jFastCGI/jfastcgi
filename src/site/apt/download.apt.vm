@@ -19,45 +19,24 @@ Manual installation:
 
 Automated dependency resolving
 
-      If you're using Maven, Ivy, Gradle or something else, just add one of these dependencies to your project
-
---------------
-              <!-- add this dependency to use the FastCGIServlet inside a servlet container (tomcat, jetty, etc.) -->
-              <dependency>
-                  <groupId>org.jfastcgi.client</groupId>
-                  <artifactId>client-servlet</artifactId>
-                  <version>${project.version}</version>
-              </dependency>
-
-              <!-- add this dependency to use inside a servlet container with the Spring Framework -->
-              <!-- this already includes the client-servlet dependency -->
-              <dependency>
-                  <groupId>org.jfastcgi.client</groupId>
-                  <artifactId>client-spring</artifactId>
-                  <version>${project.version}</version>
-              </dependency>
-
-
-              <!-- add this dependency to use inside a portlet container (liferay, etc.) -->
-              <dependency>
-                  <groupId>org.jfastcgi.client</groupId>
-                  <artifactId>client-portlet</artifactId>
-                  <version>${project.version}</version>
-              </dependency>
-
-              <!-- add this dependency if you want to expose an existing application as a FastCGI Server -->
-              <dependency>
-                  <groupId>org.jfastcgi.server</groupId>
-                  <artifactId>server</artifactId>
-                  <version>${project.version}</version>
-              </dependency>
-
---------------
-
     For usages on how to include this dependencies with your dependency resolver, see these pages:
 
     * Client
-    ** {{{jfastcgi-parent/client-servlet/dependency-info.html}Client-Servlet}
-    ** {{{jfastcgi-parent/client-spring/dependency-info.html}Client-Servlet with Spring Integration}
-    ** {{{jfastcgi-parent/client-portlet/dependency-info.html}Client-Portlet}
-    * {{{server/dependency-info.html}Server}}
+
+       * {{{./client-servlet/dependency-info.html}Client-Servlet}}
+
+         Dependency required for integrating jFastCGI with a Servlet Container like Tomcat, Jetty, etc.
+
+       * {{{./client-spring/dependency-info.html}Client-Servlet with Spring Integration}}
+
+         Depedency required for integrating jFastCGI with the Spring Framework with a Servlet Container
+
+       * {{{./client-portlet/dependency-info.html}Client-Portlet}}
+
+         Dependency required for integrating jFastCGI with a Portlet Container (Liferay etc.)
+
+    * {{{./server/dependency-info.html}Server}}
+
+      If you want to create FastCGI Applications with Java, include this dependency.
+
+    []

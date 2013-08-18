@@ -15,12 +15,10 @@ Installing the library in your webapp
 
 
 * Installing manually
-   See the {{{download.html}Download}} page.
 
+   If you're not using {{{http://maven.apache.org}Maven}} or another dependency manager, see the
+   {{{./download.html}Download}} page for details on how to manually get all the dependencies required.
 
-** Pooling of fastCGI connections :
-
-   You will need the commons-pool library (version 1.4 or more) if you want to use the fastCGI responder pooling capability.
 
 * Installing with Maven
 
@@ -53,11 +51,12 @@ Installing the library in your webapp
 
 Portlet support
 
-   portlet.jar (FastCGIPortlet is compatible with jsr168)
+   Our *Client-Portlet* Project offers support to use FastCGI Applications as Portlets.
 
 Spring integration
 
-   spring-2.5.6 or higher.
+   We've got a Integration Project allowing you to configure {{{/}jFastCGI}} with the Spring Framework. The integration
+   requires at least Spring in the version of 2.5.6 or higher.
 
 
 Running the simple way : the FastCGIServlet
