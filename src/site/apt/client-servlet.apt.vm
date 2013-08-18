@@ -1,0 +1,43 @@
+Running the simple way : the FastCGIServlet
+
+   In most cases, if you don't want to use pooling/distributing between several fastCGI servers,
+   you just have to declare the fastCGI Servlet and declare the address of the external fastCGI program.
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>server-address</param-name>
+        <param-value>localhost:6666</param-value>
+    </init-param>
+</servlet>
+-----------------
+
+IPv6
+
+   If the other server is listening to ipv6, specify the server address like this:
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>server-address</param-name>
+        <param-value>[::1]:6666</param-value>
+    </init-param>
+</servlet>
+-----------------
+
+
+Binding to filetypes (e.g. PHP)
+
+    If you, for example, use jFastCGI with php, just map the servlet with the php files by adding the <servlet-mapping> configuration in the web.xml :
+
+-----------------
+<servlet-mapping>
+    <servlet-name>FastCGI</servlet-name>
+    <url-pattern>*.php</url-pattern>
+</servlet-mapping>
+-----------------
+

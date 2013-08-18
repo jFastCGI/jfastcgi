@@ -48,6 +48,11 @@
         <!--</breadcrumbs>-->
         <menu name="Getting started" inherit="top">
             <item name="Reference/Documentation" href="reference.html" title="Click here for the documentation on how to use jFastCGI"/>
+            <item name="&#187; Servlet Configuration" href="client-servlet.html" title="Click here for the documentation on how to use jFastCGI Servlet"/>
+            <item name="&#187; Portlet Configuration" href="client-portlet.html" title="Click here for the documentation on how to use jFastCGI Portlet"/>
+            <item name="&#187; Spring Integration" href="client-spring.html" title="Click here for the documentation on how to use jFastCGI Spring integration"/>
+            <item name="&#187; Servlet/Portlet Init-Parameters" href="servlet-portlet-configuration.html"
+                  title="Click here for the documentation on how to configure the jFastCGI Servlet/Portlet"/>
             <item name="Download" href="download.html" title="Click here to download jFastCGI"/>
             <item name="Team list" href="team-list.html"/>
             <item name="Github" href="https://github.com/jFastCGI/jfastcgi"/>

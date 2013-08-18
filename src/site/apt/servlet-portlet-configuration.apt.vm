@@ -1,0 +1,148 @@
+Context-Configuration for Servlet and Portlets
+
+    The jFastCGI Servlet and Portlet both support a variety
+    of configuration options that are described below.
+
+    The examples given here always use the configuration for the {{{./client-servlet.html}servlet-configuration}}.
+    The important parts are always the *init-param*eters. To use them with the {{{./client-portlet.html}portlets}},
+    just copy the corresponding parts to the portlet configuration.
+
+
+Basic configuration - one connection / one target
+
+    Add the *server-address* init param to let the FastCGIServlet / FastCGIPortlet connect to exactly one host / port.
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>server-address</param-name>
+        <param-value>localhost:6666</param-value>
+    </init-param>
+</servlet>
+-----------------
+
+   If you're server is running on IPv6, use this notation:
+
+-----------------
+<servlet>
+   <servlet-name>FastCGI</servlet-name>
+   <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+   <init-param>
+       <param-name>server-address</param-name>
+       <param-value>[::1]:6666</param-value>
+   </init-param>
+</servlet>
+-----------------
+
+
+Doing fancy things: writing a custom ConnectionFactory
+
+    You may want to provide a more complex algorithm for creating and keeping the fastCGI tcp connections.
+    You do this by creating your own ConnectionFactory. Just implement
+    {{{https://github.com/jFastCGI/jfastcgi/blob/master/client/core/src/main/java/org/jfastcgi/api/ConnectionFactory.java}org.jfastcgi.api.ConnectionFactory}}
+    and register it with the servlet/portlet like this:
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>connection-factory</param-name>
+        <param-value>com.mycompany.fastcgi.MyFancyConnectionHandler</param-value>
+    </init-param>
+</servlet>
+-----------------
+
+
+Start & Stop FastCGI Processes
+
+    The servlet/portlet may optionally be responsible of the fastCGI process and start it for you if necessary.
+    Just add the "start-executable" init parameter :
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>server-address</param-name>
+        <param-value>localhost:6666</param-value>
+    </init-param>
+    <init-param>
+        <param-name>start-executable</param-name>
+        <param-value>c:/wamp/bin/php/php5.2.6/php-cgi.exe -b6666</param-value>
+    </init-param>
+</servlet>
+-----------------
+
+    Note that the lifecycle of the application is the same as the servlet/portlet.
+    When the servlet/portlet is undeployed, the jFastCGI library will try to stop the program aggressively
+    (by calling
+    {{{http://download.oracle.com/javase/6/docs/api/java/lang/Process.html#destroy()}java.lang.Process.destroy()}} method).
+
+    Beware: There is currently no mechanism to restart the application if it crashes.
+    You have to take care of this yourself and take appropriate precautions.
+
+Filtering http headers
+
+    For security reasons, you might want to filter certain http headers that are present in the original request.
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>server-address</param-name>
+        <param-value>localhost:6666</param-value>
+    </init-param>
+    <init-param>
+        <param-name>filtered-headers</param-name>
+        <param-value>Authorization;</param-value>
+    </init-param>
+</servlet>
+-----------------
+
+    The filtered-headers parameter is a semicolon (the ";" character) separated list of the headers that WILL not be translated into parameters for the fastCGI process.
+    In this example the HTTP_AUTHORIZATION parameters will be absent in requests passed to the target application.
+
+Using several connections for the same app
+
+    If the fastCGI application accepts it, several host/port couples may be used to serve the pages.
+    The FastCGI servlet/portlet will choose one of the provided address,
+    and use the connection for serving the page.
+
+    This configuration is done by providing a semicolon-separated list of addresses to the servlet/portlet configuration :
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>cluster-adresses</param-name>
+        <param-value>localhost:6666;host1:6666;host2:6666</param-value>
+    </init-param>
+</servlet>
+-----------------
+
+    Alternatively you can also put the different endpoints on multiple lines, like this
+
+-----------------
+<servlet>
+    <servlet-name>FastCGI</servlet-name>
+    <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+    <init-param>
+        <param-name>cluster-adresses</param-name>
+        <param-value>
+            localhost:6666
+            host1:6666
+            host2:6666
+            [::1]:9000
+        </param-value>
+    </init-param>
+</servlet>
+-----------------
+
+    By default, the fastCGI connection that will be used to build a response is chosen randomly when a request arrives.
+
+

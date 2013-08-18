@@ -1,0 +1,28 @@
+Using portlets
+
+    The configuration of the *jFastCGI portlet* is similar to the servlet. Just declare the portlet in your portlet.xml,
+
+-----------------
+<portlet>
+    <portlet-name>sample_fastci_app</portlet-name>
+    <display-name>Sample FastCGI Application</display-name>
+    <portlet-class>org.jfastcgi.portlet.FastCGIPortlet</portlet-class>
+    <init-param>
+        <name>server-address</name>
+        <value>localhost:6666</value>
+    </init-param>
+    <supports>
+        <mime-type>text/html</mime-type>
+        <portlet-mode>view</portlet-mode>
+    </supports>
+    <porlet-info>
+        <title>My portlet</title>
+    </portlet-info>
+</portlet>
+-----------------
+
+    All the parameters that would be accepted for servlet configuration
+    (server-address, cluster-adresses, filtered-headers,...)
+    will be accepted for the portlet configuration.
+
+    To get a list of supported configuration values, see {{{./servlet-portlet-configuration.html}Servlet/Portlet Configuration}}.

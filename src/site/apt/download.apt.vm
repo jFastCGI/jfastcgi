@@ -13,9 +13,12 @@ Manual installation:
 
       To manually add jFastCGI to your application, you'll need at least to get the following files:
 
-      * Apache Commons Pool: http://repo1.maven.org/maven2/commons-pool/commons-pool/1.6/commons-pool-1.6.jar
-      * SLF4J API: http://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar
-      * jFastCGI Bundled Client: http://www.jfastcgi.org/maven/releases/org/jfastcgi/client/client-bundled/${project.version}/client-bundled-${project.version}.jar
+      * Apache Commons Pool: {{http://repo1.maven.org/maven2/commons-pool/commons-pool/1.6/commons-pool-1.6.jar}}
+
+      * SLF4J API: {{http://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar}}
+
+      * jFastCGI Bundled Client: {{http://www.jfastcgi.org/maven/releases/org/jfastcgi/client/client-bundled/${project.version}/client-bundled-${project.version}.jar}}
+
 
 Automated dependency resolving
 

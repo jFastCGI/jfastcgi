@@ -1,0 +1,33 @@
+Spring Integration
+
+
+* Using Spring instead of plain servlets
+
+** pre-requisite :
+
+    You know how to use Spring, and in particular Spring's
+    {{{http://static.springsource.org/spring/docs/2.5.x/api/org/springframework/web/servlet/DispatcherServlet.html}DispatcherServlet}}
+
+    If you use spring, you may register a handler instead of the servlet, in particular if you use a complex configuration.
+
+    The configuration is done through spring :
+
+-----------------
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+                **.php=fastCGIRequestHandler
+            </value>
+        </property>
+    </bean>
+
+    <bean id="fastCGIRequestHandler" class="org.jfastcgi.spring.RequestHandler">
+        <property name="connectionFactory" ref="connectionFactory" />
+    </bean>
+
+    <bean id="connectionFactory" class="org.jfastcgi.client.SingleConnectionFactory">
+        <constructor-arg value="localhost:9763"/>
+    </bean>
+-----------------
+
+    Note that the SingleConnectionFactory can be replaced with a PooledConnectionFactory, or any class that implements org.jfastcgi.api.ConnectionFactory.
