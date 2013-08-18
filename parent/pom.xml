@@ -30,6 +30,7 @@
         <httpunit.version>1.7.2</httpunit.version>
         <fest-assert.version>1.4</fest-assert.version>
         <fest-reflect.version>1.4.1</fest-reflect.version>
+        <play1x.version>1.2.6</play1x.version>
     </properties>
 
 
@@ -201,6 +202,16 @@
             	<version>${fest-reflect.version}</version>
                 <scope>test</scope>
             </dependency>
+
+
+            <!-- playframework 1.x -->
+            <dependency>
+                <groupId>com.google.code.maven-play-plugin.org.playframework</groupId>
+                <artifactId>play</artifactId>
+                <version>${play1x.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

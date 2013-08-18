@@ -19,6 +19,7 @@
         <module>portlet</module>
         <module>spring</module>
         <module>bundled</module>
+        <module>playframework1x</module>
     </modules>
 
 </project>

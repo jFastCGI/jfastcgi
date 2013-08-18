@@ -53,6 +53,8 @@
             <item name="&#187; Spring Integration" href="client-spring.html" title="Click here for the documentation on how to use jFastCGI Spring integration"/>
             <item name="&#187; Servlet/Portlet Init-Parameters" href="servlet-portlet-configuration.html"
                   title="Click here for the documentation on how to configure the jFastCGI Servlet/Portlet"/>
+            <item name="&#187; Play!Framework 1.x support" href="client-playframework1x.html"
+                  title="Click here for the documentation on how to configure the jFastCGI integration for Play!Framework 1.x"/>
             <item name="Download" href="download.html" title="Click here to download jFastCGI"/>
             <item name="Team list" href="team-list.html"/>
             <item name="Github" href="https://github.com/jFastCGI/jfastcgi"/>
