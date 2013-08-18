@@ -18,7 +18,8 @@
 */
 package com.fastcgi;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 /* This class handles reading and building the fastcgi messages.
@@ -28,9 +29,7 @@ import java.util.Properties;
  * dont need a stream.
  */
 
-public class FCGIMessage
-{
-    private static final String RCSID = "$Id: FCGIMessage.java,v 1.4 2000/10/02 15:09:07 robs Exp $";
+public class FCGIMessage {
 
     /*
      * Instance variables
@@ -44,29 +43,30 @@ public class FCGIMessage
     /*
      * FCGI Header
      */
-    private int  h_version;
-    private int  h_type;
-    private int  h_requestID;       // 2 bytes
-    private int  h_contentLength;   // 2 bytes
-    private int  h_paddingLength;
+    private int h_version;
+    private int h_type;
+    private int h_requestID;       // 2 bytes
+    private int h_contentLength;   // 2 bytes
+    private int h_paddingLength;
     /*
      * FCGI BeginRequest body.
      */
-    private int  br_role;      // 2 bytes
-    private int  br_flags;
+    private int br_role;      // 2 bytes
+    private int br_flags;
 
     private FCGIInputStream in;
 
     /*
      * constructor - Java would do this implicitly.
      */
-    public FCGIMessage(){
+    public FCGIMessage() {
         super();
     }
+
     /*
      * constructor - get the stream.
      */
-    public FCGIMessage(FCGIInputStream instream){
+    public FCGIMessage(FCGIInputStream instream) {
         in = instream;
     }
 
@@ -76,30 +76,30 @@ public class FCGIMessage
 
     /*
      * Interpret the FCGI Message Header. Processes FCGI
-     * BeginRequest and Management messages. Param hdr is the header.
+     * BeginRequest and Management messages. Param header is the header.
      * The calling routine has to keep track of the stream reading
      * management or use FCGIInputStream.fill() which does just that.
      */
-    public int processHeader(byte[] hdr) throws IOException{
-        processHeaderBytes(hdr);
-        if (h_version != FCGIGlobalDefs.def_FCGIVersion1) {
-            return(FCGIGlobalDefs.def_FCGIUnsupportedVersion);
+    public int processHeader(byte[] header) throws IOException {
+        processHeaderBytes(header);
+        if (h_version != FCGIConstants.FASTCGI_VERSION_ONE) {
+            return (FCGIConstants.ERROR_UNSUPPORTED_VERSION);
         }
-        in.contentLen = h_contentLength;
-        in.paddingLen = h_paddingLength;
-        if (h_type == FCGIGlobalDefs.def_FCGIBeginRequest) {
+        in.setContentLen(h_contentLength);
+        in.setPaddingLen(h_paddingLength);
+        if (h_type == FCGIConstants.TYPE_BEGIN_REQUEST) {
             return processBeginRecord(h_requestID);
         }
-        if (h_requestID == FCGIGlobalDefs.def_FCGINullRequestID) {
+        if (h_requestID == FCGIConstants.REQUEST_ID_NULL_VALUE) {
             return processManagementRecord(h_type);
         }
-        if (h_requestID != in.request.requestID) {
-            return(FCGIGlobalDefs.def_FCGISkip);
+        if (h_requestID != in.getRequest().getId()) {
+            return (FCGIConstants.HEADER_SKIP);
         }
-        if (h_type != in.type) {
-            return(FCGIGlobalDefs.def_FCGIProtocolError);
+        if (h_type != in.getType()) {
+            return (FCGIConstants.ERROR_PROTOCOL_ERROR);
         }
-        return(FCGIGlobalDefs.def_FCGIStreamRecord);
+        return (FCGIConstants.HEADER_STREAM_RECORD);
     }
 
     /* Put the unsigned bytes in the incoming FCGI header into
@@ -107,7 +107,7 @@ public class FCGIMessage
      * Because Java has no unsigned byte type, we have to be careful
      * about signed numeric promotion to int.
      */
-    private void processHeaderBytes(byte[] hdrBuf){
+    private void processHeaderBytes(byte[] hdrBuf) {
         h_version = hdrBuf[0] & 0xFF;
         h_type = hdrBuf[1] & 0xFF;
         h_requestID = ((hdrBuf[2] & 0xFF) << 8) | (hdrBuf[3] & 0xFF);
@@ -119,62 +119,61 @@ public class FCGIMessage
      * Reads FCGI Begin Request Record.
      */
     public int processBeginRecord(int requestID) throws IOException {
-        byte beginReqBody[];
-        byte endReqMsg[];
-        if (requestID == 0 || in.contentLen
-            != FCGIGlobalDefs.def_FCGIEndReqBodyLen) {
-            return FCGIGlobalDefs.def_FCGIProtocolError;
+        byte[] beginReqBody;
+        byte[] endReqMsg;
+        if (requestID == 0 ||
+                in.getContentLen() != FCGIConstants.BUFFER_END_REQUEST_BODY_LENGTH) {
+            return FCGIConstants.ERROR_PROTOCOL_ERROR;
         }
         /*
          * If the webserver is multiplexing the connection,
          * this library can't deal with it, so repond with
          * FCGIEndReq message with protocolStatus FCGICantMpxConn
          */
-        if (in.request.isBeginProcessed) {
-            endReqMsg = new byte[FCGIGlobalDefs.def_FCGIHeaderLen
-                + FCGIGlobalDefs.def_FCGIEndReqBodyLen];
+        if (in.getRequest().isBeginProcessed()) {
+            endReqMsg = new byte[FCGIConstants.BUFFER_HEADER_LENGTH
+                    + FCGIConstants.BUFFER_END_REQUEST_BODY_LENGTH];
             System.arraycopy(makeHeader(
-                FCGIGlobalDefs.def_FCGIEndRequest,
-                requestID,
-                FCGIGlobalDefs.def_FCGIEndReqBodyLen,
-                0), 0,  endReqMsg, 0,
-                FCGIGlobalDefs.def_FCGIHeaderLen);
+                    FCGIConstants.TYPE_END_REQUEST,
+                    requestID,
+                    FCGIConstants.BUFFER_END_REQUEST_BODY_LENGTH,
+                    0), 0, endReqMsg, 0,
+                    FCGIConstants.BUFFER_HEADER_LENGTH);
             System.arraycopy(makeEndrequestBody(0,
-                FCGIGlobalDefs.def_FCGICantMpxConn), 0,
-                endReqMsg,
-                FCGIGlobalDefs.def_FCGIHeaderLen,
-                FCGIGlobalDefs.def_FCGIEndReqBodyLen);
+                    FCGIConstants.PROTOCOL_STATUS_CANT_MULTIPLEX_CONNECTION), 0,
+                    endReqMsg,
+                    FCGIConstants.BUFFER_HEADER_LENGTH,
+                    FCGIConstants.BUFFER_END_REQUEST_BODY_LENGTH);
             /*
              * since isBeginProcessed is first set below,this
              * can't be out first call, so request.out is properly set
              */
             try {
-                in.request.outStream.write(endReqMsg, 0,
-                    FCGIGlobalDefs.def_FCGIHeaderLen
-                    + FCGIGlobalDefs.def_FCGIEndReqBodyLen);
-            } catch (IOException e){
-                in.request.outStream.setException(e);
+                in.getRequest().getOutStream().write(endReqMsg, 0,
+                        FCGIConstants.BUFFER_HEADER_LENGTH
+                                + FCGIConstants.BUFFER_END_REQUEST_BODY_LENGTH);
+            }
+            catch (IOException e) {
+                in.getRequest().getOutStream().setException(e);
                 return -1;
             }
         }
         /*
          * Accept this  new request. Read the record body
          */
-        in.request.requestID = requestID;
-        beginReqBody =
-            new byte[FCGIGlobalDefs.def_FCGIBeginReqBodyLen];
+        in.getRequest().setRequestID(requestID);
+        beginReqBody = new byte[FCGIConstants.BUFFER_BEGIN_REQUEST_BODY_LENGTH];
         if (in.read(beginReqBody, 0,
-            FCGIGlobalDefs.def_FCGIBeginReqBodyLen) !=
-            FCGIGlobalDefs.def_FCGIBeginReqBodyLen) {
-            return FCGIGlobalDefs.def_FCGIProtocolError;
+                FCGIConstants.BUFFER_BEGIN_REQUEST_BODY_LENGTH) !=
+                FCGIConstants.BUFFER_BEGIN_REQUEST_BODY_LENGTH) {
+            return FCGIConstants.ERROR_PROTOCOL_ERROR;
         }
         br_flags = beginReqBody[2] & 0xFF;
-        in.request.keepConnection
-            = (br_flags & FCGIGlobalDefs.def_FCGIKeepConn) != 0;
+        in.getRequest().setKeepConnection((br_flags & FCGIConstants.MASK_KEEP_CONNECTION) != 0);
         br_role = ((beginReqBody[0] & 0xFF) << 8) | (beginReqBody[1] & 0xFF);
-        in.request.role = br_role;
-        in.request.isBeginProcessed = true;
-        return FCGIGlobalDefs.def_FCGIBeginRecord;
+        in.getRequest().setRole(br_role);
+        in.getRequest().setBeginProcessed(true);
+        return FCGIConstants.HEADER_BEGIN_RECORD;
     }
 
     /*
@@ -188,60 +187,66 @@ public class FCGIMessage
     public int processManagementRecord(int type) throws IOException {
 
         byte[] response = new byte[64];
-        int wrndx = response[FCGIGlobalDefs.def_FCGIHeaderLen];
-        int value, len, plen;
-        if (type == FCGIGlobalDefs.def_FCGIGetValues) {
+        int wrndx = response[FCGIConstants.BUFFER_HEADER_LENGTH];
+        int value = 0;
+        int len = 0;
+        int plen = 0;
+
+
+        if (type == FCGIConstants.TYPE_GET_VALUES) {
             Properties tmpProps = new Properties();
             readParams(tmpProps);
 
-            if (in.getFCGIError() != 0 || in.contentLen != 0) {
-                return FCGIGlobalDefs.def_FCGIProtocolError;
+            if (in.getFCGIError() != 0 || in.getContentLen() != 0) {
+                return FCGIConstants.ERROR_PROTOCOL_ERROR;
             }
             if (tmpProps.containsKey(
-                FCGIGlobalDefs.def_FCGIMaxConns)) {
+                    FCGIConstants.MAX_TRANSPORT_CONNECTIONS_CONSTANT)) {
                 makeNameVal(
-                    FCGIGlobalDefs.def_FCGIMaxConns, "1",
-                    response, wrndx);
+                        FCGIConstants.MAX_TRANSPORT_CONNECTIONS_CONSTANT, "1",
+                        response, wrndx);
             }
             else {
                 if (tmpProps.containsKey(
-                    FCGIGlobalDefs.def_FCGIMaxReqs)) {
+                        FCGIConstants.MAX_CONCURRENT_REQUESTS_CONSTANT)) {
                     makeNameVal(
-                        FCGIGlobalDefs.def_FCGIMaxReqs, "1",
-                        response, wrndx);
+                            FCGIConstants.MAX_CONCURRENT_REQUESTS_CONSTANT, "1",
+                            response, wrndx);
                 }
                 else {
                     if (tmpProps.containsKey(
-                        FCGIGlobalDefs.def_FCGIMaxConns)) {
+                            FCGIConstants.MAX_TRANSPORT_CONNECTIONS_CONSTANT)) {
                         makeNameVal(
-                            FCGIGlobalDefs.def_FCGIMpxsConns, "0",
-                            response, wrndx);
+                                FCGIConstants.MULTIPLEX_CONNECTIONS_CONSTANT, "0",
+                                response, wrndx);
                     }
                 }
             }
             plen = 64 - wrndx;
-            len = wrndx - FCGIGlobalDefs.def_FCGIHeaderLen;
+            len = wrndx - FCGIConstants.BUFFER_HEADER_LENGTH;
             System.arraycopy(makeHeader(
-                FCGIGlobalDefs.def_FCGIGetValuesResult,
-                FCGIGlobalDefs.def_FCGINullRequestID,
-                len, plen), 0,
-                response, 0,
-                FCGIGlobalDefs.def_FCGIHeaderLen);
+                    FCGIConstants.TYPE_GET_VALUES_RESULT,
+                    FCGIConstants.REQUEST_ID_NULL_VALUE,
+                    len, plen), 0,
+                    response, 0,
+                    FCGIConstants.BUFFER_HEADER_LENGTH);
         }
         else {
-            plen = len =
-                FCGIGlobalDefs.def_FCGIUnknownBodyTypeBodyLen;
+            len = FCGIConstants.BUFFER_UNKNOWN_BODY_TYPE_LENGTH;
+            plen = FCGIConstants.BUFFER_UNKNOWN_BODY_TYPE_LENGTH;
+
             System.arraycopy(makeHeader(
-                FCGIGlobalDefs.def_FCGIUnknownType,
-                FCGIGlobalDefs.def_FCGINullRequestID,
-                len, 0), 0,
-                response, 0,
-                FCGIGlobalDefs.def_FCGIHeaderLen);
+                    FCGIConstants.TYPE_UNKNOWN_TYPE,
+                    FCGIConstants.REQUEST_ID_NULL_VALUE,
+                    len, 0), 0,
+                    response, 0,
+                    FCGIConstants.BUFFER_HEADER_LENGTH);
             System.arraycopy(makeUnknownTypeBodyBody(h_type), 0,
-                response,
-                FCGIGlobalDefs.def_FCGIHeaderLen,
-                FCGIGlobalDefs.def_FCGIUnknownBodyTypeBodyLen);
+                    response,
+                    FCGIConstants.BUFFER_HEADER_LENGTH,
+                    FCGIConstants.BUFFER_UNKNOWN_BODY_TYPE_LENGTH);
         }
+
         /*
          * No guarantee that we have a request yet, so
          * dont use fcgi output stream to reference socket, instead
@@ -250,14 +255,15 @@ public class FCGIMessage
          */
 
         try {
-            in.request.socket.getOutputStream().write(response, 0,
-                FCGIGlobalDefs.def_FCGIHeaderLen +
-                FCGIGlobalDefs.def_FCGIUnknownBodyTypeBodyLen);
+            in.getRequest().getSocket().getOutputStream().write(response, 0,
+                    FCGIConstants.BUFFER_HEADER_LENGTH +
+                            FCGIConstants.BUFFER_UNKNOWN_BODY_TYPE_LENGTH);
 
-        } catch (IOException e){
+        }
+        catch (IOException e) {
             return -1;
         }
-        return FCGIGlobalDefs.def_FCGIMgmtRecord;
+        return FCGIConstants.HEADER_MANAGEMENT_RECORD;
     }
 
     /*
@@ -268,21 +274,23 @@ public class FCGIMessage
     void makeNameVal(String name, String value, byte[] dest, int pos) {
         int nameLen = name.length();
         if (nameLen < 0x80) {
-            dest[pos++] = (byte)nameLen;
-        }else {
-            dest[pos++] = (byte)(((nameLen >> 24) | 0x80) & 0xff);
-            dest[pos++] = (byte)((nameLen >> 16) & 0xff);
-            dest[pos++] = (byte)((nameLen >> 8) & 0xff);
-            dest[pos++] = (byte)nameLen;
+            dest[pos++] = (byte) nameLen;
+        }
+        else {
+            dest[pos++] = (byte) (((nameLen >> 24) | 0x80) & 0xff);
+            dest[pos++] = (byte) ((nameLen >> 16) & 0xff);
+            dest[pos++] = (byte) ((nameLen >> 8) & 0xff);
+            dest[pos++] = (byte) nameLen;
         }
         int valLen = value.length();
         if (valLen < 0x80) {
-            dest[pos++] =  (byte)valLen;
-        }else {
-            dest[pos++] = (byte)(((valLen >> 24) | 0x80) & 0xff);
-            dest[pos++] = (byte)((valLen >> 16) & 0xff);
-            dest[pos++] = (byte)((valLen >> 8) & 0xff);
-            dest[pos++] = (byte)valLen;
+            dest[pos++] = (byte) valLen;
+        }
+        else {
+            dest[pos++] = (byte) (((valLen >> 24) | 0x80) & 0xff);
+            dest[pos++] = (byte) ((valLen >> 16) & 0xff);
+            dest[pos++] = (byte) ((valLen >> 8) & 0xff);
+            dest[pos++] = (byte) valLen;
         }
 
         try {
@@ -292,47 +300,52 @@ public class FCGIMessage
             System.arraycopy(value.getBytes("UTF-8"), 0, dest, pos, valLen);
             pos += valLen;
         }
-        catch (UnsupportedEncodingException x) {}
+        catch (UnsupportedEncodingException x) {
+            return;
+        }
     }
 
     /*
      * Read FCGI name-value pairs from a stream until EOF. Put them
      * into a Properties object, storing both as strings.
      */
-    public int readParams(Properties props) throws IOException{
-        int nameLen, valueLen;
-        byte lenBuff[] = new byte[3];
+    public int readParams(Properties props) throws IOException {
+        int nameLen = 0;
+        int valueLen = 0;
+        byte[] lenBuff = new byte[3];
         int i = 1;
 
         while ((nameLen = in.read()) != -1) {
             i++;
             if ((nameLen & 0x80) != 0) {
-                if ((in.read( lenBuff, 0, 3)) != 3) {
+                if ((in.read(lenBuff, 0, 3)) != 3) {
                     in.setFCGIError(
-                        FCGIGlobalDefs.def_FCGIParamsError);
+                            FCGIConstants.ERROR_PARAMS_ERROR);
                     return -1;
                 }
                 nameLen = ((nameLen & 0x7f) << 24)
-                    | ((lenBuff[0] & 0xFF) << 16)
-                    | ((lenBuff[1] & 0xFF) << 8)
-                    | (lenBuff[2] & 0xFF);
+                        | ((lenBuff[0] & 0xFF) << 16)
+                        | ((lenBuff[1] & 0xFF) << 8)
+                        | (lenBuff[2] & 0xFF);
             }
 
-            if ((valueLen = in.read()) == -1) {
+            valueLen = in.read();
+            if (valueLen == -1) {
                 in.setFCGIError(
-                    FCGIGlobalDefs.def_FCGIParamsError);
+                        FCGIConstants.ERROR_PARAMS_ERROR);
                 return -1;
             }
+
             if ((valueLen & 0x80) != 0) {
-                if ((in.read( lenBuff, 0, 3)) != 3) {
+                if ((in.read(lenBuff, 0, 3)) != 3) {
                     in.setFCGIError(
-                        FCGIGlobalDefs.def_FCGIParamsError);
+                            FCGIConstants.ERROR_PARAMS_ERROR);
                     return -1;
                 }
                 valueLen = ((valueLen & 0x7f) << 24)
-                    | ((lenBuff[0] & 0xFF) << 16)
-                    | ((lenBuff[1] & 0xFF) << 8)
-                    | (lenBuff[2] & 0xFF);
+                        | ((lenBuff[0] & 0xFF) << 16)
+                        | ((lenBuff[1] & 0xFF) << 8)
+                        | (lenBuff[2] & 0xFF);
             }
 
             /*
@@ -340,20 +353,20 @@ public class FCGIMessage
              * and the value from the stream and construct a standard
              * environmental entity
              */
-            byte[] name  = new byte[nameLen];
+            byte[] name = new byte[nameLen];
             byte[] value = new byte[valueLen];
-            if (in.read(name ,0,  nameLen) != nameLen) {
+            if (in.read(name, 0, nameLen) != nameLen) {
                 in.setFCGIError(
-                    FCGIGlobalDefs.def_FCGIParamsError);
+                        FCGIConstants.ERROR_PARAMS_ERROR);
                 return -1;
             }
 
-            if(in.read(value, 0, valueLen) != valueLen) {
+            if (in.read(value, 0, valueLen) != valueLen) {
                 in.setFCGIError(
-                    FCGIGlobalDefs.def_FCGIParamsError);
+                        FCGIConstants.ERROR_PARAMS_ERROR);
                 return -1;
             }
-            String strName  = new String(name);
+            String strName = new String(name);
             String strValue = new String(value);
             props.put(strName, strValue);
         }
@@ -369,47 +382,49 @@ public class FCGIMessage
      * Build an FCGI Message Header -
      */
     public byte[] makeHeader(int type,
-        int requestId,
-        int contentLength,
-        int paddingLength) {
-        byte[] header = new byte[FCGIGlobalDefs.def_FCGIHeaderLen];
-        header[0]   = (byte)FCGIGlobalDefs.def_FCGIVersion1;
-        header[1]   = (byte)type;
-        header[2]   = (byte)((requestId      >> 8) & 0xff);
-        header[3]   = (byte)((requestId          ) & 0xff);
-        header[4]   = (byte)((contentLength  >> 8) & 0xff);
-        header[5]   = (byte)((contentLength      ) & 0xff);
-        header[6]   = (byte)paddingLength;
-        header[7]   =  0;  //reserved byte
+                             int requestId,
+                             int contentLength,
+                             int paddingLength) {
+        byte[] header = new byte[FCGIConstants.BUFFER_HEADER_LENGTH];
+        header[0] = (byte) FCGIConstants.FASTCGI_VERSION_ONE;
+        header[1] = (byte) type;
+        header[2] = (byte) ((requestId >> 8) & 0xff);
+        header[3] = (byte) ((requestId) & 0xff);
+        header[4] = (byte) ((contentLength >> 8) & 0xff);
+        header[5] = (byte) ((contentLength) & 0xff);
+        header[6] = (byte) paddingLength;
+        header[7] = 0;  //reserved byte
         return header;
     }
+
     /*
      * Build an FCGI Message End Request Body
      */
-    public byte[] makeEndrequestBody(int appStatus,int protocolStatus){
-        byte body[] = new byte[FCGIGlobalDefs.def_FCGIEndReqBodyLen];
-        body[0] = (byte)((appStatus >> 24) & 0xff);
-        body[1] = (byte)((appStatus >> 16) & 0xff);
-        body[2] = (byte)((appStatus >>  8) & 0xff);
-        body[3] = (byte)((appStatus      ) & 0xff);
-        body[4] = (byte)protocolStatus;
+    public byte[] makeEndrequestBody(int appStatus, int protocolStatus) {
+        byte[] body = new byte[FCGIConstants.BUFFER_END_REQUEST_BODY_LENGTH];
+        body[0] = (byte) ((appStatus >> 24) & 0xff);
+        body[1] = (byte) ((appStatus >> 16) & 0xff);
+        body[2] = (byte) ((appStatus >> 8) & 0xff);
+        body[3] = (byte) ((appStatus) & 0xff);
+        body[4] = (byte) protocolStatus;
         for (int i = 5; i < 8; i++) {
             body[i] = 0;
         }
         return body;
     }
+
     /*
      * Build an FCGI Message UnknownTypeBodyBody
      */
-    public byte[] makeUnknownTypeBodyBody(int type){
-        byte body[] =
-            new byte[FCGIGlobalDefs.def_FCGIUnknownBodyTypeBodyLen];
-        body[0] = (byte)type;
+    public byte[] makeUnknownTypeBodyBody(int type) {
+        byte[] body =
+                new byte[FCGIConstants.BUFFER_UNKNOWN_BODY_TYPE_LENGTH];
+        body[0] = (byte) type;
         for (int i = 1;
-            i < FCGIGlobalDefs.def_FCGIUnknownBodyTypeBodyLen; i++) {
+             i < FCGIConstants.BUFFER_UNKNOWN_BODY_TYPE_LENGTH; i++) {
             body[i] = 0;
         }
         return body;
     }
 
-} //end class
+}

@@ -28,44 +28,45 @@ import java.io.InputStream;
  */
 public class FCGIInputStream extends InputStream {
 
-	/* Stream vars */
-    public int rdNext;
-    public int stop;
-    public boolean isClosed;
+    /* Stream vars */
+    private int rdNext;
+    private int stop;
+    private boolean isClosed;
 
     /* require methods to set, get and clear */
     private int errno;
     private Exception errex;
 
-	/* data vars */
+    /* data vars */
 
-    public byte buff[];
-    public int buffLen;
-    public int buffStop;
-    public int type;
-    public int contentLen;
-    public int paddingLen;
-    public boolean skip;
-    public boolean eorStop;
-    public FCGIRequest request;
+    private byte[] buff;
+    private int buffLen;
+    private int buffStop;
+    private int type;
+    private int contentLen;
+    private int paddingLen;
+    private boolean skip;
+    private boolean eorStop;
+    private FCGIRequest request;
 
-    public InputStream in;
+    private InputStream in;
 
     /**
      * Creates a new input stream to manage fcgi prototcol stuff
      *
-     * @param inStream the input stream
-     * @param bufLen length of buffer
+     * @param inStream   the input stream
+     * @param bufLen     length of buffer
      * @param streamType
-     *
      */
     public FCGIInputStream(FileInputStream inStream, int bufLen, int streamType, FCGIRequest inReq) {
 
         in = inStream;
-        buffLen = Math.min(bufLen, FCGIGlobalDefs.def_FCGIMaxLen);
+        buffLen = Math.min(bufLen, FCGIConstants.MAX_BUFFER_LENGTH);
         buff = new byte[buffLen];
         type = streamType;
-        stop = rdNext = buffStop = 0;
+        stop = 0;
+        rdNext = 0;
+        buffStop = 0;
         isClosed = false;
         contentLen = 0;
         paddingLen = 0;
@@ -81,6 +82,7 @@ public class FCGIInputStream extends InputStream {
      * @return the byte read, or -1 if the end of the stream is reached.
      * @throws IOException If an I/O error has occurred.
      */
+    @Override
     public int read() throws IOException {
         if (rdNext != stop) {
             return buff[rdNext++] & 0xff;
@@ -104,7 +106,8 @@ public class FCGIInputStream extends InputStream {
      *         the stream is reached.
      * @throws IOException If an I/O error has occurred.
      */
-    public int read(byte b[]) throws IOException {
+    @Override
+    public int read(byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
 
@@ -118,8 +121,10 @@ public class FCGIInputStream extends InputStream {
      *         the stream is reached.
      * @throws IOException If an I/O error has occurred.
      */
-    public int read(byte b[], int off, int len) throws IOException {
-        int m, bytesMoved;
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int m = 0;
+        int bytesMoved = 0;
 
         if (len <= 0) {
             return 0;
@@ -137,7 +142,7 @@ public class FCGIInputStream extends InputStream {
          * General case: stream is closed or fill needs to be called
          */
         bytesMoved = 0;
-        for (; ; ) {
+        while (true) {
             if (rdNext != stop) {
                 m = Math.min(len - bytesMoved, stop - rdNext);
                 System.arraycopy(buff, rdNext, b, off, m);
@@ -168,7 +173,7 @@ public class FCGIInputStream extends InputStream {
      * @throws IOException If an I/O error has occurred.
      */
     public void fill() throws IOException {
-        byte[] headerBuf = new byte[FCGIGlobalDefs.def_FCGIHeaderLen];
+        byte[] headerBuf = new byte[FCGIConstants.BUFFER_HEADER_LENGTH];
         int headerLen = 0;
         int status = 0;
         int count = 0;
@@ -185,7 +190,7 @@ public class FCGIInputStream extends InputStream {
                     return;
                 }
                 if (count == 0) {
-                    setFCGIError(FCGIGlobalDefs.def_FCGIProtocolError);
+                    setFCGIError(FCGIConstants.ERROR_PROTOCOL_ERROR);
                     return;
                 }
                 rdNext = 0;
@@ -258,23 +263,23 @@ public class FCGIInputStream extends InputStream {
             eorStop = false;
             isClosed = false;
             switch (status) {
-                case FCGIGlobalDefs.def_FCGIStreamRecord:
+                case FCGIConstants.HEADER_STREAM_RECORD:
                     if (contentLen == 0) {
                         stop = rdNext;
                         isClosed = true;
                         return;
                     }
                     break;
-                case FCGIGlobalDefs.def_FCGISkip:
+                case FCGIConstants.HEADER_SKIP:
                     skip = true;
                     break;
-                case FCGIGlobalDefs.def_FCGIBeginRecord:
+                case FCGIConstants.HEADER_BEGIN_RECORD:
                 /*
                  * If this header marked the beginning of a new request, return
                  * role info to caller
                  */
                     return;
-                case FCGIGlobalDefs.def_FCGIMgmtRecord:
+                case FCGIConstants.HEADER_MANAGEMENT_RECORD:
                     break;
                 default:
                 /*
@@ -294,8 +299,9 @@ public class FCGIInputStream extends InputStream {
      * @return the actual number of bytes skipped.
      * @throws IOException If an I/O error has occurred.
      */
+    @Override
     public long skip(long n) throws IOException {
-        byte data[] = new byte[(int) n];
+        byte[] data = new byte[(int) n];
         return in.read(data);
     }
 
@@ -384,17 +390,37 @@ public class FCGIInputStream extends InputStream {
      * IOExceptions either, but that's there for compatiblity with the
      * InputStreamInterface.
      */
+    @Override
     public void close() throws IOException {
         isClosed = true;
         stop = rdNext;
     }
 
-	/*
-	 * Returns the number of bytes that can be read without blocking.
-	 */
-
+    /*
+     * Returns the number of bytes that can be read without blocking.
+     */
+    @Override
     public int available() throws IOException {
         return stop - rdNext + in.available();
     }
 
+    public void setContentLen(final int contentLen) {
+        this.contentLen = contentLen;
+    }
+
+    public void setPaddingLen(final int paddingLen) {
+        this.paddingLen = paddingLen;
+    }
+
+    public FCGIRequest getRequest() {
+        return request;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public int getContentLen() {
+        return contentLen;
+    }
 }

@@ -18,8 +18,13 @@
 */
 package com.fastcgi;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
 import java.util.Properties;
 
 /*
@@ -27,16 +32,15 @@ import java.util.Properties;
  * FastCGI web server. This version is single threaded, and handles one request at
  * a time, which is why we can have a static variable for it.
  */
-public class FCGIInterface
-{
+public class FCGIInterface {
     /*
     * Class variables
     */
-    public static FCGIRequest request = null;
-    public static boolean acceptCalled = false;
-    public static boolean isFCGI = true;
-    public static Properties startupProps;
-    public static ServerSocket srvSocket;
+    private static FCGIRequest request = null;
+    private static boolean acceptCalled = false;
+    private static boolean isFCGI = true;
+    private static Properties startupProps;
+    private static ServerSocket srvSocket;
 
     /*
     * Accepts a new request from the HTTP server and creates
@@ -68,21 +72,22 @@ public class FCGIInterface
     */
     public int FCGIaccept() {
         boolean acceptResult = accept();
-        if(acceptResult){
+        if (acceptResult) {
             return 0;
-        } else {
+        }
+        else {
             return -1;
         }
     }
 
-    public boolean accept(){
+    public boolean accept() {
         boolean acceptResult = true;
 
         /*
          * If first call, mark it and if fcgi save original system properties,
          * If not first call, and  we are cgi, we should be gone.
          */
-        if (!acceptCalled){
+        if (!acceptCalled) {
             isFCGI = System.getProperties().containsKey("FCGI_PORT");
             acceptCalled = true;
             if (isFCGI) {
@@ -99,10 +104,10 @@ public class FCGIInterface
 
                 try {
                     srvSocket = new ServerSocket(portNum);
-                } catch (IOException e) {
-                    if (request != null)
-                    {
-                        request.socket = null;
+                }
+                catch (IOException e) {
+                    if (request != null) {
+                        request.setSocket(null);
                     }
                     srvSocket = null;
                     request = null;
@@ -111,32 +116,33 @@ public class FCGIInterface
             }
         }
         else {
-            if (!isFCGI){
+            if (!isFCGI) {
                 return false;
             }
         }
         /*
          * If we are cgi, just leave everything as is, otherwise set up env
          */
-        if (isFCGI){
+        if (isFCGI) {
             try {
                 acceptResult = FCGIAccept();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 return false;
             }
-            if (!acceptResult){
+            if (!acceptResult) {
                 return false;
             }
 
             /*
             * redirect stdin, stdout and stderr to fcgi socket
             */
-            System.setIn(new BufferedInputStream(request.inStream, 8192));
+            System.setIn(new BufferedInputStream(request.getInStream(), 8192));
             System.setOut(new PrintStream(new BufferedOutputStream(
-                request.outStream, 8192)));
+                    request.getOutStream(), 8192)));
             System.setErr(new PrintStream(new BufferedOutputStream(
-                request.errStream, 512)));
-            System.setProperties(request.params);
+                    request.getErrStream(), 512)));
+            System.setProperties(request.getParams());
         }
         return true;
     }
@@ -149,7 +155,7 @@ public class FCGIInterface
      * the request object. (This is redundant on System.props
      * as long as we can handle only one request object.)
      */
-    boolean FCGIAccept() throws IOException{
+    boolean FCGIAccept() throws IOException {
 
         boolean isNewConnection;
         boolean errCloseEx = false;
@@ -162,36 +168,37 @@ public class FCGIInterface
             System.err.close();
             System.out.close();
             boolean prevRequestfailed = (errCloseEx || outCloseEx ||
-                request.inStream.getFCGIError() != 0 ||
-                request.inStream.getException() != null);
-            if (prevRequestfailed || !request.keepConnection ) {
-                request.socket.close();
-                request.socket = null;
+                    request.getInStream().getFCGIError() != 0 ||
+                    request.getInStream().getException() != null);
+            if (prevRequestfailed || !request.isKeepConnection()) {
+                request.getSocket().close();
+                request.setSocket(null);
             }
             if (prevRequestfailed) {
                 request = null;
                 return false;
             }
         }
-        else    {
+        else {
             /*
              * Get a Request and initialize some variables
              */
             request = new FCGIRequest();
-            request.socket = null;
-            request.inStream = null;
+            request.setSocket(null);
+            request.setInStream(null);
         }
         isNewConnection = false;
 
         /*
          * if connection isnt open accept a new connection (blocking)
          */
-        while(true) {
-            if (request.socket == null){
+        while (true) {
+            if (request.getSocket() == null) {
                 try {
-                    request.socket = srvSocket.accept();
-                } catch (IOException e) {
-                    request.socket = null;
+                    request.setSocket(srvSocket.accept());
+                }
+                catch (IOException e) {
+                    request.setSocket(null);
                     request = null;
                     return false;
                 }
@@ -202,18 +209,16 @@ public class FCGIInterface
              * it was an old connection the web server probably closed it;
              * try making a new connection before giving up
              */
-            request.isBeginProcessed = false;
-            request.inStream =
-                new FCGIInputStream((FileInputStream)request.
-                socket.getInputStream(),
-                8192, 0, request);
-            request.inStream.fill();
-            if (request.isBeginProcessed) {
+            request.setBeginProcessed(false);
+            request.setInStream(new FCGIInputStream((FileInputStream) request.getSocket().getInputStream(),
+                    8192, 0, request));
+            request.getInStream().fill();
+            if (request.isBeginProcessed()) {
                 break;
             }
-            request.socket.close();
+            request.getSocket().close();
 
-                request.socket = null;
+            request.setSocket(null);
             if (isNewConnection) {
                 return false;
             }
@@ -221,37 +226,35 @@ public class FCGIInterface
         /*
         * Set up the objects for the new request
         */
-        request.params = new Properties(startupProps);
-        switch(request.role) {
-        case FCGIGlobalDefs.def_FCGIResponder:
-            request.params.put("ROLE","RESPONDER");
-            break;
-        case FCGIGlobalDefs.def_FCGIAuthorizer:
-            request.params.put("ROLE", "AUTHORIZER");
-            break;
-        case FCGIGlobalDefs.def_FCGIFilter:
-            request.params.put("ROLE", "FILTER");
-            break;
-        default:
-            return false;
+        request.setParams(new Properties(startupProps));
+        switch (request.getRole()) {
+            case FCGIConstants.ROLE_RESPONDER:
+                request.getParams().put("ROLE", "RESPONDER");
+                break;
+            case FCGIConstants.ROLE_AUTHORIZER:
+                request.getParams().put("ROLE", "AUTHORIZER");
+                break;
+            case FCGIConstants.ROLE_FILTER:
+                request.getParams().put("ROLE", "FILTER");
+                break;
+            default:
+                return false;
         }
-        request.inStream.setReaderType(FCGIGlobalDefs.def_FCGIParams);
+        request.getInStream().setReaderType(FCGIConstants.TYPE_PARAMS);
         /*
          * read the rest of request parameters
          */
-        if (new FCGIMessage(request.inStream).readParams(request.params) < 0) {
+        if (new FCGIMessage(request.getInStream()).readParams(request.getParams()) < 0) {
             return false;
         }
-        request.inStream.setReaderType(FCGIGlobalDefs.def_FCGIStdin);
-        request.outStream
-            =  new FCGIOutputStream((FileOutputStream)request.socket.
-            getOutputStream(), 8192,
-            FCGIGlobalDefs.def_FCGIStdout,request);
-        request.errStream
-            = new FCGIOutputStream((FileOutputStream)request.socket.
-            getOutputStream(), 512,
-            FCGIGlobalDefs.def_FCGIStderr,request);
-        request.numWriters = 2;
+        request.getInStream().setReaderType(FCGIConstants.TYPE_STDIN);
+        request.setOutStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
+        getOutputStream(), 8192,
+        FCGIConstants.TYPE_STDOUT, request));
+        request.setErrStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
+        getOutputStream(), 512,
+        FCGIConstants.TYPE_STDERR, request));
+        request.setNumWriters(2);
         return true;
     }
 }
