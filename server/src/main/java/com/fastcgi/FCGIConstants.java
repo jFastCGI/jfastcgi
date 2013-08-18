@@ -69,11 +69,6 @@ public enum FCGIConstants {
     public final static int MASK_KEEP_CONNECTION = 1;
 
 
-    /* Roles */
-    public static final int ROLE_RESPONDER = 1;
-    public static final int ROLE_AUTHORIZER = 2;
-    public static final int ROLE_FILTER = 3;
-
     /*
     * End Request defines
     */

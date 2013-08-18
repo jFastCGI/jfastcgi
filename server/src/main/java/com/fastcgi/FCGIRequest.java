@@ -18,6 +18,8 @@
 */
 package com.fastcgi;
 
+import com.fastcgi.constants.ApplicationRole;
+
 import java.net.Socket;
 import java.util.Properties;
 
@@ -46,13 +48,13 @@ public class FCGIRequest {
     private boolean isBeginProcessed;
     private int requestID;
     private boolean keepConnection;
-    private int role;
+    private ApplicationRole role;
     private int appStatus;
     private int numWriters;
-    private FCGIInputStream inStream;
-    private FCGIOutputStream outStream;
-    private FCGIOutputStream errStream;
-    private Properties params;
+    private FCGIInputStream inputStream;
+    private FCGIOutputStream outputStream;
+    private FCGIOutputStream errorStream;
+    private Properties parameters;
 
     public int getId() {
         return getRequestID();
@@ -91,12 +93,12 @@ public class FCGIRequest {
         this.keepConnection = keepConnection;
     }
 
-    public int getRole() {
+    public ApplicationRole getRole() {
         return role;
     }
 
     public void setRole(final int role) {
-        this.role = role;
+        this.role = ApplicationRole.getByValue(role);
     }
 
     public int getAppStatus() {
@@ -115,36 +117,36 @@ public class FCGIRequest {
         this.numWriters = numWriters;
     }
 
-    public FCGIInputStream getInStream() {
-        return inStream;
+    public FCGIInputStream getInputStream() {
+        return inputStream;
     }
 
-    public void setInStream(final FCGIInputStream inStream) {
-        this.inStream = inStream;
+    public void setInputStream(final FCGIInputStream inputStream) {
+        this.inputStream = inputStream;
     }
 
-    public FCGIOutputStream getOutStream() {
-        return outStream;
+    public FCGIOutputStream getOutputStream() {
+        return outputStream;
     }
 
-    public void setOutStream(final FCGIOutputStream outStream) {
-        this.outStream = outStream;
+    public void setOutputStream(final FCGIOutputStream outputStream) {
+        this.outputStream = outputStream;
     }
 
-    public FCGIOutputStream getErrStream() {
-        return errStream;
+    public FCGIOutputStream getErrorStream() {
+        return errorStream;
     }
 
-    public void setErrStream(final FCGIOutputStream errStream) {
-        this.errStream = errStream;
+    public void setErrorStream(final FCGIOutputStream errorStream) {
+        this.errorStream = errorStream;
     }
 
-    public Properties getParams() {
-        return params;
+    public Properties getParameters() {
+        return parameters;
     }
 
-    public void setParams(final Properties params) {
-        this.params = params;
+    public void setParameters(final Properties parameters) {
+        this.parameters = parameters;
     }
 }
 

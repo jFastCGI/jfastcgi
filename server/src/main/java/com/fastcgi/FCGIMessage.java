@@ -149,12 +149,12 @@ public class FCGIMessage {
              * can't be out first call, so request.out is properly set
              */
             try {
-                in.getRequest().getOutStream().write(endReqMsg, 0,
+                in.getRequest().getOutputStream().write(endReqMsg, 0,
                         FCGIConstants.BUFFER_HEADER_LENGTH
                                 + FCGIConstants.BUFFER_END_REQUEST_BODY_LENGTH);
             }
             catch (IOException e) {
-                in.getRequest().getOutStream().setException(e);
+                in.getRequest().getOutputStream().setException(e);
                 return -1;
             }
         }

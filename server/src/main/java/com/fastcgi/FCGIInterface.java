@@ -137,12 +137,12 @@ public class FCGIInterface {
             /*
             * redirect stdin, stdout and stderr to fcgi socket
             */
-            System.setIn(new BufferedInputStream(request.getInStream(), 8192));
+            System.setIn(new BufferedInputStream(request.getInputStream(), 8192));
             System.setOut(new PrintStream(new BufferedOutputStream(
-                    request.getOutStream(), 8192)));
+                    request.getOutputStream(), 8192)));
             System.setErr(new PrintStream(new BufferedOutputStream(
-                    request.getErrStream(), 512)));
-            System.setProperties(request.getParams());
+                    request.getErrorStream(), 512)));
+            System.setProperties(request.getParameters());
         }
         return true;
     }
@@ -168,8 +168,8 @@ public class FCGIInterface {
             System.err.close();
             System.out.close();
             boolean prevRequestfailed = (errCloseEx || outCloseEx ||
-                    request.getInStream().getFCGIError() != 0 ||
-                    request.getInStream().getException() != null);
+                    request.getInputStream().getFCGIError() != 0 ||
+                    request.getInputStream().getException() != null);
             if (prevRequestfailed || !request.isKeepConnection()) {
                 request.getSocket().close();
                 request.setSocket(null);
@@ -185,7 +185,7 @@ public class FCGIInterface {
              */
             request = new FCGIRequest();
             request.setSocket(null);
-            request.setInStream(null);
+            request.setInputStream(null);
         }
         isNewConnection = false;
 
@@ -210,9 +210,9 @@ public class FCGIInterface {
              * try making a new connection before giving up
              */
             request.setBeginProcessed(false);
-            request.setInStream(new FCGIInputStream((FileInputStream) request.getSocket().getInputStream(),
+            request.setInputStream(new FCGIInputStream((FileInputStream) request.getSocket().getInputStream(),
                     8192, 0, request));
-            request.getInStream().fill();
+            request.getInputStream().fill();
             if (request.isBeginProcessed()) {
                 break;
             }
@@ -226,34 +226,22 @@ public class FCGIInterface {
         /*
         * Set up the objects for the new request
         */
-        request.setParams(new Properties(startupProps));
-        switch (request.getRole()) {
-            case FCGIConstants.ROLE_RESPONDER:
-                request.getParams().put("ROLE", "RESPONDER");
-                break;
-            case FCGIConstants.ROLE_AUTHORIZER:
-                request.getParams().put("ROLE", "AUTHORIZER");
-                break;
-            case FCGIConstants.ROLE_FILTER:
-                request.getParams().put("ROLE", "FILTER");
-                break;
-            default:
-                return false;
-        }
-        request.getInStream().setReaderType(FCGIConstants.TYPE_PARAMS);
+        request.setParameters(new Properties(startupProps));
+        request.getParameters().put("ROLE", request.getRole().getRoleName());
+        request.getInputStream().setReaderType(FCGIConstants.TYPE_PARAMS);
         /*
          * read the rest of request parameters
          */
-        if (new FCGIMessage(request.getInStream()).readParams(request.getParams()) < 0) {
+        if (new FCGIMessage(request.getInputStream()).readParams(request.getParameters()) < 0) {
             return false;
         }
-        request.getInStream().setReaderType(FCGIConstants.TYPE_STDIN);
-        request.setOutStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
-        getOutputStream(), 8192,
-        FCGIConstants.TYPE_STDOUT, request));
-        request.setErrStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
-        getOutputStream(), 512,
-        FCGIConstants.TYPE_STDERR, request));
+        request.getInputStream().setReaderType(FCGIConstants.TYPE_STDIN);
+        request.setOutputStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
+                getOutputStream(), 8192,
+                FCGIConstants.TYPE_STDOUT, request));
+        request.setErrorStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
+                getOutputStream(), 512,
+                FCGIConstants.TYPE_STDERR, request));
         request.setNumWriters(2);
         return true;
     }
