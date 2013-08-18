@@ -1,5 +1,59 @@
 Play!Framework 1.x FastCGI support
 
     Support for the Play!Framework 1.x is currently under development.
-    Please check back at a later time.
+    Please check back at a later time. In the meantime, you can review
+    the way we want to provide support for the PlayFramework 1.x:
 
+* Installation
+
+    Adjust your conf/dependencies.yml to include the dependency
+
+-------------
+    # Application dependencies
+
+    require:
+        - play
+        - org.jfastcgi.client -> client-playframework1x ${project.version}
+-------------
+
+
+* Configuration
+
+    Before you can proxy requests to a FastCGI application, you have to configure
+    the available services in your conf/application.conf.
+
+    Please note, that "server-address" and "cluster-adresses" are mutually exclusive
+    (meaning, if you specify both for an endpoint, we'll take cluster-addresses)
+
+    The syntax is always jfastcgi.<endpoint-Name>.propertyName = value
+
+-------------
+
+jfastcgi.DEFAULT.server-address = 127.0.0.1:19000
+jfastcgi.DEFAULT.start-executable = "/usr/bin/php-fcgi -b 19000"
+...
+jfastcgi.ALTERNATE.server-address = 127.0.0.1:19000
+jfastcgi.ALTERNATE.connection-factory = com.yourcompany.fastcgi.CustomConnectionFactory
+...
+jfastcgi.ACLUSTERCONFIG.cluster-adresses = 127.0.0.1:19000,[::1]:20000,[::1]:21000
+...
+jfastcgi.FILTERINGHEADERS.server-address = 127.0.0.1:19000
+jfastcgi.FILTERINGHEADERS.filtered-headers = Authorization;
+
+-------------
+
+    Additionally, there's the context-path property, in case your app is not listening
+    to / or you just want to override it for all requests for this endpoint that don't
+    override it with the result request.
+
+---------------
+
+jfastcgi.CONTEXTOVERRIDEEXCAMPLE.server-address = 127.0.0.1:19000
+jfastcgi.CONTEXTOVERRIDEEXCAMPLE.context-path = /someapp
+
+---------------
+
+
+* Using the FastCGI client
+
+   TODO
