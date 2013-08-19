@@ -69,7 +69,6 @@ public class FastCGIHandlerFactory {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FastCGIHandlerFactory.class);
 
-    private static PoolFactory poolFactory = new PoolFactory();
 
     public static FastCGIHandler create(Map<String, String> config) {
         FastCGIHandler handler = new FastCGIHandler();
@@ -83,8 +82,8 @@ public class FastCGIHandlerFactory {
             handler.setConnectionFactory(buildConnectionFactoryForClass(className));
         }
         else if (config.get(PARAM_CLUSTER_ADRESSES) != null) {
-
             getLog().info("configuring fastCGI handler using the following adresses : ");
+            PoolFactory poolFactory = PoolFactoryFactory.getOrCreatePoolFactory();
             for (String addr : config.get(PARAM_CLUSTER_ADRESSES).replaceAll("[\n\t]",";").replaceAll(" ","").split(";")) {
                 if(!addr.isEmpty()){
                     getLog().info("  => " + addr);
@@ -126,7 +125,5 @@ public class FastCGIHandlerFactory {
         return LOGGER;
     }
 
-    public static void setPoolFactory(final PoolFactory poolFactory) {
-        FastCGIHandlerFactory.poolFactory = poolFactory;
-    }
+
 }

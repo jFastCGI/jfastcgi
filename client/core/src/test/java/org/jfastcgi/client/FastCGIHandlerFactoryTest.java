@@ -17,7 +17,7 @@ public class FastCGIHandlerFactoryTest {
     @Before
     public void setUp() throws Exception {
         poolFactory = mock(PoolFactory.class);
-        FastCGIHandlerFactory.setPoolFactory(poolFactory);
+        PoolFactoryFactory.setStaticPoolFactory(poolFactory);
     }
 
 
