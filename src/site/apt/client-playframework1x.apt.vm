@@ -35,7 +35,7 @@ jfastcgi.DEFAULT.start-executable = "/usr/bin/php-fcgi -b 19000"
 jfastcgi.ALTERNATE.server-address = 127.0.0.1:19000
 jfastcgi.ALTERNATE.connection-factory = com.yourcompany.fastcgi.CustomConnectionFactory
 ...
-jfastcgi.ACLUSTERCONFIG.cluster-adresses = 127.0.0.1:19000,[::1]:20000,[::1]:21000
+jfastcgi.ACLUSTERCONFIG.cluster-adresses = 127.0.0.1:19000;[::1]:20000;[::1]:21000
 ...
 jfastcgi.FILTERINGHEADERS.server-address = 127.0.0.1:19000
 jfastcgi.FILTERINGHEADERS.filtered-headers = Authorization;
@@ -48,8 +48,8 @@ jfastcgi.FILTERINGHEADERS.filtered-headers = Authorization;
 
 ---------------
 
-jfastcgi.CONTEXTOVERRIDEEXCAMPLE.server-address = 127.0.0.1:19000
-jfastcgi.CONTEXTOVERRIDEEXCAMPLE.context-path = /someapp
+jfastcgi.CONTEXTOVERRIDEEXAMPLE.server-address = 127.0.0.1:19000
+jfastcgi.CONTEXTOVERRIDEEXAMPLE.context-path = /someapp
 
 ---------------
 
