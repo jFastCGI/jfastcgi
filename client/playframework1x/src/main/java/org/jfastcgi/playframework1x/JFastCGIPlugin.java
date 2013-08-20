@@ -5,6 +5,7 @@ import org.jfastcgi.client.FastCGIHandlerFactory;
 import play.Play;
 import play.PlayPlugin;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +35,10 @@ public class JFastCGIPlugin extends PlayPlugin {
     );
 
     private Properties _configuration = null;
+
+    private Map<String, FastCGIHandler> handlers;
+
+    private final Object syncObject = new Object();
 
     private Properties getConfiguration() {
         if (_configuration == null) {
@@ -78,7 +83,10 @@ public class JFastCGIPlugin extends PlayPlugin {
     @Override
     public void onApplicationStart() {
         Map<String, Map<String, String>> configMap = createConfigMap(getConfiguration());
-
+        Map<String, FastCGIHandler> handlers = createHandlers(configMap);
+        synchronized (syncObject){
+            this.handlers = Collections.unmodifiableMap(handlers);
+        }
 
         // iterate over all configuration objects
         // start connections
@@ -87,6 +95,16 @@ public class JFastCGIPlugin extends PlayPlugin {
 
     @Override
     public void onApplicationStop() {
+        synchronized (syncObject){
+            for (FastCGIHandler handler : this.handlers.values()) {
+                // destroy the handler
+                handler.destroy();
+            }
+            // remove handlers
+            this.handlers = null;
+        }
+
+
         // iterate over all configuration objects
         // close connections
         // remove configuration objects from memory
