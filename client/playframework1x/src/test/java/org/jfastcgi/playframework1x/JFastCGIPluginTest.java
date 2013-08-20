@@ -26,8 +26,10 @@ public class JFastCGIPluginTest {
         conf.setProperty("jfastcgi.ACLUSTERCONFIG.cluster-adresses","127.0.0.1:19000;[::1]:20000;[::1]:21000");
         conf.setProperty("jfastcgi.FILTERINGHEADERS.server-address","127.0.0.1:19000");
         conf.setProperty("jfastcgi.FILTERINGHEADERS.filtered-headers","Authorization;");
+        conf.setProperty("jfastcgi.FILTERINGHEADERS.keep-alive","false");
         conf.setProperty("jfastcgi.CONTEXTOVERRIDEEXAMPLE.server-address","127.0.0.1:19000");
         conf.setProperty("jfastcgi.CONTEXTOVERRIDEEXAMPLE.context-path","/someapp");
+        conf.setProperty("jfastcgi.CONTEXTOVERRIDEEXAMPLE.keep-alive","true");
     }
 
 
@@ -43,8 +45,8 @@ public class JFastCGIPluginTest {
         assertThat(configMap.containsKey("DEFAULT"));
         assertThat(configMap.get("DEFAULT")).hasSize(2);
         assertThat(configMap.get("ACLUSTERCONFIG")).hasSize(1);
-        assertThat(configMap.get("FILTERINGHEADERS")).hasSize(2);
-        assertThat(configMap.get("CONTEXTOVERRIDEEXAMPLE")).hasSize(2);
+        assertThat(configMap.get("FILTERINGHEADERS")).hasSize(3);
+        assertThat(configMap.get("CONTEXTOVERRIDEEXAMPLE")).hasSize(3);
     }
 
     @Test

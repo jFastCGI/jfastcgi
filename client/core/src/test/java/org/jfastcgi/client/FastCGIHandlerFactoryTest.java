@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -65,4 +66,18 @@ public class FastCGIHandlerFactoryTest {
     }
 
 
+    @Test
+    public void testCreate_parseKeepAlive() throws Exception {
+        Map<String, String> data = new HashMap<String, String>();
+        data.put(FastCGIHandlerFactory.PARAM_CLUSTER_ADRESSES, "127.0.0.1:9003");
+        FastCGIHandler handlerWithoutKeepAlive = FastCGIHandlerFactory.create(data);
+        verify(poolFactory).addAddress("127.0.0.1:9003");
+        assertThat(handlerWithoutKeepAlive).isNotNull();
+        assertThat(handlerWithoutKeepAlive.isKeepAlive()).isFalse();
+
+        data.put(FastCGIHandlerFactory.PARAM_KEEP_ALIVE, "true");
+        FastCGIHandler handlerWithKeepAlive = FastCGIHandlerFactory.create(data);
+        assertThat(handlerWithKeepAlive).isNotNull();
+        assertThat(handlerWithKeepAlive.isKeepAlive()).isTrue();
+    }
 }

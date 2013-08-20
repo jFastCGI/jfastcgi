@@ -53,6 +53,12 @@ public class FastCGIHandlerFactory {
      */
     public final static String PARAM_CLUSTER_ADRESSES = "cluster-adresses";
 
+
+    /**
+     * should connections be kept alive? true | false
+     */
+    public final static String PARAM_KEEP_ALIVE = "keep-alive";
+
     /**
      * comma-separated list of http headers that will be filtered (i.e not transmitted to the fastcgi responder)
      * The list is case insensitive.
@@ -64,7 +70,8 @@ public class FastCGIHandlerFactory {
             PARAM_START_EXECUTABLE,
             PARAM_CONNECTION_FACTORY,
             PARAM_CLUSTER_ADRESSES,
-            PARAM_FILTERED_HEADERS
+            PARAM_FILTERED_HEADERS,
+            PARAM_KEEP_ALIVE
     };
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FastCGIHandlerFactory.class);
@@ -107,6 +114,13 @@ public class FastCGIHandlerFactory {
                 getLog().info("The following http headers will not be transmitted : [" + StringUtil.arrayToString(", ", filteredHeaders) + "]");
             }
             handler.setFilteredHeaders(filteredHeaders);
+        }
+
+        if(config.get(PARAM_KEEP_ALIVE) != null) {
+            String value = config.get(PARAM_KEEP_ALIVE);
+            if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")){
+                handler.setKeepAlive(true);
+            }
         }
 
         return handler;

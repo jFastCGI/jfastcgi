@@ -36,6 +36,21 @@ Basic configuration - one connection / one target
 </servlet>
 -----------------
 
+Keep-Alive support
+
+    If the connection to the FastCGI Service should be kept alive, add the following init-param:
+
+-----------------
+<servlet>
+   <servlet-name>FastCGI</servlet-name>
+   <servlet-class>org.jfastcgi.servlet.FastCGIServlet</servlet-class>
+   <init-param>
+       <param-name>keep-alive</param-name>
+       <param-value>true</param-value>
+   </init-param>
+</servlet>
+-----------------
+
 
 Doing fancy things: writing a custom ConnectionFactory
 

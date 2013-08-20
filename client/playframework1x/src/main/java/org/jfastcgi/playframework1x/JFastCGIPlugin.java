@@ -29,7 +29,9 @@ public class JFastCGIPlugin extends PlayPlugin {
      jfastcgi.FILTERINGHEADERS.server-address = 127.0.0.1:19000
      jfastcgi.FILTERINGHEADERS.filtered-headers = Authorization;
      */
-    private final Pattern configPattern = Pattern.compile("^jfastcgi.(.*).(server-address|cluster-adresses|start-executable|connection-factory|filtered-headers|context-path)$");
+    private final Pattern configPattern = Pattern.compile(
+            "^jfastcgi.(.*).(server-address|cluster-adresses|start-executable|connection-factory|filtered-headers|context-path|keep-alive)$"
+    );
 
     private Properties _configuration = null;
 
@@ -41,7 +43,6 @@ public class JFastCGIPlugin extends PlayPlugin {
             return _configuration;
         }
     }
-
 
 
     Map<String, Map<String, String>> createConfigMap(Properties configuration) {
