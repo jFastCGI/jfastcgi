@@ -42,6 +42,7 @@
         <module>parent</module>
         <module>server</module>
         <module>client</module>
+	<module>samples</module>
     </modules>
 
     <properties>
