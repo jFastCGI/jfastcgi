@@ -19,66 +19,46 @@
 */
 package org.jfastcgi.client;
 
-import org.jfastcgi.api.ConnectionFactory;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.jfastcgi.api.ConnectionFactory;
 
 /**
  * A connection factory that always tries to connect to the same ip/port.
- *
+ * 
  * @author jrialland
  */
 public class SingleConnectionFactory implements ConnectionFactory {
 
-    private InetAddress host;
+	private final ConnectionDescriptor desc;
 
-    private int port;
+	public SingleConnectionFactory(final InetSocketAddress sockAddr) {
+		this(sockAddr.getAddress(), sockAddr.getPort());
+	}
 
-    public SingleConnectionFactory(InetSocketAddress sockAddr) {
-        this(sockAddr.getAddress(), sockAddr.getPort());
-    }
+	public SingleConnectionFactory(final InetAddress host, final int port) {
+		this("tcp://" + host + ":" + port);
+	}
 
-    public SingleConnectionFactory(InetAddress host, int port) {
-        this.host = host;
-        this.port = port;
-    }
+	public SingleConnectionFactory(final String descriptor) {
+		desc = ConnectionDescriptor.makeConnDesc(descriptor);
+	}
 
-    public SingleConnectionFactory(String descriptor) {
-        Matcher m = Pattern.compile("([^:]+):([1-9][0-9]*)$").matcher(descriptor.trim());
-        if (m.matches()) {
-            try {
-                this.host = InetAddress.getByName(m.group(1));
-                this.port = Integer.parseInt(m.group(2));
-            }
-            catch (Exception e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-        else {
-            throw new IllegalArgumentException("syntax error (required format is <host>:<port>) - " + descriptor);
-        }
-    }
+	public ISocket getConnection() {
+		try {
+			return desc.makeSocket();
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public Socket getConnection() {
-        try {
-            return new Socket(host, port);
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void releaseConnection(Socket socket) {
-        try {
-            socket.close();
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public void releaseConnection(final ISocket socket) {
+		try {
+			socket.close();
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

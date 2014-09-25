@@ -19,136 +19,75 @@
 */
 package org.jfastcgi.client;
 
-import org.apache.commons.pool.BasePoolableObjectFactory;
-
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * Implements PoolableObjectFactory so it creates tcp connections on demand using pool configuration.
- *
+ * 
  * @author jrialland
  */
-public class PoolFactory extends BasePoolableObjectFactory {
-    private final static Pattern PATTERN_HOSTNAME_PORT = Pattern.compile("([^:]+):([1-9][0-9]*)$");
-    private final static Pattern PATTERN_IPV6_PORT = Pattern.compile("\\[((?:(?:(?:[0-9a-fA-F]{0,4}):){2,7})(?:[0-9a-fA-F]{1,4}))\\]:([1-9][0-9]*)");
+public class PoolFactory extends BasePooledObjectFactory<ISocket> {
 
-    /**
-     * embeds ip + port into a single structure.
-     *
-     * @author jrialland
-     */
-    static class ConnectionDescriptor {
-        private final InetAddress addr;
-        private final int port;
+	private final Random random = new Random();
 
-        public ConnectionDescriptor(InetAddress addr, int port) {
-            this.addr = addr;
-            this.port = port;
-        }
+	/**
+	 * List of configured host/port pairs.
+	 */
+	private final List<ConnectionDescriptor> addresses = new ArrayList<ConnectionDescriptor>();
 
-        public InetAddress getAddr() {
-            return addr;
-        }
+	/**
+	 * build a ConnDesc from a &quot;host:port&quot; string.
+	 * <p/>
+	 * If you want to specify ipv6 addresses, use the format &quot;[ipv6]:port&quot;, e.g. &quot;[::1]:9000&quot;
+	 * 
+	 * @param address
+	 *            the input address
+	 * @return a parsed ConnectionDescription
+	 */
 
-        public int getPort() {
-            return port;
-        }
+	public void addAddress(final String address) {
+		addresses.add(ConnectionDescriptor.makeConnDesc(address));
+	}
 
-        @Override
-        public String toString() {
-            return addr.getHostName() + ":" + port;
-        }
-    }
+	public void addAdresses(final Iterable<String> addresses) {
+		for (final String address : addresses) {
+			this.addresses.add(ConnectionDescriptor.makeConnDesc(address));
+		}
+	}
 
-    private Random random = new Random();
+	/**
+	 * may simplify future spring integration...
+	 * 
+	 * @param address
+	 */
+	public void setAddress(final String address) {
+		addAddress(address);
+	}
 
-    /**
-     * List of configured host/port pairs.
-     */
-    private List<ConnectionDescriptor> addresses = new ArrayList<ConnectionDescriptor>();
+	/**
+	 * may simplify future spring integration...
+	 * 
+	 * @param addresses
+	 */
+	public void setAddresses(final Iterable<String> addresses) {
+		addAdresses(addresses);
+	}
 
-    /**
-     * build a ConnDesc from a &quot;host:port&quot; string.
-     * <p/>
-     * If you want to specify ipv6 addresses, use the format &quot;[ipv6]:port&quot;, e.g. &quot;[::1]:9000&quot;
-     *
-     * @param address the input address
-     * @return a parsed ConnectionDescription
-     */
-    static ConnectionDescriptor makeConnDesc(String address) {
-        if (address == null) {
-            throw new IllegalArgumentException("null for Connection Description given. Try something like localhost:9000 ");
-        }
+	@Override
+	public ISocket create() throws Exception {
+		final int index = random.nextInt(addresses.size() - 1);
+		final ConnectionDescriptor desc = addresses.get(index);
+		return desc.makeSocket();
+	}
 
-        Matcher ipv4Matcher = PATTERN_HOSTNAME_PORT.matcher(address);
-        Matcher ipv6Matcher = PATTERN_IPV6_PORT.matcher(address);
-        if (ipv4Matcher.matches()) {
-            try {
-                InetAddress addr = InetAddress.getByName(ipv4Matcher.group(1));
-                int port = Integer.parseInt(ipv4Matcher.group(2));
-                return new ConnectionDescriptor(addr, port);
-            }
-            catch (UnknownHostException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-        else if (ipv6Matcher.matches()) {
-            try {
-                InetAddress addr = InetAddress.getByName(ipv6Matcher.group(1));
-                int port = Integer.parseInt(ipv6Matcher.group(2));
-                return new ConnectionDescriptor(addr, port);
-            }
-            catch (UnknownHostException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-        else {
-            throw new IllegalArgumentException(address);
-        }
-    }
-
-    /**
-     * builds a new socket using one of the descriptors.
-     */
-    @Override
-    public Object makeObject() throws Exception {
-        int index = random.nextInt(addresses.size() - 1);
-        ConnectionDescriptor desc = addresses.get(index);
-        return new Socket(desc.getAddr(), desc.getPort());
-    }
-
-    public void addAddress(String address) {
-        this.addresses.add(makeConnDesc(address));
-    }
-
-    public void addAdresses(Iterable<String> addresses) {
-        for (String address : addresses) {
-            this.addresses.add(makeConnDesc(address));
-        }
-    }
-
-    /**
-     * may simplify future spring integration...
-     *
-     * @param address
-     */
-    public void setAddress(String address) {
-        addAddress(address);
-    }
-
-    /**
-     * may simplify future spring integration...
-     *
-     * @param addresses
-     */
-    public void setAddresses(Iterable<String> addresses) {
-        addAdresses(addresses);
-    }
+	@Override
+	public PooledObject<ISocket> wrap(final ISocket obj) {
+		return new DefaultPooledObject<ISocket>(obj);
+	}
 }

@@ -19,31 +19,31 @@
 */
 package org.jfastcgi.api;
 
-import java.net.Socket;
+import org.jfastcgi.client.ISocket;
+
 // START SNIPPET: apiConnectionFactory
 /**
  * interface that any service that can create / destroy connections to a fastCGI provider should implement.
- *
+ * 
  * @author jrialland
  */
 public interface ConnectionFactory {
 
-    /**
-     * Called when a connection is needed.
-     *
-     * @return
-     */
-    public Socket getConnection();
+	/**
+	 * Called when a connection is needed.
+	 * 
+	 * @return
+	 */
+	public ISocket getConnection();
 
-    /**
-     * Called  when a connection is released (not needed anymore)
-     * <p/>
-     * Note : it doesn't mean that the socket should be closed at all, but notifies that this connection is no more
-     * needed for a particular request.
-     * For example, a pooling system could use this method to mark connection as "useable" for another request.
-     *
-     * @param socket
-     */
-    public void releaseConnection(Socket socket);
+	/**
+	 * Called when a connection is released (not needed anymore)
+	 * <p/>
+	 * Note : it doesn't mean that the socket should be closed at all, but notifies that this connection is no more needed for a particular request. For example, a pooling system could use this method to mark connection as "useable" for another
+	 * request.
+	 * 
+	 * @param socket
+	 */
+	public void releaseConnection(ISocket socket);
 }
-    // END SNIPPET: apiConnectionFactory
+// END SNIPPET: apiConnectionFactory

@@ -21,7 +21,7 @@
     </modules>
 
     <properties>
-        <commons-pool.version>1.5.6</commons-pool.version>
+        <commons-pool2.version>2.2</commons-pool2.version>
         <portlet-api.version>2.0</portlet-api.version>
         <ejb.version>2.0</ejb.version>
         <spring.version>2.5.6</spring.version>
@@ -37,15 +37,15 @@
         <fest-assert.version>1.4</fest-assert.version>
         <fest-reflect.version>1.4.1</fest-reflect.version>
         <play1x.version>1.2.6</play1x.version>
+        <juds.version>0.94.1</juds.version>
     </properties>
-
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>commons-pool</groupId>
-                <artifactId>commons-pool</artifactId>
-                <version>${commons-pool.version}</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
                 <optional>true</optional>
             </dependency>
 
@@ -64,13 +64,12 @@
                 <optional>true</optional>
             </dependency>
 
-            <!--<dependency>-->
-            <!--<groupId>org.apache.geronimo.specs</groupId>-->
-            <!--<artifactId>geronimo-servlet_2.5_spec</artifactId>-->
-            <!--<version>1.2</version>-->
-            <!--<scope>provided</scope>-->
-            <!--<optional>true</optional>-->
-            <!--</dependency>-->
+			<dependency>
+			    <groupId>uk.co.caprica</groupId>
+			    <artifactId>juds</artifactId>
+			    <version>${juds.version}</version>
+			    <optional>true</optional>
+			</dependency>
 
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>

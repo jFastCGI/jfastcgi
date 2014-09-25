@@ -19,57 +19,51 @@
 */
 package org.jfastcgi.client;
 
+import org.apache.commons.pool2.ObjectPool;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.jfastcgi.api.ConnectionFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
-
-import java.net.Socket;
 
 /**
- * A connection factory that handles multiple connections, using an underlying connection pool provided
- * by commons-pool. (http://commons.apache.org/pool/)
- *
+ * A connection factory that handles multiple connections, using an underlying connection pool provided by commons-pool. (http://commons.apache.org/pool/)
+ * 
  * @author jrialland
  */
 public class PooledConnectionFactory implements ConnectionFactory {
 
-    private ObjectPool pool;
+	private ObjectPool<ISocket> pool;
 
-    public PooledConnectionFactory(PoolableObjectFactory poolableObjectFactory) {
-        this.pool = new GenericObjectPool(poolableObjectFactory);
-    }
+	public PooledConnectionFactory(final PooledObjectFactory<ISocket> pooledObjectFactory) {
+		pool = new GenericObjectPool<ISocket>(pooledObjectFactory);
+	}
 
-    /**
-     * get e connection from the pool.
-     */
-    public Socket getConnection() {
-        try {
-            Socket s = (Socket) pool.borrowObject();
-            return s;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+	/**
+	 * get e connection from the pool.
+	 */
+	public ISocket getConnection() {
+		try {
+			return pool.borrowObject();
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    /**
-     * returns a connection to the pool.
-     */
-    public void releaseConnection(Socket socket) {
-        try {
-            pool.returnObject(socket);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+	/**
+	 * returns a connection to the pool.
+	 */
+	public void releaseConnection(final ISocket socket) {
+		try {
+			pool.returnObject(socket);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public ObjectPool getPool() {
-        return pool;
-    }
+	public ObjectPool<ISocket> getPool() {
+		return pool;
+	}
 
-    public void setPool(ObjectPool pool) {
-        this.pool = pool;
-    }
+	public void setPool(final ObjectPool<ISocket> pool) {
+		this.pool = pool;
+	}
 }
