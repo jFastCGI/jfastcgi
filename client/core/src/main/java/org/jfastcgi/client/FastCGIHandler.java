@@ -139,11 +139,17 @@ public class FastCGIHandler {
 		final DefaultExecutor pe = new DefaultExecutor();
 		processExecutor = pe;
 		pe.setWatchdog(new ExecuteWatchdog(60000));
+		getLog().info("Starting external process : " + cmd);
 		pe.execute(CommandLine.parse(cmd), new DefaultExecuteResultHandler() {
 			@Override
 			public void onProcessFailed(final ExecuteException e) {
 				super.onProcessFailed(e);
 				getLog().error("while running process", e);
+			}
+
+			@Override
+			public void onProcessComplete(final int exitValue) {
+				getLog().info(String.format("external process exited with code %s : %s", exitValue, cmd));
 			}
 		});
 
