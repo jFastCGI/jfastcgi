@@ -22,6 +22,7 @@
 
     <properties>
         <commons-pool2.version>2.2</commons-pool2.version>
+        <commons-exec.version>1.2</commons-exec.version>
         <portlet-api.version>2.0</portlet-api.version>
         <ejb.version>2.0</ejb.version>
         <spring.version>2.5.6</spring.version>
@@ -69,6 +70,12 @@
 			    <artifactId>juds</artifactId>
 			    <version>${juds.version}</version>
 			    <optional>true</optional>
+			</dependency>
+
+			<dependency>
+			    <groupId>org.apache.commons</groupId>
+			    <artifactId>commons-exec</artifactId>
+			    <version>${commons-exec.version}</version>
 			</dependency>
 
             <dependency>

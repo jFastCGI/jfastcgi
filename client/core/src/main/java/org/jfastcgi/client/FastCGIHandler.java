@@ -25,10 +25,15 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
 import org.jfastcgi.api.ConnectionFactory;
 import org.jfastcgi.api.RequestAdapter;
 import org.jfastcgi.api.ResponseAdapter;
-import org.jfastcgi.utils.logging.StreamLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +74,7 @@ public class FastCGIHandler {
 
 	private ConnectionFactory connectionFactory;
 
-	private Process process;
+	private Executor processExecutor;
 
 	private Thread processLogThread;
 
@@ -131,17 +136,17 @@ public class FastCGIHandler {
 	}
 
 	public void startProcess(final String cmd) throws IOException {
-		final ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
-		process = pb.start();
+		final DefaultExecutor pe = new DefaultExecutor();
+		processExecutor = pe;
+		pe.setWatchdog(new ExecuteWatchdog(60000));
+		pe.execute(CommandLine.parse(cmd), new DefaultExecuteResultHandler() {
+			@Override
+			public void onProcessFailed(final ExecuteException e) {
+				super.onProcessFailed(e);
+				getLog().error("while running process", e);
+			}
+		});
 
-		if (getLog().isTraceEnabled()) {
-
-			processLogThread = new Thread(new StreamLogger(process.getErrorStream(), getLog()));
-
-			processLogThread.setDaemon(true);
-
-			processLogThread.start();
-		}
 	}
 
 	@Override
@@ -411,9 +416,9 @@ public class FastCGIHandler {
 	}
 
 	public void destroy() {
-		if (process != null) {
-			process.destroy();
-			process = null;
+		if (processExecutor != null) {
+			processExecutor.getWatchdog().destroyProcess();
+			processExecutor = null;
 		}
 	}
 
@@ -542,10 +547,6 @@ public class FastCGIHandler {
 			_is = null;
 			return false;
 		}
-	}
-
-	public Process getProcess() {
-		return process;
 	}
 
 	public Thread getProcessLogThread() {
