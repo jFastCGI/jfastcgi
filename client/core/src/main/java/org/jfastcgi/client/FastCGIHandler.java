@@ -23,17 +23,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteStreamHandler;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
 import org.jfastcgi.api.ConnectionFactory;
 import org.jfastcgi.api.RequestAdapter;
 import org.jfastcgi.api.ResponseAdapter;
+import org.jfastcgi.utils.logging.StreamLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,6 +143,32 @@ public class FastCGIHandler {
 		final DefaultExecutor pe = new DefaultExecutor();
 		processExecutor = pe;
 		pe.setWatchdog(new ExecuteWatchdog(60000));
+
+		processExecutor.setStreamHandler(new ExecuteStreamHandler() {
+
+			private final Set<StreamLogger> loggers = new HashSet<StreamLogger>();
+
+			public void stop() throws IOException {
+
+			}
+
+			public void start() throws IOException {
+
+			}
+
+			public void setProcessOutputStream(final InputStream is) throws IOException {
+				loggers.add(new StreamLogger(is, LoggerFactory.getLogger(FastCGIHandler.class.getName() + ".externalprocess.stdout")));
+			}
+
+			public void setProcessInputStream(final OutputStream os) throws IOException {
+
+			}
+
+			public void setProcessErrorStream(final InputStream is) throws IOException {
+				loggers.add(new StreamLogger(is, LoggerFactory.getLogger(FastCGIHandler.class.getName() + ".externalprocess.stderr")));
+			}
+		});
+
 		getLog().info("Starting external process : " + cmd);
 		pe.execute(CommandLine.parse(cmd), new DefaultExecuteResultHandler() {
 			@Override
