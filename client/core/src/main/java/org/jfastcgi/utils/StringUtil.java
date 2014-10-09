@@ -9,14 +9,14 @@
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
 
-      http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
+ */
 package org.jfastcgi.utils;
 
 import java.util.Arrays;
@@ -30,16 +30,18 @@ import java.util.Iterator;
  */
 public final class StringUtil {
 
-    public static <T> String arrayToString(String separator, T... array) {
+    public static <T> String arrayToString(final String separator,
+            final T... array) {
         return collectionToString(separator, Arrays.asList(array));
     }
 
-    public static String collectionToString(String separator, Collection<?> coll) {
-        StringBuffer buf = new StringBuffer();
-        Iterator<?> it = coll.iterator();
+    public static String collectionToString(final String separator,
+            final Collection<?> coll) {
+        final StringBuffer buf = new StringBuffer();
+        final Iterator<?> it = coll.iterator();
         while (it.hasNext()) {
 
-            Object item = it.next();
+            final Object item = it.next();
             if (item == null) {
                 buf.append("null");
             }

@@ -13,14 +13,15 @@ public class PoolFactoryFactory {
     private static PoolFactory _poolFactory = null;
 
     /**
-     * Returns a new PoolFactory as long as setStaticPoolFactory
-     * has not be called with a non-null value.
+     * Returns a new PoolFactory as long as setStaticPoolFactory has not be
+     * called with a non-null value.
      *
      * @return a new PoolFactory or the one provided by setStaticPoolFactory()
      */
     public static PoolFactory getOrCreatePoolFactory() {
         if (_poolFactory == null) {
-            return new PoolFactory(); // do not set the _poolFactory variable, we want new instances everytime.
+            return new PoolFactory(); // do not set the _poolFactory variable,
+            // we want new instances everytime.
         }
         else {
             return _poolFactory;

@@ -6,11 +6,11 @@ import java.io.OutputStream;
 
 public interface ISocket {
 
-	InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
 
-	OutputStream getOutputStream() throws IOException;
+    OutputStream getOutputStream() throws IOException;
 
-	void close() throws IOException;
+    void close() throws IOException;
 
-	void setSoTimeout(int timeout);
+    void setSoTimeout(int timeout);
 }
