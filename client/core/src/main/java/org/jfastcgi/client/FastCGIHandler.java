@@ -310,8 +310,13 @@ public class FastCGIHandler {
         final String scriptPath = req.getServletPath();
         getLog().debug("FCGI file: " + scriptPath);
         addHeader(ws, "PATH_INFO", req.getContextPath() + scriptPath);
-        addHeader(ws, "PATH_TRANSLATED", req.getRealPath(scriptPath));
-        addHeader(ws, "SCRIPT_FILENAME", req.getRealPath(scriptPath));
+
+	final String realPath = req.getRealPath(scriptPath);
+
+        addHeader(ws, "PATH_TRANSLATED", realPath);
+        addHeader(ws, "SCRIPT_FILENAME", realPath);
+        addHeader(ws, "SCRIPT_NAME", realPath);
+
         final int contentLength = req.getContentLength();
         if (contentLength < 0) {
             addHeader(ws, "CONTENT_LENGTH", "0");
