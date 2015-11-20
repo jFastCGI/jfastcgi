@@ -47,89 +47,89 @@ import com.meterware.httpunit.WebResponse;
 
 public class TestFastCgiConnection {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TestFastCgiConnection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestFastCgiConnection.class);
 
-	private Thread fastCgiServer;
+    private Thread fastCgiServer;
 
-	int serverPort = 0;
+    int serverPort = 0;
 
-	int fcgiPort = 0;
+    int fcgiPort = 0;
 
-	private Server jettyServer = null;
+    private Server jettyServer = null;
 
-	public static List<Integer> getFreeTcpPorts(int amount) throws Exception {
-		List<Integer> list = new ArrayList<Integer>(amount);
-		List<ServerSocket> toClose = new ArrayList<ServerSocket>(amount);
-		try {
-			for (int i = 0; i < amount; i++) {
-				final ServerSocket ss = new ServerSocket(0);
-				list.add(ss.getLocalPort());
-				toClose.add(ss);
-			}
-		} finally {
-			for (ServerSocket ss : toClose) {
-				ss.close();
-			}
-		}
-		return list;
-	}
+    public static List<Integer> getFreeTcpPorts(int amount) throws Exception {
+        List<Integer> list = new ArrayList<Integer>(amount);
+        List<ServerSocket> toClose = new ArrayList<ServerSocket>(amount);
+        try {
+            for (int i = 0; i < amount; i++) {
+                final ServerSocket ss = new ServerSocket(0);
+                list.add(ss.getLocalPort());
+                toClose.add(ss);
+            }
+        } finally {
+            for (ServerSocket ss : toClose) {
+                ss.close();
+            }
+        }
+        return list;
+    }
 
-	@Before
-	public void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
-		List<Integer> freePorts = getFreeTcpPorts(2);
-		fcgiPort = freePorts.get(0);
-		serverPort = freePorts.get(1);
+        List<Integer> freePorts = getFreeTcpPorts(2);
+        fcgiPort = freePorts.get(0);
+        serverPort = freePorts.get(1);
 
-		LOGGER.debug("Starting fcgi server");
-		fastCgiServer = new SampleServer(fcgiPort).start();
+        LOGGER.debug("Starting fcgi server");
+        fastCgiServer = new SampleServer(fcgiPort).start();
 
-		LOGGER.debug("fcgi server started");
+        LOGGER.debug("fcgi server started");
 
-		LOGGER.debug("Starting servlet container");
-		serverPort = 8080;
-		jettyServer = new Server(serverPort);
+        LOGGER.debug("Starting servlet container");
+        serverPort = 8080;
+        jettyServer = new Server(serverPort);
 
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setResourceBase(Files.createTempFile("jetty", "").toAbsolutePath().toString());
-		context.setContextPath("/");
-		jettyServer.setHandler(context);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setResourceBase(Files.createTempFile("jetty", "").toAbsolutePath().toString());
+        context.setContextPath("/");
+        jettyServer.setHandler(context);
 
-		ServletHolder holder = context.addServlet(FastCGIServlet.class, "/*");
-		holder.setInitParameter(FastCGIHandlerFactory.PARAM_SERVER_ADDRESS, "localhost:" + fcgiPort);
+        ServletHolder holder = context.addServlet(FastCGIServlet.class, "/*");
+        holder.setInitParameter(FastCGIHandlerFactory.PARAM_SERVER_ADDRESS, "localhost:" + fcgiPort);
 
-		jettyServer.start();
-		LOGGER.debug("Servlet container started, listening on port " + serverPort);
-	}
+        jettyServer.start();
+        LOGGER.debug("Servlet container started, listening on port " + serverPort);
+    }
 
-	@After
-	public void tearDown() throws Exception {
-		// stop jetty
-		jettyServer.stop();
+    @After
+    public void tearDown() throws Exception {
+        // stop jetty
+        jettyServer.stop();
 
-		// stop fastcgi server
-		fastCgiServer.interrupt();
-	}
+        // stop fastcgi server
+        fastCgiServer.interrupt();
+    }
 
-	/**
-	 * Simple test : just send a request, and assert that the answer is ok
-	 *
-	 * @throws Exception
-	 */
-	@Test
-	public void testItWorks() throws Exception {
+    /**
+     * Simple test : just send a request, and assert that the answer is ok
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testItWorks() throws Exception {
 
-		WebConversation wc = new WebConversation();
+        WebConversation wc = new WebConversation();
 
-		WebRequest request = new GetMethodWebRequest("http://localhost:" + serverPort + "/");
-		WebResponse response = wc.getResponse(request);
-		System.out.println(new String(response.getBytes()));
+        WebRequest request = new GetMethodWebRequest("http://localhost:" + serverPort + "/");
+        WebResponse response = wc.getResponse(request);
+        System.out.println(new String(response.getBytes()));
 
-		assertEquals(response.getResponseCode(), HttpServletResponse.SC_OK);
-		assertTrue(response.getContentLength() > 0);
+        assertEquals(response.getResponseCode(), HttpServletResponse.SC_OK);
+        assertTrue(response.getContentLength() > 0);
 
-		assertEquals(response.getElementsByTagName("H3").length, 1);
-		assertEquals(response.getTitle(), "FastCGI-Hello");
-	}
+        assertEquals(response.getElementsByTagName("H3").length, 1);
+        assertEquals(response.getTitle(), "FastCGI-Hello");
+    }
 
 }

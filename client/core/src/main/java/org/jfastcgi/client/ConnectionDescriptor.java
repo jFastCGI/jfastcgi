@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 public abstract class ConnectionDescriptor {
 
-	private static final String ERR_MSG = "Invalid address (%) -- Try something like tcp://localhost:9000 or unix:///var/run/app.sock";
-	
+    private static final String ERR_MSG = "Invalid address (%) -- Try something like tcp://localhost:9000 or unix:///var/run/app.sock";
+    
     private final static Pattern PATTERN_HOSTNAME_PORT = Pattern
             .compile("([^:]+):([1-9][0-9]*)$");
 

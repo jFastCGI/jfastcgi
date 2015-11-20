@@ -34,135 +34,135 @@ import java.net.Socket;
  */
 public class SampleServer implements Runnable {
 
-	private int port;
+    private int port;
 
-	private static enum PacketType {
-		FCGI_STDOUT(6), FCGI_END_REQUEST(3);
+    private static enum PacketType {
+        FCGI_STDOUT(6), FCGI_END_REQUEST(3);
 
-		int code;
+        int code;
 
-		PacketType(int code) {
-			this.code = code;
-		}
+        PacketType(int code) {
+            this.code = code;
+        }
 
-		public int getCode() {
-			return code;
-		}
-	}
+        public int getCode() {
+            return code;
+        }
+    }
 
-	public SampleServer(int port) {
-		this.port = port;
+    public SampleServer(int port) {
+        this.port = port;
 
-	}
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	/**
-	 * <pre>
-	 * 		typedef struct {
-	 * 		    unsigned char version;
-	 * 		    unsigned char type;
-	 * 		    unsigned char requestIdB1;
-	 * 		    unsigned char requestIdB0;
-	 * 		    unsigned char contentLengthB1;
-	 * 		    unsigned char contentLengthB0;
-	 * 		    unsigned char paddingLength;
-	 * 		    unsigned char reserved;
-	 * 		} FCGI_Header;
-	 * </pre>
-	 * 
-	 * @param os
-	 */
-	private void writeHeader(DataOutputStream os, PacketType pkt, int requestId, int contentLength) throws IOException {
-		os.write(1);// version
-		os.write(pkt.getCode());// type
-		os.writeShort(requestId);
-		os.writeShort(contentLength);// contentLength
-		os.write(0);// paddingLength
-		os.write(0);// reserved
-	}
+    /**
+     * <pre>
+     *         typedef struct {
+     *             unsigned char version;
+     *             unsigned char type;
+     *             unsigned char requestIdB1;
+     *             unsigned char requestIdB0;
+     *             unsigned char contentLengthB1;
+     *             unsigned char contentLengthB0;
+     *             unsigned char paddingLength;
+     *             unsigned char reserved;
+     *         } FCGI_Header;
+     * </pre>
+     * 
+     * @param os
+     */
+    private void writeHeader(DataOutputStream os, PacketType pkt, int requestId, int contentLength) throws IOException {
+        os.write(1);// version
+        os.write(pkt.getCode());// type
+        os.writeShort(requestId);
+        os.writeShort(contentLength);// contentLength
+        os.write(0);// paddingLength
+        os.write(0);// reserved
+    }
 
-	private void writeStdout(DataOutputStream os, int requestId, String content) throws IOException {
-		writeHeader(os, PacketType.FCGI_STDOUT, requestId, content.length());
-		os.write(content.getBytes());
-	}
+    private void writeStdout(DataOutputStream os, int requestId, String content) throws IOException {
+        writeHeader(os, PacketType.FCGI_STDOUT, requestId, content.length());
+        os.write(content.getBytes());
+    }
 
-	/**
-	 * <pre>
-	 * typedef struct {
-	 *     unsigned char appStatusB3;
-	 *     unsigned char appStatusB2;
-	 *     unsigned char appStatusB1;
-	 *     unsigned char appStatusB0;
-	 *     unsigned char protocolStatus;
-	 *     unsigned char reserved[3];
-	 * } FCGI_EndRequestBody;
-	 * </pre>
-	 * 
-	 * @param os
-	 */
-	private void writeEndRequest(DataOutputStream os, int requestId, int status) throws IOException {
-		writeHeader(os, PacketType.FCGI_END_REQUEST, requestId, 8);
-		os.write(0);// appStatusB3
-		os.write(0);// appStatusB2
-		os.write(0);// appStatusB1
-		os.write(0);// appStatusB0
-		os.write(status);// protocolStatus
-		os.write(new byte[3]);// reserved
-	}
+    /**
+     * <pre>
+     * typedef struct {
+     *     unsigned char appStatusB3;
+     *     unsigned char appStatusB2;
+     *     unsigned char appStatusB1;
+     *     unsigned char appStatusB0;
+     *     unsigned char protocolStatus;
+     *     unsigned char reserved[3];
+     * } FCGI_EndRequestBody;
+     * </pre>
+     * 
+     * @param os
+     */
+    private void writeEndRequest(DataOutputStream os, int requestId, int status) throws IOException {
+        writeHeader(os, PacketType.FCGI_END_REQUEST, requestId, 8);
+        os.write(0);// appStatusB3
+        os.write(0);// appStatusB2
+        os.write(0);// appStatusB1
+        os.write(0);// appStatusB0
+        os.write(status);// protocolStatus
+        os.write(new byte[3]);// reserved
+    }
 
-	public void run() {
-		ServerSocket ss = null;
-		try {
-			ss = new ServerSocket();
-			ss.bind(new InetSocketAddress("localhost", port));
+    public void run() {
+        ServerSocket ss = null;
+        try {
+            ss = new ServerSocket();
+            ss.bind(new InetSocketAddress("localhost", port));
 
-			Socket client;
-			while ((client = ss.accept()) != null) {
+            Socket client;
+            while ((client = ss.accept()) != null) {
 
-				DataInputStream in = new DataInputStream(client.getInputStream());
-				in.skip(2);
-				int requestId = in.readShort();
+                DataInputStream in = new DataInputStream(client.getInputStream());
+                in.skip(2);
+                int requestId = in.readShort();
 
-				final DataOutputStream os = new DataOutputStream(client.getOutputStream());
+                final DataOutputStream os = new DataOutputStream(client.getOutputStream());
 
-				StringWriter sw = new StringWriter();
-				sw.append("Content-type: text/html\r\n\r\n");
-				sw.append("<html>");
-				sw.append("<head><title>FastCGI-Hello</title></head>");
-				sw.append("<body>");
-				sw.append("<h3>Hello from fcgi !</h3>");
-				sw.append("</body>");
-				sw.append("<html>");
+                StringWriter sw = new StringWriter();
+                sw.append("Content-type: text/html\r\n\r\n");
+                sw.append("<html>");
+                sw.append("<head><title>FastCGI-Hello</title></head>");
+                sw.append("<body>");
+                sw.append("<h3>Hello from fcgi !</h3>");
+                sw.append("</body>");
+                sw.append("<html>");
 
-				writeStdout(os, requestId, sw.toString());
-				writeStdout(os, requestId, "");
-				writeEndRequest(os, requestId, 0);
-			}
+                writeStdout(os, requestId, sw.toString());
+                writeStdout(os, requestId, "");
+                writeEndRequest(os, requestId, 0);
+            }
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				if (ss != null) {
-					ss.close();
-				}
-			} catch (IOException ioe) {
-				throw new RuntimeException(ioe);
-			}
-		}
-	}
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (ss != null) {
+                    ss.close();
+                }
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        }
+    }
 
-	public Thread start() {
-		Thread t = new Thread(this);
-		t.setDaemon(true);
-		t.start();
-		return t;
-	}
+    public Thread start() {
+        Thread t = new Thread(this);
+        t.setDaemon(true);
+        t.start();
+        return t;
+    }
 
-	public static void main(String[] args) {
-		new SampleServer(8541).run();
-	}
+    public static void main(String[] args) {
+        new SampleServer(8541).run();
+    }
 }

@@ -19,7 +19,7 @@ public class UnixSocketConnectionDescriptor extends ConnectionDescriptor {
     @Override
     public ISocket makeSocket() throws IOException {
         try {
-        	String pkgName = UnixSocketConnectionDescriptor.class.getPackage().getName();
+            String pkgName = UnixSocketConnectionDescriptor.class.getPackage().getName();
             return LazyClassLoading.newInstance(pkgName+".juds.UnixSocketWrapper", path);
         }
         catch (final Exception e) {
