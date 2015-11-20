@@ -36,7 +36,7 @@ public class LazyClassLoading {
         }
         else {
             throw new IllegalArgumentException(
-                    "could not find any matching constructor");
+                    "Could not find any matching constructor for class "+className);
         }
     }
 }

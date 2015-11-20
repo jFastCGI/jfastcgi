@@ -13,4 +13,6 @@ public interface ISocket {
     void close() throws IOException;
 
     void setSoTimeout(int timeout);
+    
+    public String getPseudoUrl();
 }

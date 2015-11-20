@@ -19,8 +19,8 @@ public class UnixSocketConnectionDescriptor extends ConnectionDescriptor {
     @Override
     public ISocket makeSocket() throws IOException {
         try {
-            return LazyClassLoading.newInstance(
-                    "org.jfastcgi.client.juds.UnixSocketWrapper", path);
+        	String pkgName = UnixSocketConnectionDescriptor.class.getPackage().getName();
+            return LazyClassLoading.newInstance(pkgName+".juds.UnixSocketWrapper", path);
         }
         catch (final Exception e) {
             throw new IOException(e);

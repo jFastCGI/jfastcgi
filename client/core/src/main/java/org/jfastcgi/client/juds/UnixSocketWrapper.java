@@ -11,30 +11,33 @@ import com.etsy.net.UnixDomainSocketClient;
 
 public class UnixSocketWrapper implements ISocket {
 
-    private final UnixDomainSocketClient s;
+	private final UnixDomainSocketClient s;
 
-    public UnixSocketWrapper(final String path) throws IOException {
-        this(new UnixDomainSocketClient(path, JUDS.SOCK_STREAM));
-    }
+	private final String path;
 
-    public UnixSocketWrapper(final UnixDomainSocketClient s) {
-        this.s = s;
-    }
+	public UnixSocketWrapper(final String path) throws IOException {
+		this.s = new UnixDomainSocketClient(path, JUDS.SOCK_STREAM);
+		this.path = path;
+	}
 
-    public InputStream getInputStream() throws IOException {
-        return s.getInputStream();
-    }
+	public InputStream getInputStream() throws IOException {
+		return s.getInputStream();
+	}
 
-    public OutputStream getOutputStream() throws IOException {
-        return s.getOutputStream();
-    }
+	public OutputStream getOutputStream() throws IOException {
+		return s.getOutputStream();
+	}
 
-    public void close() throws IOException {
-        s.close();
-    }
+	public void close() throws IOException {
+		s.close();
+	}
 
-    public void setSoTimeout(final int timeout) {
-        s.setTimeout(timeout);
-    }
+	public void setSoTimeout(final int timeout) {
+		s.setTimeout(timeout);
+	}
+
+	public String getPseudoUrl() {
+		return "unix://" + this.path;
+	}
 
 }
