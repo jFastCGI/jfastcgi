@@ -474,7 +474,7 @@ public class FastCGIHandler {
         getLog().debug(String.format("HEADER: key=%s, value=%s", key, value));
     }
 
-    private void writeHeader(final OutputStream ws, final int type, final int length) throws IOException {
+    private short writeHeader(final OutputStream ws, final int type, final int length) throws IOException {
         final short id = newRequestId();
         final int pad = 0;
 
@@ -486,6 +486,9 @@ public class FastCGIHandler {
         ws.write(length);
         ws.write(pad);
         ws.write(0);
+        
+        getLog().debug("fcgi request id : " + id);
+        return id;
     }
 
     public void destroy() {
