@@ -39,40 +39,40 @@ import org.jfastcgi.servlet.impl.ServletResponseAdapter;
  */
 public class FastCGIServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -8597795652806478718L;
+    private static final long serialVersionUID = -8597795652806478718L;
 
-	private FastCGIHandler handler = new FastCGIHandler();
+    private FastCGIHandler handler = new FastCGIHandler();
 
-	public void init(ServletConfig servletConfig) throws ServletException {
-		super.init(servletConfig);
-		Map<String, String> config = new TreeMap<String, String>();
-		for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
-			String value = servletConfig.getInitParameter(paramName);
-			if (value != null) {
-				config.put(paramName, getInitParameter(paramName));
-			}
-		}
-		handler = FastCGIHandlerFactory.create(config);
-	}
+    public void init(ServletConfig servletConfig) throws ServletException {
+        super.init(servletConfig);
+        Map<String, String> config = new TreeMap<String, String>();
+        for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
+            String value = servletConfig.getInitParameter(paramName);
+            if (value != null) {
+                config.put(paramName, getInitParameter(paramName));
+            }
+        }
+        handler = FastCGIHandlerFactory.create(config);
+    }
 
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		handler.service(new ServletRequestAdapter(getServletContext(), request), new ServletResponseAdapter(response));
-	}
+        handler.service(new ServletRequestAdapter(getServletContext(), request), new ServletResponseAdapter(response));
+    }
 
-	@Override
-	public void destroy() {
-		super.destroy();
-		handler.destroy();
-	}
+    @Override
+    public void destroy() {
+        super.destroy();
+        handler.destroy();
+    }
 
-	public FastCGIHandler getHandler() {
-		return handler;
-	}
+    public FastCGIHandler getHandler() {
+        return handler;
+    }
 
-	public void setHandler(FastCGIHandler handler) {
-		this.handler = handler;
-	}
+    public void setHandler(FastCGIHandler handler) {
+        this.handler = handler;
+    }
 }
