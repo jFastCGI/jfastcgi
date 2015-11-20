@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 public abstract class ConnectionDescriptor {
 
+	private static final String ERR_MSG = "Invalid address (%) -- Try something like tcp://localhost:9000 or unix:///var/run/app.sock";
+	
     private final static Pattern PATTERN_HOSTNAME_PORT = Pattern
             .compile("([^:]+):([1-9][0-9]*)$");
 
@@ -17,8 +19,7 @@ public abstract class ConnectionDescriptor {
 
     public static ConnectionDescriptor makeConnDesc(String address) {
         if (address == null || address.trim().length() == 0) {
-            throw new IllegalArgumentException(
-                    "empty Connection Description given. Try something like tcp://localhost:9000 or unix:///var/run/app.sock");
+            throw new IllegalArgumentException(String.format(ERR_MSG, "The given address is empty"));
         }
 
         // address used to look like <host>:<port>. now that we switched to an
@@ -34,8 +35,8 @@ public abstract class ConnectionDescriptor {
             }
             final File f = new File(path);
             if (!f.getAbsolutePath().matches("^[^*&%\\s]+$")) {
-                throw new IllegalArgumentException("Not a regular file name : "
-                        + f.getAbsolutePath());
+                throw new IllegalArgumentException(String.format(ERR_MSG,"Not a regular file name : "
+                        + f.getAbsolutePath()));
             }
             return new UnixSocketConnectionDescriptor(path);
         }
@@ -65,7 +66,7 @@ public abstract class ConnectionDescriptor {
             }
         }
         else {
-            throw new IllegalArgumentException(address);
+            throw new IllegalArgumentException(String.format(ERR_MSG, "Not a valid address"));
         }
     }
 
