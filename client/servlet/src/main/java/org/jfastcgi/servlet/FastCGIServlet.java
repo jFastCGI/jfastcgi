@@ -19,58 +19,60 @@
 */
 package org.jfastcgi.servlet;
 
-import org.jfastcgi.client.FastCGIHandler;
-import org.jfastcgi.client.FastCGIHandlerFactory;
-import org.jfastcgi.servlet.impl.ServletRequestAdapter;
-import org.jfastcgi.servlet.impl.ServletResponseAdapter;
+import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Map;
-import java.util.TreeMap;
+
+import org.jfastcgi.client.FastCGIHandler;
+import org.jfastcgi.client.FastCGIHandlerFactory;
+import org.jfastcgi.servlet.impl.ServletRequestAdapter;
+import org.jfastcgi.servlet.impl.ServletResponseAdapter;
 
 /**
  * @author jrialland
  */
 public class FastCGIServlet extends HttpServlet {
 
-    private static final long serialVersionUID = -8597795652806478718L;
+	private static final long serialVersionUID = -8597795652806478718L;
 
-    private FastCGIHandler handler = new FastCGIHandler();
+	private FastCGIHandler handler = new FastCGIHandler();
 
-    public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
-        Map<String, String> config = new TreeMap<String, String>();
-        for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
-            String value = servletConfig.getInitParameter(paramName);
-            if (value != null) {
-                config.put(paramName, getInitParameter(paramName));
-            }
-        }
-        handler = FastCGIHandlerFactory.create(config);
-    }
+	public void init(ServletConfig servletConfig) throws ServletException {
+		super.init(servletConfig);
+		Map<String, String> config = new TreeMap<String, String>();
+		for (String paramName : FastCGIHandlerFactory.PARAM_NAMES) {
+			String value = servletConfig.getInitParameter(paramName);
+			if (value != null) {
+				config.put(paramName, getInitParameter(paramName));
+			}
+		}
+		handler = FastCGIHandlerFactory.create(config);
+	}
 
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        handler.service(new ServletRequestAdapter(getServletContext(), request), new ServletResponseAdapter(response));
-    }
+	@Override
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-    @Override
-    public void destroy() {
-        super.destroy();
-        handler.destroy();
-    }
+		handler.service(new ServletRequestAdapter(getServletContext(), request), new ServletResponseAdapter(response));
+	}
 
-    public FastCGIHandler getHandler() {
-        return handler;
-    }
+	@Override
+	public void destroy() {
+		super.destroy();
+		handler.destroy();
+	}
 
-    public void setHandler(FastCGIHandler handler) {
-        this.handler = handler;
-    }
+	public FastCGIHandler getHandler() {
+		return handler;
+	}
+
+	public void setHandler(FastCGIHandler handler) {
+		this.handler = handler;
+	}
 }
