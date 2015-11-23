@@ -48,7 +48,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.javacoco.version>0.7.2.201409121644</maven.javacoco.version>
     </properties>
 
     <build>
@@ -71,25 +70,6 @@
                     <stagingDirectory>/tmp/stage</stagingDirectory>
                 </configuration>
             </plugin>
-		<plugin>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			<version>0.7.2.201409121644</version>
-			<executions>
-				<execution>
-					<id>prepare-agent</id>
-					<goals>
-						<goal>prepare-agent</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-		<plugin>
-			<groupId>org.eluder.coveralls</groupId>
-			<artifactId>coveralls-maven-plugin</artifactId>
-			<version>3.0.1</version>
-		</plugin>
-
         </plugins>
         <extensions>
             <!-- Enabling the use of FTP -->

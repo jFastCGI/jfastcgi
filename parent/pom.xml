@@ -39,7 +39,6 @@
         <fest-reflect.version>1.4.1</fest-reflect.version>
         <play1x.version>1.2.6</play1x.version>
         <juds.version>0.94.1</juds.version>
-        <maven.jacoco.version>0.7.2.201409121644</maven.jacoco.version>
     </properties>
 
     <dependencyManagement>

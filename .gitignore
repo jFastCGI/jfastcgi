@@ -12,3 +12,4 @@ target
 sun-jaxb.episode
 .surefire-*
 .tm_properties
+client/bundled/dependency-reduced-pom.xml

@@ -5,7 +5,6 @@ jFastCGI is the implementation of the FastCGI Protocol with the Java language.
 The project gets build using Apache Maven 3 and is split into two main modules:
 
 [![Build Status](https://travis-ci.org/jFastCGI/jfastcgi.svg)](https://travis-ci.org/jFastCGI/jfastcgi)
-[![Coverage Status](https://img.shields.io/coveralls/jFastCGI/jfastcgi.svg)](https://coveralls.io/r/jFastCGI/jfastcgi)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.sf.jfastcgi/jfastcgi/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.sf.jfastcgi/jfastcgi)
 
 
