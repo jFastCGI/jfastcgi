@@ -10,7 +10,8 @@ The project gets build using Apache Maven 3 and is split into two main modules:
 
 
 ![Commits](https://www.openhub.net/p/jfastcgi/analyses/latest/commits_spark.png)
-[![Code statistics](http://www.ohloh.net/p/jfastcgi/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/jfastcgi)
+
+[![Throughput Graph](https://graphs.waffle.io/jfastcgi/jfastcgi/throughput.svg)](https://waffle.io/jfastcgi/jfastcgi/metrics) 
 
 ## Server
 
