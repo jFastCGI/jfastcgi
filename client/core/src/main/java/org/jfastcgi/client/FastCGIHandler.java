@@ -315,7 +315,7 @@ public class FastCGIHandler {
 
         addHeader(ws, "PATH_TRANSLATED", realPath);
         addHeader(ws, "SCRIPT_FILENAME", realPath);
-        addHeader(ws, "SCRIPT_NAME", realPath);
+        addHeader(ws, "SCRIPT_NAME", req.getRequestURI());
 
         final int contentLength = req.getContentLength();
         if (contentLength < 0) {
