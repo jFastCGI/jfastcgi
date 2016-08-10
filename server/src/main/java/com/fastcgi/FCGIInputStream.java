@@ -19,7 +19,6 @@
 
 package com.fastcgi;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -58,7 +57,7 @@ public class FCGIInputStream extends InputStream {
      * @param bufLen     length of buffer
      * @param streamType
      */
-    public FCGIInputStream(FileInputStream inStream, int bufLen, int streamType, FCGIRequest inReq) {
+    public FCGIInputStream(InputStream inStream, int bufLen, int streamType, FCGIRequest inReq) {
 
         in = inStream;
         buffLen = Math.min(bufLen, FCGIConstants.MAX_BUFFER_LENGTH);
@@ -189,7 +188,7 @@ public class FCGIInputStream extends InputStream {
                     setException(e);
                     return;
                 }
-                if (count == 0) {
+                if (count <= 0) {
                     setFCGIError(FCGIConstants.ERROR_PROTOCOL_ERROR);
                     return;
                 }

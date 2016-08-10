@@ -20,8 +20,6 @@ package com.fastcgi;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
@@ -88,7 +86,7 @@ public class FCGIInterface {
          * If not first call, and  we are cgi, we should be gone.
          */
         if (!acceptCalled) {
-            isFCGI = System.getProperties().containsKey("FCGI_PORT");
+            isFCGI = System.getenv("FCGI_PORT") != null;
             acceptCalled = true;
             if (isFCGI) {
                 /*
@@ -96,7 +94,7 @@ public class FCGIInterface {
                  * and get a server socket
                  */
                 startupProps = new Properties(System.getProperties());
-                String str = System.getProperty("FCGI_PORT");
+                String str = System.getenv("FCGI_PORT");
                 if (str.length() <= 0) {
                     return false;
                 }
@@ -210,7 +208,7 @@ public class FCGIInterface {
              * try making a new connection before giving up
              */
             request.setBeginProcessed(false);
-            request.setInputStream(new FCGIInputStream((FileInputStream) request.getSocket().getInputStream(),
+            request.setInputStream(new FCGIInputStream(request.getSocket().getInputStream(),
                     8192, 0, request));
             request.getInputStream().fill();
             if (request.isBeginProcessed()) {
@@ -236,10 +234,10 @@ public class FCGIInterface {
             return false;
         }
         request.getInputStream().setReaderType(FCGIConstants.TYPE_STDIN);
-        request.setOutputStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
+        request.setOutputStream(new FCGIOutputStream(request.getSocket().
                 getOutputStream(), 8192,
                 FCGIConstants.TYPE_STDOUT, request));
-        request.setErrorStream(new FCGIOutputStream((FileOutputStream) request.getSocket().
+        request.setErrorStream(new FCGIOutputStream(request.getSocket().
                 getOutputStream(), 512,
                 FCGIConstants.TYPE_STDERR, request));
         request.setNumWriters(2);

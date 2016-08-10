@@ -19,7 +19,6 @@
 package com.fastcgi;
 
 import java.io.EOFException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -48,7 +47,7 @@ public class FCGIOutputStream extends OutputStream {
     private boolean rawWrite;
     private FCGIRequest request;
 
-    private FileOutputStream out;
+    private OutputStream out;
 
     /**
      * Creates a new output stream to manage fcgi prototcol stuff
@@ -57,7 +56,7 @@ public class FCGIOutputStream extends OutputStream {
      * @param bufLen     length of buffer
      * @param streamType
      */
-    public FCGIOutputStream(FileOutputStream outStream,
+    public FCGIOutputStream(OutputStream outStream,
                             int bufLen, int streamType,
                             FCGIRequest inreq) {
         out = outStream;
