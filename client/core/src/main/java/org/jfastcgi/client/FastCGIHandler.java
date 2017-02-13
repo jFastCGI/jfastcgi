@@ -276,11 +276,11 @@ public class FastCGIHandler {
     }
 
     private void setEnvironment(final OutputStream ws, final RequestAdapter req) throws IOException {
-    	if (req.getQueryString() != null) {
+        if (req.getQueryString() != null) {
             addHeader(ws, "REQUEST_URI", req.getRequestURI()+"?"+req.getQueryString());
-    	} else {
+        } else {
             addHeader(ws, "REQUEST_URI", req.getRequestURI());
-    	}
+        }
         addHeader(ws, "REQUEST_METHOD", req.getMethod());
         addHeader(ws, "SERVER_SOFTWARE", FastCGIHandler.class.getName());
         addHeader(ws, "SERVER_NAME", req.getServerName());
