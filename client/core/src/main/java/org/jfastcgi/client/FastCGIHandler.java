@@ -19,7 +19,14 @@
  */
 package org.jfastcgi.client;
 
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteStreamHandler;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+
 import org.jfastcgi.api.ConnectionFactory;
 import org.jfastcgi.api.RequestAdapter;
 import org.jfastcgi.api.ResponseAdapter;
@@ -315,10 +322,12 @@ public class FastCGIHandler {
                 }
                 else if (key.equalsIgnoreCase("content-type")) {
                     addHeader(ws, "CONTENT_TYPE", value);
-                } else if(key.equalsIgnoreCase("PROXY")) {
+                }
+                else if(key.equalsIgnoreCase("PROXY")) {
                     //Avoid to pass HTTP_PROXY to the script (https://github.com/jFastCGI/jfastcgi/issues/21)
                     addHeader(ws, "CGI_HTTP_PROXY", value);
-                } else {
+                }
+                else {
                     addHeader(ws, convertHeader(key), value);
                 }
             }
