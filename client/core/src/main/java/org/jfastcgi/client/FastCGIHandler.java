@@ -19,6 +19,21 @@
  */
 package org.jfastcgi.client;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteStreamHandler;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+
+import org.jfastcgi.api.ConnectionFactory;
+import org.jfastcgi.api.RequestAdapter;
+import org.jfastcgi.api.ResponseAdapter;
+import org.jfastcgi.utils.logging.StreamLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,65 +42,29 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.ExecuteStreamHandler;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.Executor;
-import org.jfastcgi.api.ConnectionFactory;
-import org.jfastcgi.api.RequestAdapter;
-import org.jfastcgi.api.ResponseAdapter;
-import org.jfastcgi.utils.logging.StreamLogger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * handling of the fastCGI protocol.
  */
 public class FastCGIHandler {
 
-    private static interface HeaderFilter {
-        public boolean isFiltered(String header);
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(FastCGIHandler.class);
-
     private static final int HTTP_ERROR_BAD_GATEWAY = 502;
-
     private static final int FCGI_BEGIN_REQUEST = 1;
-
     private static final int FCGI_END_REQUEST = 3;
-
     private static final int FCGI_PARAMS = 4;
-
     private static final int FCGI_STDIN = 5;
-
     private static final int FCGI_STDOUT = 6;
-
     private static final int FCGI_STDERR = 7;
-
     private static final int FCGI_RESPONDER = 1;
-
     private static final int FCGI_VERSION = 1;
-
     private static final int FCGI_KEEP_CONN = 1;
-
     private static final int FCGI_REQUEST_COMPLETE = 0;
-
     private static final long READ_TIMEOUT = 120000;
-
     private ConnectionFactory connectionFactory;
-
     private Executor processExecutor;
-
     private Thread processLogThread;
-
     private boolean keepAlive = false;
-
     private short requestId = 1;
-    
     /**
      * by default, no header is filtered.
      */
@@ -104,7 +83,7 @@ public class FastCGIHandler {
     private synchronized short newRequestId() {
         return requestId++;
     }
-    
+
     /**
      * Some http headers have sometimes to be filtered for security reasons, so
      * this methods allows to tell which http headers we do not want to pass to
@@ -278,7 +257,7 @@ public class FastCGIHandler {
     private void setEnvironment(final OutputStream ws, final RequestAdapter req) throws IOException {
         if (req.getQueryString() != null) {
             addHeader(ws, "REQUEST_URI", req.getRequestURI()+"?"+req.getQueryString());
-        } 
+        }
         else {
             addHeader(ws, "REQUEST_URI", req.getRequestURI());
         }
@@ -343,6 +322,10 @@ public class FastCGIHandler {
                 }
                 else if (key.equalsIgnoreCase("content-type")) {
                     addHeader(ws, "CONTENT_TYPE", value);
+                }
+                else if(key.equalsIgnoreCase("PROXY")) {
+                    //Avoid to pass HTTP_PROXY to the script (https://github.com/jFastCGI/jfastcgi/issues/21)
+                    addHeader(ws, "CGI_HTTP_PROXY", value);
                 }
                 else {
                     addHeader(ws, convertHeader(key), value);
@@ -491,7 +474,7 @@ public class FastCGIHandler {
         ws.write(length);
         ws.write(pad);
         ws.write(0);
-        
+
         getLog().debug("fcgi request id : " + id);
         return id;
     }
@@ -501,6 +484,30 @@ public class FastCGIHandler {
             processExecutor.getWatchdog().destroyProcess();
             processExecutor = null;
         }
+    }
+
+    public Thread getProcessLogThread() {
+        return processLogThread;
+    }
+
+    public boolean isKeepAlive() {
+        return keepAlive;
+    }
+
+    public void setKeepAlive(final boolean keepAlive) {
+        this.keepAlive = keepAlive;
+    }
+
+    public ConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
+
+    public void setConnectionFactory(final ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
+    private static interface HeaderFilter {
+        public boolean isFiltered(String header);
     }
 
     static class FastCGIInputStream extends InputStream {
@@ -556,7 +563,7 @@ public class FastCGIHandler {
             int version;
 
             while ((version = _is.read()) >= 0) {
-                
+
                 final int type = _is.read();
 
                 @SuppressWarnings("unused")
@@ -566,7 +573,7 @@ public class FastCGIHandler {
                 _is.read();
 
                 switch (type) {
-                case FCGI_END_REQUEST: 
+                case FCGI_END_REQUEST:
                     final int appStatus = (_is.read() << 24) + (_is.read() << 16) + (_is.read() << 8) + _is.read();
                     final int pStatus = _is.read();
 
@@ -586,7 +593,7 @@ public class FastCGIHandler {
                     _is.skip(3);
                     _is = null;
                     return false;
-                
+
 
                 case FCGI_STDOUT:
                     if (getLog().isDebugEnabled()) {
@@ -633,26 +640,6 @@ public class FastCGIHandler {
 
             return false;
         }
-    }
-
-    public Thread getProcessLogThread() {
-        return processLogThread;
-    }
-
-    public boolean isKeepAlive() {
-        return keepAlive;
-    }
-
-    public void setKeepAlive(final boolean keepAlive) {
-        this.keepAlive = keepAlive;
-    }
-
-    public ConnectionFactory getConnectionFactory() {
-        return connectionFactory;
-    }
-
-    public void setConnectionFactory(final ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
     }
 
 }
