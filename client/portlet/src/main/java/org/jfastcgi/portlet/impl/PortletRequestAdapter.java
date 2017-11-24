@@ -64,6 +64,10 @@ public class PortletRequestAdapter implements RequestAdapter {
         return "";
     }
 
+    public String getRemoteHost() {
+        return "";
+    }
+
     public String getRemoteUser() {
         return portletRequest.getRemoteUser();
     }
@@ -84,7 +88,11 @@ public class PortletRequestAdapter implements RequestAdapter {
         return portletRequest.getContextPath();
     }
 
-    public String getRealPath(String relPath) {
-        return relPath;
+    public String getPathInfo() {
+        return "";
+    }
+
+    public String getRealPath(String realPath) {
+        return realPath;
     }
 }

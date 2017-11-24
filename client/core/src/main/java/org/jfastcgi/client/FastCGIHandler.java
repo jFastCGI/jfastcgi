@@ -37,9 +37,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -65,15 +67,21 @@ public class FastCGIHandler {
     private Thread processLogThread;
     private boolean keepAlive = false;
     private short requestId = 1;
+    private Pattern phpScriptFromPathPattern = Pattern.compile(
+    		"\\.php(/|$)");
     /**
-     * by default, no header is filtered.
+     * by default allow some widely used headers and headers used by Nextcloud
      */
     private HeaderFilter headerFilter = new HeaderFilter() {
-        public boolean isFiltered(final String header) {
-            return false;
-        }
 
-        ;
+        Pattern p = Pattern.compile(
+                "ACCEPT[-0-9A-Z]{0,100}|AUTHORIZATION|CACHE-CONTROL|COOKIE|DEPTH"
+                + "|HOST|IF-[-0-9A-Z]{2,100}|OCS-APIREQUEST|REFERER|REQUESTTOKEN"
+                + "|USER-AGENT|X-FORWARDED-FOR|X-UPDATER-AUTH");
+
+        public boolean isAllowed(final String header) {
+            return p.matcher(header.toUpperCase()).matches();
+        }
     };
 
     private static Logger getLog() {
@@ -86,46 +94,39 @@ public class FastCGIHandler {
 
     /**
      * Some http headers have sometimes to be filtered for security reasons, so
-     * this methods allows to tell which http headers we do not want to pass to
-     * the fastcgi app. For example : <code>
-     * handler.setFilteredHeaders(new String[]{"Authorization"});
+     * this methods allows to tell which http headers we do want to pass to
+     * the fastcgi app. Default is: <code>
+     * java.util.Pattern.compile(
+     *    "ACCEPT[-0-9A-Z]{0,100}|AUTHORIZATION|CACHE-CONTROL|COOKIE|DEPTH|HOST|IF-[-0-9A-Z]{2,100}|OCS-APIREQUEST|REFERER|REQUESTTOKEN|USER-AGENT|X-FORWARDED-FOR|X-UPDATER-AUTH");
      * </code>
      * <p/>
-     * will remove all the HTTP_AUTHORIZATION headers from the transmitted
-     * requests.
      *
-     * @param filteredHeaders
-     *            an array of http header keys that will not be transmitted to
-     *            the fastcgi responder app.
+     * @param allowedHeaders
+     *            a regular expression for allowed http headers that will be
+     *            transmitted to the fastcgi responder app.
      */
-    public void setFilteredHeaders(final String[] filteredHeaders) {
+    public void setAllowedHeaders(final Pattern allowedHeaders) {
 
-        if (filteredHeaders.length > 0) {
-            final StringBuffer regex = new StringBuffer();
-            for (final String header : filteredHeaders) {
-                regex.append("|");
-                regex.append(Pattern.quote(header));
+        headerFilter = new HeaderFilter() {
+            Pattern p = allowedHeaders;
+
+            public boolean isAllowed(final String header) {
+                return p.matcher(header.toUpperCase()).matches();
             }
-
-            getLog().trace("regular expression for filtered headers : " + regex);
-
-            final Pattern pattern = Pattern.compile(regex.toString().substring(1), Pattern.CASE_INSENSITIVE);
-
-            headerFilter = new HeaderFilter() {
-                public boolean isFiltered(final String header) {
-                    return pattern.matcher(header).matches();
-                }
-            };
-        }
+        };
+    }
+    
+    public void setPhpScriptFromPathPattern(final Pattern phpScriptFromPathPattern) {
+    	this.phpScriptFromPathPattern = phpScriptFromPathPattern;
     }
 
     /**
      * @param header
      *            the name of a http header (case insensitive)
-     * @return true if the header should be filtered.
+     * @return true if the header should be allowed.
      */
-    protected boolean isHeaderFiltered(final String header) {
-        return headerFilter.isFiltered(header);
+    protected boolean isHeaderAllowed(final String header) {
+        return headerFilter.isAllowed(header);
     }
 
     public void startProcess(final String cmd) throws IOException {
@@ -266,13 +267,10 @@ public class FastCGIHandler {
         addHeader(ws, "SERVER_NAME", req.getServerName());
         addHeader(ws, "SERVER_PORT", String.valueOf(req.getServerPort()));
         addHeader(ws, "REMOTE_ADDR", req.getRemoteAddr());
-        addHeader(ws, "REMOTE_HOST", req.getRemoteAddr());
-        if (req.getRemoteUser() != null) {
-            addHeader(ws, "REMOTE_USER", req.getRemoteUser());
-        }
-        else {
-            addHeader(ws, "REMOTE_USER", "");
-        }
+        addHeader(ws, "REMOTE_HOST", req.getRemoteHost());
+
+        String remoteUser = req.getRemoteUser();
+        addHeader(ws, "REMOTE_USER", remoteUser == null ? "" : remoteUser);
 
         if (req.getAuthType() != null) {
             addHeader(ws, "AUTH_TYPE", req.getAuthType());
@@ -281,63 +279,67 @@ public class FastCGIHandler {
         addHeader(ws, "GATEWAY_INTERFACE", "CGI/1.1");
         addHeader(ws, "SERVER_PROTOCOL", req.getProtocol());
 
-        if (req.getQueryString() != null) {
-            addHeader(ws, "QUERY_STRING", req.getQueryString());
-        }
-        else {
-            addHeader(ws, "QUERY_STRING", "");
-        }
+        String queryString = req.getQueryString();
+        addHeader(ws, "QUERY_STRING", queryString == null ? "" : queryString);
 
-        String scriptPath = req.getServletPath();
-        if (!scriptPath.startsWith("/")) {
-            scriptPath = "/" + scriptPath;
+        String servletPathPathInfo = req.getServletPath() + req.getPathInfo();
+        String documentRoot = req.getRealPath("/");
+        documentRoot = documentRoot.substring(0, documentRoot.length() - 1);
+        
+        Matcher findScriptMatcher
+        			= phpScriptFromPathPattern.matcher(servletPathPathInfo);
+        if (getLog().isDebugEnabled()) {
+        	getLog().debug("req.getServletPath() + req.getPathInfo(): '" +
+        			servletPathPathInfo + "'.");
         }
-        getLog().debug("FCGI file: " + scriptPath);
-        addHeader(ws, "PATH_INFO", (req.getContextPath() + scriptPath).replaceAll("//", "/"));
-
-        final String realPath = req.getRealPath(scriptPath);
-
-        addHeader(ws, "PATH_TRANSLATED", realPath);
-        addHeader(ws, "SCRIPT_FILENAME", realPath);
-        addHeader(ws, "SCRIPT_NAME", req.getRequestURI());
-
-        final int contentLength = req.getContentLength();
-        if (contentLength < 0) {
-            addHeader(ws, "CONTENT_LENGTH", "0");
+        if (!findScriptMatcher.find()) {
+        	// should we log a warning here? Or throw an exception?
+        	getLog().debug("Regex from config parameter "
+        			+ FastCGIHandlerFactory.PARAM_PHP_SCRIPT_FROM_PATH
+        			+ " not found in current URL (" + servletPathPathInfo + ")");
+        	return;
         }
-        else {
+        if (getLog().isDebugEnabled()) {
+        	getLog().debug("Pattern matches '" + findScriptMatcher.group()
+        			+ "at position " + findScriptMatcher.start() + ".");
+        }
+        int afterScriptIndex = findScriptMatcher.end();
+        if (afterScriptIndex > 0
+        		&& afterScriptIndex < servletPathPathInfo.length()) {
+        	afterScriptIndex--; // Pattern matches '/' after script name
+        }
+        String pathInfo = servletPathPathInfo.substring(afterScriptIndex);
+        String scriptNameWithoutContext = 
+        		servletPathPathInfo.substring(0, afterScriptIndex);
+        
+        addHeader(ws, "PATH_INFO", pathInfo);
+        addHeader(ws, "SCRIPT_NAME", req.getContextPath() + scriptNameWithoutContext);
+        
+        // I am not sure about PATH_TRANSLATED. Following
+        // https://www.ietf.org/rfc/rfc3875 it must be URL-encoded
+        if (!pathInfo.isEmpty()) {
+        	addHeader(ws, "PATH_TRANSLATED", documentRoot + "/"
+        				+ URLEncoder.encode(pathInfo.substring(1), "UTF-8"));
+        }
+        
+        addHeader(ws, "SCRIPT_FILENAME", documentRoot + scriptNameWithoutContext);
+        
+        final long contentLength = req.getContentLength/* "Long" for Servlet 3.1 */();
+        if (contentLength > 0) {
             addHeader(ws, "CONTENT_LENGTH", String.valueOf(contentLength));
         }
 
-        addHeader(ws, "DOCUMENT_ROOT", req.getRealPath("/"));
+        addHeader(ws, "DOCUMENT_ROOT", documentRoot);
+        
 
         final Enumeration<String> e = req.getHeaderNames();
         while (e.hasMoreElements()) {
-            final String key = e.nextElement();
-            final String value = req.getHeader(key);
+            final String key = e.nextElement().toUpperCase();
 
-            if (!isHeaderFiltered(key)) {
-                if (key.equalsIgnoreCase("content-length")) {
-                    addHeader(ws, "CONTENT_LENGTH", value);
-                }
-                else if (key.equalsIgnoreCase("content-type")) {
-                    addHeader(ws, "CONTENT_TYPE", value);
-                }
-                else if(key.equalsIgnoreCase("PROXY")) {
-                    //Avoid to pass HTTP_PROXY to the script (https://github.com/jFastCGI/jfastcgi/issues/21)
-                    addHeader(ws, "CGI_HTTP_PROXY", value);
-                }
-                else {
-                    addHeader(ws, convertHeader(key), value);
-                }
+            if (isHeaderAllowed(key)) {
+                addHeader(ws, "HTTP_" + key.replace('-',  '_'), req.getHeader(key));
             }
         }
-    }
-
-    private String convertHeader(final String key) {
-        final StringBuffer sb = new StringBuffer("HTTP_");
-        sb.append(key.toUpperCase().replace('-', '_'));
-        return sb.toString();
     }
 
     private int parseHeaders(final ResponseAdapter res, final InputStream is) throws IOException {
@@ -377,8 +379,8 @@ public class FastCGIHandler {
                 return ch;
             }
 
-            if (getLog().isInfoEnabled()) {
-                getLog().info("fastcgi:" + key + ": " + value);
+            if (getLog().isDebugEnabled()) {
+                getLog().debug("fastcgi:" + key + ": " + value);
             }
 
             if (key.equalsIgnoreCase("status")) {
@@ -507,7 +509,7 @@ public class FastCGIHandler {
     }
 
     private static interface HeaderFilter {
-        public boolean isFiltered(String header);
+        public boolean isAllowed(String header);
     }
 
     static class FastCGIInputStream extends InputStream {
