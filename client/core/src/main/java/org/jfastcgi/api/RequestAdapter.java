@@ -41,6 +41,8 @@ public interface RequestAdapter {
     public int getServerPort();
 
     public String getRemoteAddr();
+    
+    public String getRemoteHost();
 
     public String getRemoteUser();
 
@@ -51,6 +53,8 @@ public interface RequestAdapter {
     public String getQueryString();
 
     public String getServletPath();
+    
+    public String getPathInfo();
 
     public String getRealPath(String relPath);
 

@@ -21,9 +21,10 @@ package org.jfastcgi.client;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.jfastcgi.api.ConnectionFactory;
-import org.jfastcgi.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,15 +62,27 @@ public class FastCGIHandlerFactory {
     public final static String PARAM_KEEP_ALIVE = "keep-alive";
 
     /**
-     * comma-separated list of http headers that will be filtered (i.e not
-     * transmitted to the fastcgi responder) The list is case insensitive.
+     * Regular expression (java.util.regex.Pattern) of http headers that
+     * will be transformed to HTTP_ environment variables for the
+     * script. Header names will always be transformed to upper case,
+     * so this pattern must be all upper case.
      */
-    public final static String PARAM_FILTERED_HEADERS = "filtered-headers";
+    public final static String PARAM_ALLOWED_HEADERS = "allowed-headers-regex";
+
+    /**
+     * Regular expression (java.util.regex.Pattern) to determine
+     * the php script file from the URL.
+     * The pattern will be searched in URL part behind the server
+     * name and behind the webapp context path (search for first
+     * occurrence). The part after the pattern will be put in
+     * PATH_INFO. The part before that will be put in SCRIPT_NAME.  
+     */
+    public final static String PARAM_PHP_SCRIPT_FROM_PATH = "php-script-from-path-regex";
 
     public final static String[] PARAM_NAMES = new String[] {
         PARAM_SERVER_ADDRESS, PARAM_START_EXECUTABLE,
         PARAM_CONNECTION_FACTORY, PARAM_CLUSTER_ADRESSES,
-        PARAM_FILTERED_HEADERS, PARAM_KEEP_ALIVE };
+        PARAM_ALLOWED_HEADERS, PARAM_PHP_SCRIPT_FROM_PATH, PARAM_KEEP_ALIVE };
 
     private final static Logger LOGGER = LoggerFactory
             .getLogger(FastCGIHandlerFactory.class);
@@ -112,20 +125,39 @@ public class FastCGIHandlerFactory {
         }
 
         // handle filtered-headers param
-        if (config.get(PARAM_FILTERED_HEADERS) != null) {
-            final String[] filteredHeaders = config.get(PARAM_FILTERED_HEADERS)
-                    .split(";");
-            for (int i = 0; i < filteredHeaders.length; i++) {
-                filteredHeaders[i] = filteredHeaders[i].trim();
-            }
+        if (config.get(PARAM_ALLOWED_HEADERS) != null) {
+            final String allowedHeaders = config.get(PARAM_ALLOWED_HEADERS);
 
             if (getLog().isInfoEnabled()) {
                 getLog().info(
-                        "The following http headers will not be transmitted : ["
-                                + StringUtil.arrayToString(", ",
-                                        filteredHeaders) + "]");
+                        "The following http headers will be transmitted (regex): ["
+                                + allowedHeaders + "]");
             }
-            handler.setFilteredHeaders(filteredHeaders);
+            Pattern allowedHeadersPattern;
+            try {
+                allowedHeadersPattern = Pattern.compile(allowedHeaders);
+            }
+            catch (PatternSyntaxException pse) {
+                throw new IllegalArgumentException(
+                        "Invalid regular expression in configuration parameter "
+                        + PARAM_ALLOWED_HEADERS, pse);
+            }
+            handler.setAllowedHeaders(allowedHeadersPattern);
+        }
+
+        if (config.get(PARAM_PHP_SCRIPT_FROM_PATH) != null) {
+            final String phpScriptFromPathPattern = config.get(PARAM_PHP_SCRIPT_FROM_PATH);
+
+            Pattern phpScriptFromPath;
+            try {
+                phpScriptFromPath = Pattern.compile(phpScriptFromPathPattern);
+            }
+            catch (PatternSyntaxException pse) {
+                throw new IllegalArgumentException(
+                        "Invalid regular expression in configuration parameter "
+                        + PARAM_PHP_SCRIPT_FROM_PATH, pse);
+            }
+            handler.setPhpScriptFromPathPattern(phpScriptFromPath);
         }
 
         if (config.get(PARAM_KEEP_ALIVE) != null) {
