@@ -135,7 +135,6 @@ public class FastCGIHandlerFactory {
             }
             Pattern allowedHeadersPattern;
             try {
-<<<<<<< HEAD
                 allowedHeadersPattern = Pattern.compile(allowedHeaders);
             }
             catch (PatternSyntaxException pse) {
@@ -159,31 +158,6 @@ public class FastCGIHandlerFactory {
                         + PARAM_PHP_SCRIPT_FROM_PATH, pse);
             }
             handler.setPhpScriptFromPathPattern(phpScriptFromPath);
-=======
-            	allowedHeadersPattern = Pattern.compile(allowedHeaders);
-            }
-            catch (PatternSyntaxException pse) {
-            	throw new IllegalArgumentException(
-            			"Invalid regular expression in configuration parameter "
-            			+ PARAM_ALLOWED_HEADERS, pse);
-            }
-            handler.setAllowedHeaders(allowedHeadersPattern);
-        }
-        
-        if (config.get(PARAM_PHP_SCRIPT_FROM_PATH) != null) {
-        	final String phpScriptFromPathPattern = config.get(PARAM_PHP_SCRIPT_FROM_PATH);
-        	
-        	Pattern phpScriptFromPath;
-            try {
-            	phpScriptFromPath = Pattern.compile(phpScriptFromPathPattern);
-            }
-            catch (PatternSyntaxException pse) {
-            	throw new IllegalArgumentException(
-            			"Invalid regular expression in configuration parameter "
-            			+ PARAM_PHP_SCRIPT_FROM_PATH, pse);
-            }
-        	handler.setPhpScriptFromPathPattern(phpScriptFromPath);
->>>>>>> f0c726479e59959d0d362fcff01683ea8f0b13c3
         }
 
         if (config.get(PARAM_KEEP_ALIVE) != null) {
