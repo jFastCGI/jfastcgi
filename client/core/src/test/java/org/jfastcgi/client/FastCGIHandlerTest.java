@@ -47,6 +47,7 @@ public class FastCGIHandlerTest {
     protected RequestAdapter makeRequest(final Map<String, String> headers) {
         RequestAdapter request = Mockito.mock(RequestAdapter.class);
         Mockito.when(request.getServletPath()).thenReturn("/fcgi");
+        Mockito.when(request.getRealPath("/")).thenReturn("/opt/whatever");
         Mockito.when(request.getHeaderNames()).thenReturn(Collections.enumeration(headers.keySet()));
 
         Mockito.when(request.getHeader(Mockito.anyString())).then(new Answer<String>() {
@@ -83,6 +84,6 @@ public class FastCGIHandlerTest {
         fastCGIHandler.service(makeRequest(headers), response);
 
         String s = new String(outputStream.toByteArray());
-        Assert.assertTrue(s.contains("CGI_HTTP_PROXY")); //same fix as ruby, we change the name of the variable
+        Assert.assertFalse(s.contains("HTTP_PROXY")); //same fix as ruby, we change the name of the variable
     }
 }

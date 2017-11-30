@@ -86,6 +86,10 @@ public class ServletRequestAdapter implements RequestAdapter {
         return httpServletRequest.getRemoteAddr();
     }
 
+    public String getRemoteHost() {
+        return httpServletRequest.getRemoteHost();
+    }
+
     public String getRemoteUser() {
         return httpServletRequest.getRemoteUser();
     }
@@ -106,7 +110,12 @@ public class ServletRequestAdapter implements RequestAdapter {
         return httpServletRequest.getServletPath();
     }
 
-    public String getRealPath(String relPath) {
-        return servletContext.getRealPath(relPath);
+    public String getPathInfo() {
+        String pathInfo = httpServletRequest.getPathInfo(); 
+        return pathInfo == null ? "" : pathInfo;
+    }
+
+    public String getRealPath(String realPath) {
+        return servletContext.getRealPath(realPath);
     }
 }
