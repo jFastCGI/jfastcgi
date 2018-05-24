@@ -5,6 +5,7 @@
        <groupId>org.sonatype.oss</groupId>
        <artifactId>oss-parent</artifactId>
        <version>7</version>
+       <relativePath/>
      </parent>
 
     <groupId>org.jfastcgi.parent</groupId>
@@ -21,6 +22,8 @@
     </modules>
 
     <properties>
+    	<maven.compiler.source>1.6</maven.compiler.source>
+    	<maven.compiler.target>1.6</maven.compiler.target>
         <commons-pool2.version>2.2</commons-pool2.version>
         <commons-exec.version>1.2</commons-exec.version>
         <portlet-api.version>2.0</portlet-api.version>
@@ -238,23 +241,16 @@
                     <execution>
                         <id>verify-style</id>
                         <phase>process-classes</phase>
+                        <configuration>
+                            <configLocation>build-tools/src/main/resources/checkstyle/checkstyle-default.xml</configLocation>
+                            <consoleOutput>true</consoleOutput>
+                            <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                        </configuration>
                         <goals>
                             <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <configLocation>checkstyle/checkstyle-default.xml</configLocation>
-                    <consoleOutput>true</consoleOutput>
-                    <includeTestSourceDirectory>false</includeTestSourceDirectory>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jfastcgi.parent</groupId>
-                        <artifactId>build-tools</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.zeroturnaround</groupId>
