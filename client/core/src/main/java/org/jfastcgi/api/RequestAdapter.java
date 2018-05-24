@@ -51,6 +51,8 @@ public interface RequestAdapter {
     public String getProtocol();
 
     public String getQueryString();
+    
+    public String getContentType();
 
     public String getServletPath();
     

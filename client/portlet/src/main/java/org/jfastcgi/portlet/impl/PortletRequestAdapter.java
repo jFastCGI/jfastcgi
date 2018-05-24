@@ -59,6 +59,10 @@ public class PortletRequestAdapter implements RequestAdapter {
     public String getQueryString() {
         return "";
     }
+    
+    public String getContentType() {
+        return null;
+    }
 
     public String getRemoteAddr() {
         return "";

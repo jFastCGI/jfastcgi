@@ -81,6 +81,10 @@ public class ServletRequestAdapter implements RequestAdapter {
     public String getQueryString() {
         return httpServletRequest.getQueryString();
     }
+    
+    public String getContentType() {
+        return httpServletRequest.getContentType();
+    }
 
     public String getRemoteAddr() {
         return httpServletRequest.getRemoteAddr();

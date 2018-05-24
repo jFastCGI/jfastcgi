@@ -261,6 +261,9 @@ public class FastCGIHandler {
         else {
             addHeader(ws, "REQUEST_URI", req.getRequestURI());
         }
+        if (req.getContentType() != null) {
+            addHeader(ws, "CONTENT_TYPE", req.getContentType());
+        }
         addHeader(ws, "REQUEST_METHOD", req.getMethod());
         addHeader(ws, "SERVER_SOFTWARE", FastCGIHandler.class.getName());
         addHeader(ws, "SERVER_NAME", req.getServerName());
