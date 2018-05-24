@@ -5,7 +5,8 @@
        <groupId>org.sonatype.oss</groupId>
        <artifactId>oss-parent</artifactId>
        <version>7</version>
-     </parent>
+       <relativePath/>
+    </parent>
 
     <groupId>org.jfastcgi.parent</groupId>
     <artifactId>jfastcgi-parent</artifactId>
