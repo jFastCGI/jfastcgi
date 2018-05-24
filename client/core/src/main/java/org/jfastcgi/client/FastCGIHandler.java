@@ -75,8 +75,9 @@ public class FastCGIHandler {
 
         private Pattern p = Pattern.compile(
                 "ACCEPT[-0-9A-Z]{0,100}|AUTHORIZATION|CACHE-CONTROL|COOKIE|DEPTH"
-                + "|HOST|IF-[-0-9A-Z]{2,100}|OCS-APIREQUEST|REFERER|REQUESTTOKEN"
-                + "|USER-AGENT|X-FORWARDED-FOR|X-UPDATER-AUTH");
+                + "|DESTINATION|HOST|IF-[-0-9A-Z]{2,100}|OCS-APIREQUEST|OVERWRITE"
+                + "|REFERER|REQUESTTOKEN|USER-AGENT|X-FORWARDED-FOR"
+                + "|X-REQUESTED-WITH|X-UPDATER-AUTH");
 
         public boolean isAllowed(final String header) {
             return p.matcher(header.toUpperCase()).matches();
@@ -96,9 +97,11 @@ public class FastCGIHandler {
      * this methods allows to tell which http headers we do want to pass to
      * the fastcgi app. Default is: <code>
      * java.util.Pattern.compile(
-     *    "ACCEPT[-0-9A-Z]{0,100}|AUTHORIZATION|CACHE-CONTROL|COOKIE|DEPTH|HOST|IF-[-0-9A-Z]{2,100}|OCS-APIREQUEST|REFERER|REQUESTTOKEN|USER-AGENT|X-FORWARDED-FOR|X-UPDATER-AUTH");
+     *      "ACCEPT[-0-9A-Z]{0,100}|AUTHORIZATION|CACHE-CONTROL|COOKIE|DEPTH"
+     *      + "|DESTINATION|HOST|IF-[-0-9A-Z]{2,100}|OCS-APIREQUEST|OVERWRITE"
+     *      + "|REFERER|REQUESTTOKEN|USER-AGENT|X-FORWARDED-FOR"
+     *      + "|X-REQUESTED-WITH|X-UPDATER-AUTH");
      * </code>
-     * <p/>
      *
      * @param allowedHeaders
      *            a regular expression for allowed http headers that will be
@@ -260,6 +263,9 @@ public class FastCGIHandler {
         }
         else {
             addHeader(ws, "REQUEST_URI", req.getRequestURI());
+        }
+        if (req.getContentType() != null) {
+            addHeader(ws, "CONTENT_TYPE", req.getContentType());
         }
         addHeader(ws, "REQUEST_METHOD", req.getMethod());
         addHeader(ws, "SERVER_SOFTWARE", FastCGIHandler.class.getName());
