@@ -3,4 +3,4 @@ jdk: openjdk7
 script: mvn clean package
 cache:
   directories:
-     - /home/travis/.m2
+     - $HOME/.m2
