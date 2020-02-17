@@ -36,7 +36,7 @@
         <slf4j.version>1.7.10</slf4j.version>
         <openejb.version>4.5.2</openejb.version>
         <mockito.version>1.9.5</mockito.version>
-        <jetty.version>9.3.24.v20180605</jetty.version>
+        <jetty.version>9.4.26.v20200117</jetty.version>
         <httpunit.version>1.7.2</httpunit.version>
         <fest-assert.version>1.4</fest-assert.version>
         <fest-reflect.version>1.4.1</fest-reflect.version>
