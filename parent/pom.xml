@@ -30,7 +30,7 @@
         <ejb.version>2.0</ejb.version>
         <spring.version>2.5.6</spring.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <junit.version>4.8.2</junit.version>
+        <junit.version>4.13.1</junit.version>
         <mockrunner.version>0.4</mockrunner.version>
         <jdom.version>1.1</jdom.version>
         <slf4j.version>1.7.10</slf4j.version>
