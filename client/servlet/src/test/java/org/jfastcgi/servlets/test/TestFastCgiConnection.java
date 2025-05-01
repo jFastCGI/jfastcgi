@@ -19,9 +19,6 @@
 */
 package org.jfastcgi.servlets.test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -32,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.fest.assertions.Assertions;
 import org.jfastcgi.client.FastCGIHandlerFactory;
 import org.jfastcgi.servlet.FastCGIServlet;
 import org.junit.After;
@@ -125,11 +123,11 @@ public class TestFastCgiConnection {
         WebResponse response = wc.getResponse(request);
         System.out.println(new String(response.getBytes()));
 
-        assertEquals(response.getResponseCode(), HttpServletResponse.SC_OK);
-        assertTrue(response.getContentLength() > 0);
+        Assertions.assertThat(response.getResponseCode()).isEqualTo(HttpServletResponse.SC_OK);
+        Assertions.assertThat(response.getContentLength()).isGreaterThan(0);
 
-        assertEquals(response.getElementsByTagName("H3").length, 1);
-        assertEquals(response.getTitle(), "FastCGI-Hello");
+        Assertions.assertThat(response.getElementsByTagName("H3").length).isEqualTo(1);
+        Assertions.assertThat(response.getTitle()).isEqualTo("FastCGI-Hello");
     }
 
 }
