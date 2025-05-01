@@ -20,4 +20,12 @@ public class FastCGIResult extends Result {
     public void apply(final Http.Request request, final Http.Response response) {
 
     }
+
+    public int getServerId() {
+        return serverId;
+    }
+
+    public String getPathOverride() {
+        return pathOverride;
+    }
 }
