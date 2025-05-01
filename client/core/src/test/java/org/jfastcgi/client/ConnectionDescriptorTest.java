@@ -1,7 +1,8 @@
 package org.jfastcgi.client;
 
 import static org.fest.assertions.Assertions.assertThat;
-import junit.framework.Assert;
+
+import org.fest.assertions.Assertions;
 
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class ConnectionDescriptorTest {
     public void testMakeConnDesc_unixSock() {
         final ConnectionDescriptor desc = ConnectionDescriptor
                 .makeConnDesc("unix://var/run/application.sock");
-        Assert.assertTrue(desc instanceof UnixSocketConnectionDescriptor);
+        Assertions.assertThat(desc instanceof UnixSocketConnectionDescriptor).isTrue();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -65,7 +66,7 @@ public class ConnectionDescriptorTest {
         final TcpConnectionDescriptor desc = (TcpConnectionDescriptor) ConnectionDescriptor
                 .makeConnDesc("[0:0:0:0:0:0:0:1]:9000");
         assertThat(desc).isNotNull();
-        if(!runsOnTravisCI()) {
+        if (!runsOnTravisCI()) {
             assertThat(desc.getAddr().isReachable(1)).isTrue();
         }
         assertThat(desc.getPort()).isEqualTo(9000);
@@ -76,7 +77,7 @@ public class ConnectionDescriptorTest {
         final TcpConnectionDescriptor desc = (TcpConnectionDescriptor) ConnectionDescriptor
                 .makeConnDesc("[::1]:9000");
         assertThat(desc).isNotNull();
-        if(!runsOnTravisCI()){
+        if (!runsOnTravisCI()) {
             assertThat(desc.getAddr().isReachable(1)).isTrue();
         }
         assertThat(desc.getPort()).isEqualTo(9000);
