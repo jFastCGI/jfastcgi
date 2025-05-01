@@ -30,6 +30,7 @@ import java.util.Iterator;
  */
 public final class StringUtil {
 
+    @SafeVarargs
     public static <T> String arrayToString(final String separator,
             final T... array) {
         return collectionToString(separator, Arrays.asList(array));
