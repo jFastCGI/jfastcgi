@@ -3,7 +3,6 @@ package org.jfastcgi.playframework1x;
 import org.jfastcgi.client.FastCGIHandler;
 import org.junit.Before;
 import org.junit.Test;
-import play.Play;
 
 import java.util.Map;
 import java.util.Properties;
