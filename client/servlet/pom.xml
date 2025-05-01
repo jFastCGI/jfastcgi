@@ -3,16 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
-		<groupId>org.jfastcgi.parent</groupId>
+		<groupId>net.sf.jfastcgi.parent</groupId>
 		<artifactId>jfastcgi-parent</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<version>2.4</version>
 		<relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.jfastcgi.client</groupId>
+	<groupId>net.sf.jfastcgi.client</groupId>
 	<artifactId>client-servlet</artifactId>
-	<version>2.4-SNAPSHOT</version>
+	<version>2.4</version>
 	<name>jFastCGI Client: Servlet</name>
 	<description>Integration into Servlet Containers.
         Use this if you want serve e.g. PHP files through your tomcat/jetty/etc.
@@ -29,7 +29,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jfastcgi.client</groupId>
+			<groupId>net.sf.jfastcgi.client</groupId>
 			<artifactId>client-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>

@@ -8,9 +8,9 @@
        <relativePath/>
      </parent>
 
-    <groupId>org.jfastcgi.parent</groupId>
+    <groupId>net.sf.jfastcgi.parent</groupId>
     <artifactId>jfastcgi-parent</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.4</version>
     <packaging>pom</packaging>
 
     <name>jFastCGI Build: Parent</name>
